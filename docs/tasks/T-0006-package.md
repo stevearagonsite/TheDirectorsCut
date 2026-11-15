@@ -15,7 +15,8 @@ y comprobar que el **zip** arranca y se ve bien: L_Slice con colores de lectura,
 Checklist de entrega: [`docs/jam/entrega.md`](../jam/entrega.md).
 
 ## Contexto
-- La rama sale de `main` después de T-0011 y se rebasea sobre `main` cuando cierre T-0012 (ambientación + director en cm).
+- La rama está sobre `main` con T-0012 (director a escala, locomoción, ambientación noir). Este es el package **de prueba**;
+  si después entran props o fixes, se repite con un envío corto.
 - `tdc.ps1 package`: RunUAT BuildCookRun Win64 **Development** (Shipping oculta los mensajes en pantalla, que hoy son el HUD),
   archiva en `Game\Saved\Package` y arma `Game\Saved\stevearagonsite_TheDirectorsCut.zip`.
 - `tdc.ps1 smoke` (nuevo): descomprime el zip en `Game\Saved\PackageTest` (ignorado), arranca `TheDirectorsCut.exe` en ventana,
@@ -24,7 +25,8 @@ Checklist de entrega: [`docs/jam/entrega.md`](../jam/entrega.md).
   cargan por ruta y sin eso no entrarían al package.
 
 ## Pasos
-1. `git pull` en la rama. `.\Tools\scripts\tdc.ps1 stop`: el juego de la tarea anterior tiene Live Coding y bloquea el build.
+1. La rama se rehízo desde main (force-push): `git fetch` y `git checkout -B t/T-0006-package origin/t/T-0006-package`.
+   `.\Tools\scripts\tdc.ps1 stop`: el juego de la tarea anterior tiene Live Coding y bloquea el build.
 2. `.\Tools\scripts\tdc.ps1 build` (por si cambió el C++) y `.\Tools\scripts\tdc.ps1 package`.
    Si falla: los primeros errores reales de `Game\Saved\Logs\tdc-package.log` (no la cascada) y reportar `fallo`. Si es del
    script `tdc.ps1`, arreglarlo (permitido) y explicarlo.
@@ -48,7 +50,7 @@ Checklist de entrega: [`docs/jam/entrega.md`](../jam/entrega.md).
 - Editar `Tools/scripts/tdc.ps1` solo para que `package`/`smoke` funcionen.
 
 ## No hacer
-- No commitear el zip, `Game/Saved/` ni binarios del build.
+- No commitear el zip, `Game/Saved/` ni binarios del build, ni `Tools/unreal/_diag_*` (temporales de T-0012: borralos).
 - No cambiar C++ ni el mapa: reportar.
 
 ## Evidencia pedida
