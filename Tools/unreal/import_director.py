@@ -23,6 +23,7 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 FBX = os.path.join(REPO, "Art", "Export", "Director", "Director_rigged_anims.fbx")
 TARGET_HEIGHT_CM = 180.0
 # Prop opcional (T-0009): la claqueta, pivote en el agarre. Se engancha al hueso RightHand desde C++.
+THROW_FBX = os.path.join(REPO, "Art", "Export", "Director", "Director_anim_throw.fbx")  # opcional: AS_Director_Clap
 CLAPPER_FBX = os.path.join(REPO, "Art", "Export", "Director", "SM_Clapperboard.fbx")
 
 # Palabra clave en el nombre de la animación importada -> nombre final. El orden importa ("sprint" antes que "run").
@@ -102,9 +103,50 @@ def import_clapper():
         log("SM_Clapperboard NO se importó")
 
 
+def import_throw(scale):
+    """Animación del claquetazo: FBX aparte con el mismo rig; se importa solo la animación sobre SKEL_Director."""
+    if not os.path.isfile(THROW_FBX):
+        log("sin Director_anim_throw.fbx: el claquetazo va sin animación")
+        return
+    skel = eal.load_asset(DEST + "/SKEL_Director")
+    if not skel:
+        log("sin SKEL_Director: no puedo importar el throw")
+        return
+    ui = unreal.FbxImportUI()
+    ui.import_mesh = False
+    ui.import_as_skeletal = True
+    ui.mesh_type_to_import = unreal.FBXImportType.FBXIT_ANIMATION
+    ui.import_animations = True
+    ui.import_materials = False
+    ui.import_textures = False
+    ui.skeleton = skel
+    ui.automated_import_should_detect_type = False
+    ui.anim_sequence_import_data.import_uniform_scale = scale
+    ui.anim_sequence_import_data.set_editor_property(
+        "animation_length", unreal.FBXAnimationLengthImportType.FBXALIT_EXPORTED_TIME)
+    task = unreal.AssetImportTask()
+    task.filename = THROW_FBX
+    task.destination_path = DEST + "/Throw"
+    task.destination_name = "AS_Director_Clap"
+    task.replace_existing = True
+    task.automated = True
+    task.save = True
+    task.options = ui
+    unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+    anims = [eal.load_asset(p) for p in eal.list_assets(DEST + "/Throw", recursive=True, include_folder=False)]
+    anims = [a for a in anims if isinstance(a, unreal.AnimSequence)]
+    if not anims:
+        log("el throw NO produjo animación")
+        return
+    if eal.does_asset_exist(DEST + "/AS_Director_Clap"):
+        eal.delete_asset(DEST + "/AS_Director_Clap")
+    eal.rename_asset(anims[0].get_path_name().split(".")[0], DEST + "/AS_Director_Clap")
+    log("anim %s -> AS_Director_Clap (%.2f s)" % (anims[0].get_name(), anims[0].get_play_length()))
+
+
 def find(cls):
     out = []
-    for path in eal.list_assets(DEST, recursive=True, include_folder=False):
+    for path in eal.list_assets(DEST, recursive=False, include_folder=False):
         obj = eal.load_asset(path)
         if isinstance(obj, cls):
             out.append(obj)
@@ -121,7 +163,8 @@ def main():
         raise RuntimeError("No existe " + FBX)
     unreal.SystemLibrary.execute_console_command(None, "Interchange.FeatureFlags.Import.FBX False")
 
-    paths = import_fbx(1.0)
+    scale = 1.0
+    paths = import_fbx(scale)
     log("importado: %d objetos" % len(paths))
     meshes = find(unreal.SkeletalMesh)
     if not meshes:
@@ -156,6 +199,7 @@ def main():
         else:
             log("anim sin mapear: " + name)
 
+    import_throw(scale)
     import_clapper()
     eal.save_directory(DEST, only_if_is_dirty=False, recursive=True)
     missing = sorted(n for n in ("AS_Director_Idle", "AS_Director_Run", "AS_Director_Jump") if n not in taken)
