@@ -1,7 +1,7 @@
 ---
 id: T-0009
 titulo: Claquetazo y extras en la sala
-estado: nueva
+estado: enviada
 tipo: mixto
 rama: t/T-0009-claquetazo
 creada: 2026-11-15
@@ -26,14 +26,19 @@ Depende de T-0007: esta rama está encima de ella.
   (animación). `import_director.py` importa la claqueta si está `Art/Export/Director/SM_Clapperboard.fbx`.
 
 ## Pasos
-1. `git merge origin/main` si quedó atrás. Tiene que incluir T-0008 y T-0007.
+0. **Esta tarea incluye T-0007** (la rama está encima): hacé también sus pasos de import (el paso 4 de acá los cubre) y
+   completá el Reporte de `docs/tasks/T-0007-personaje-skeletal.md` con lo que corresponda al director.
+   Si el juego de T-0008 sigue abierto (Live Coding bloquea el build), cerralo primero: `Stop-Process -Name UnrealEditor`.
+   Borrá `docs/tasks/T-0008-reporte.tmp` si existe (no se commitea).
+1. La rama ya está rebaseada sobre `main` con T-0008 (`.uproject` 5.8 y `L_Slice`).
 2. `.\Tools\scripts\tdc.ps1 build`. Si hay errores de C++: **pará** y reportá `estado: fallo` con `archivo:línea` y el mensaje.
 3. `.\Tools\scripts\tdc.ps1 test`. Incluye `TDC.Combat.ResolveClap`; anotá el resultado.
 4. `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\import_director.py`, para sumar la claqueta si está el FBX.
-5. `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\build_slice.py`, para regenerar `L_Slice` con los extras.
+5. `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\build_slice.py`, para regenerar `L_Slice` con los extras
+   (si el commandlet no alcanza, con `-InEditor`).
 6. Captura: `.\Tools\scripts\tdc.ps1 shot -Map /Game/Maps/L_Slice -Task T-0009 -Name 01-extras`.
 7. Commit de `L_Slice.umap`, `Game/Content/Characters/Director/**` (si cambió), la evidencia y el Reporte. Push y `[TDC-REPORT]`.
-8. Dejá el juego abierto en la PC (como en T-0007, paso 6).
+8. Dejá el juego abierto en la PC: `.\Tools\scripts\tdc.ps1 play`.
 
 ## Criterios de aceptación
 - [ ] Compila sin errores y `TDC.Combat.ResolveClap` pasa.
