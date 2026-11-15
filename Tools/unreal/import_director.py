@@ -6,6 +6,7 @@ Correr en Windows:
   (o en el editor: Output Log > Python:  py "<repo>/Tools/unreal/import_director.py")
 
 Entrada:  Art/Export/Director/Director_rigged_anims.fbx (mesh + skeleton + animaciones Idle, Walking, Jogging, Sprint, Jumping).
+Opcional: Art/Export/Director/SM_Clapperboard.fbx -> SM_Clapperboard (prop del claquetazo, T-0009).
 Salida:   SK_Director (skeletal mesh, ~180 cm), SKEL_Director, y las animaciones renombradas:
           AS_Director_Idle, AS_Director_Walk, AS_Director_Run (Jogging), AS_Director_Sprint, AS_Director_Jump.
 ATDCCharacter carga estos nombres por ruta (T-0007): no cambiarlos sin cambiar el C++.
@@ -21,6 +22,8 @@ DEST = "/Game/Characters/Director"
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 FBX = os.path.join(REPO, "Art", "Export", "Director", "Director_rigged_anims.fbx")
 TARGET_HEIGHT_CM = 180.0
+# Prop opcional (T-0009): la claqueta, pivote en el agarre. Se engancha al hueso RightHand desde C++.
+CLAPPER_FBX = os.path.join(REPO, "Art", "Export", "Director", "SM_Clapperboard.fbx")
 
 # Palabra clave en el nombre de la animación importada -> nombre final. El orden importa ("sprint" antes que "run").
 ANIM_NAMES = [
@@ -30,6 +33,8 @@ ANIM_NAMES = [
     ("jog", "AS_Director_Run"),
     ("run", "AS_Director_Run"),
     ("jump", "AS_Director_Jump"),
+    ("throw", "AS_Director_Clap"),
+    ("clap", "AS_Director_Clap"),
 ]
 
 eal = unreal.EditorAssetLibrary
@@ -65,6 +70,36 @@ def import_fbx(scale):
     task.options = ui
     unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
     return list(task.imported_object_paths or [])
+
+
+def import_clapper():
+    if not os.path.isfile(CLAPPER_FBX):
+        log("sin SM_Clapperboard.fbx: el claquetazo va sin prop")
+        return
+    ui = unreal.FbxImportUI()
+    ui.import_mesh = True
+    ui.import_as_skeletal = False
+    ui.mesh_type_to_import = unreal.FBXImportType.FBXIT_STATIC_MESH
+    ui.import_animations = False
+    ui.import_materials = True
+    ui.import_textures = True
+    ui.automated_import_should_detect_type = False
+    ui.static_mesh_import_data.combine_meshes = True
+    ui.static_mesh_import_data.set_editor_property("auto_generate_collision", False)
+    task = unreal.AssetImportTask()
+    task.filename = CLAPPER_FBX
+    task.destination_path = DEST
+    task.destination_name = "SM_Clapperboard"
+    task.replace_existing = True
+    task.automated = True
+    task.save = True
+    task.options = ui
+    unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+    sm = eal.load_asset(DEST + "/SM_Clapperboard")
+    if sm:
+        log("SM_Clapperboard importado (alto %.1f cm)" % (sm.get_bounds().box_extent.z * 2.0))
+    else:
+        log("SM_Clapperboard NO se importó")
 
 
 def find(cls):
@@ -121,6 +156,7 @@ def main():
         else:
             log("anim sin mapear: " + name)
 
+    import_clapper()
     eal.save_directory(DEST, only_if_is_dirty=False, recursive=True)
     missing = sorted(n for n in ("AS_Director_Idle", "AS_Director_Run", "AS_Director_Jump") if n not in taken)
     if missing:
