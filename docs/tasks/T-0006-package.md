@@ -1,7 +1,7 @@
 ---
 id: T-0006
 titulo: Package Win64 para la Epic AI MegaJam (build + zip + prueba del exe)
-estado: nueva
+estado: ok
 tipo: build
 rama: t/T-0006-package
 creada: 2026-11-15
@@ -59,9 +59,29 @@ Tamaño del zip, extracto del log del exe que imprime `smoke` (ya redactado) y `
 ---
 
 ## Reporte (lo completa Windows)
-- estado:
-- sha:
-- resumen:
-- errores:
-- evidencia:
+- estado: ok
+- sha: bd31aae (base) + commit de este reporte
+- resumen: `build` al día (sin cambios de C++). `package` Win64 Development: BUILD SUCCESSFUL en 2m53s (523 paquetes,
+  ~152 MiB UAsset en IoStore). **Zip: 319,2 MB** (`Game\Saved\stevearagonsite_TheDirectorsCut.zip`, < 1 GB). `smoke`: el exe
+  sigue corriendo a los 40 s y a los 60 s; el log hace `LoadMap /Game/Maps/L_Slice` sin `Fatal` ni assets faltantes.
+  Captura: el director Rodin (no el cilindro), una pieza roja, plataformas y el telón pintado de cielo noir.
+- errores: primer intento de `package` falló: `Invalid configuration '$Config'` — PowerShell no expande `$Config` en un argumento
+  sin comillas que empieza con `-`. Arreglado en `Tools/scripts/tdc.ps1` (`-clientconfig="$Config"`). El log del package solo
+  tiene el warning de compilador VS 14.52 no preferido.
+- evidencia: `docs/evidence/T-0006/01-package.png`. Extracto del log del exe (smoke, `-Wait 60`):
+  ```
+  LogWindows: Failed to load 'aqProf.dll' / 'VtuneApi.dll' / 'VtuneApi32e.dll' / 'WinPixGpuCapturer.dll' (GetLastError=126)  ← profilers opcionales, normal
+  LogAudio: Display: No default SoundConcurrencyObject specified (or failed to load).
+  LogLoad: LoadMap: /Game/Maps/L_Slice?Name=Player
+  LogLoad: Took 0.051819 seconds to LoadMap(/Game/Maps/L_Slice)
+  LogGlobalStatus: UEngine::LoadMap Load map complete /Game/Maps/L_Slice
+  ```
 - notas / preguntas:
+  - La primera captura (`-Wait 40`) salió solo con un gradiente azul: `HighResShot` va por `-ExecCmds` y se dispara en el
+    frame ~6, antes de que la escena termine de renderizar. Con `-Wait 60` salió bien, pero `-Wait` no cambia cuándo se toma
+    la foto: es una carrera. Sugerencia para la Mac: en `smoke`, sacar la captura después del `Start-Sleep` (p. ej. captura
+    de la ventana) en vez de por `-ExecCmds`.
+  - En la captura se ve una sola pieza de color (roja); el resto del encuadre son plataformas grises y el telón.
+  - `Tools/unreal/_diag_*` (temporales de T-0012) no se pudieron borrar desde la sesión sin interfaz (permiso de borrado
+    denegado); quedan sin trackear y no se commitearon. Borrarlos a mano.
+  - Build empaquetado dejado abierto con `smoke -Task T-0006 -Name 02-final -Keep` (captura no commiteada).

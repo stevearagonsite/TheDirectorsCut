@@ -171,7 +171,7 @@ switch ($Command) {
     $log = Join-Path $Repo 'Game\Saved\Logs\tdc-package.log'
     if (Test-Path $out) { Remove-Item -Recurse -Force $out }
     New-Item -ItemType Directory -Force (Split-Path $log) | Out-Null
-    & $UEUAT BuildCookRun -project="$Proj" -noP4 -platform=Win64 -clientconfig=$Config `
+    & $UEUAT BuildCookRun -project="$Proj" -noP4 -platform=Win64 -clientconfig="$Config" `
       -build -cook -stage -pak -iostore -prereqs -nodebuginfo -archive -archivedirectory="$out" -utf8output 2>&1 |
       Tee-Object -FilePath $log
     Check-Exit 'package'
