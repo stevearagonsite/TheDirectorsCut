@@ -7,6 +7,8 @@
 #include "TDCExtra.generated.h"
 
 class UCapsuleComponent;
+class USkeletalMeshComponent;
+class UAnimSequence;
 class UStaticMeshComponent;
 class UTDCLightReactiveComponent;
 class UMaterialInstanceDynamic;
@@ -48,6 +50,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|Extra", meta = (ClampMin = "0"))
 	float KnockbackDistance = 120.f;
 
+	/**
+	 * Modelo animado del extra (Rodin), cargado por ruta según la vulnerabilidad:
+	 * /Game/Characters/Extras/<Comun|Resistente|Sombra>/SK_Extra_<Tipo> + AS_Extra_<Tipo>_Idle/_Walk.
+	 * Si no existe, queda el greybox. PuppetScale compensa la escala 0.01 del root en las animaciones de Rodin.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|Extra")
+	float PuppetScale = 100.f;
+
 	/** Recibe un claquetazo desde una posición. Devuelve el resultado para el feedback del director. */
 	UFUNCTION(BlueprintCallable, Category = "TDC|Extra")
 	ETDCClapResult ReceiveClap(const FVector& FromLocation);
@@ -74,6 +84,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "TDC|Extra")
 	TObjectPtr<UTDCLightReactiveComponent> LightReactive;
 
+	UPROPERTY(VisibleAnywhere, Category = "TDC|Extra")
+	TObjectPtr<USkeletalMeshComponent> Puppet;
+
 private:
 	UFUNCTION()
 	void OnTouch(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
@@ -93,5 +106,13 @@ private:
 	float Direction = 1.f;
 	float StunRemaining = 0.f;
 	bool bDefeated = false;
+	void LoadPuppet();
+	void UpdatePuppet();
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> PuppetIdle;
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> PuppetWalk;
+	bool bPuppetWalking = false;
+	float PuppetFacing = 0.f;
 	TWeakObjectPtr<AActor> StunFx;
 };

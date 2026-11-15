@@ -1,0 +1,26 @@
+Busqueda Sketchfab (2026-11-15): modelos propios de stevearagon92 (14: robot, castillo, chica, escaneos...; ninguno es un extra noir) y busquedas descargables CC-BY: 'low poly gangster', 'low poly security guard', 'noir character low poly', 'shadow humanoid low poly', 'low poly mobster rigged'.
+Mejores candidatos evaluados (contacto en ../sketchfab-candidatos.png):
+- Gangster Rigged (syedabbas0815, CC-BY, 16k tris): 1/6. Moderno, realista, musculosa con palmeras cian.
+- Low Poly Thug (kanesk06, CC-BY, 7.6k): 1/6. Realista, torso desnudo, tatuajes.
+- Low poly security guard (manre, CC-BY, 4.8k): 3/6. Low-poly plano y liviano, pero guardia moderno, paleta azul, no coherente con el Director.
+- LowPoly Security Guard (luizmiguel3d, CC-BY, 2.8k): 3/6. Traje azul y anteojos, estilo de juego movil, no de los 40.
+- PBR Shadowkin Mage (CC-BY, 16k): 1/6. PBR fantasia, no noir.
+Ninguno llega a 5/6 -> se genera (D-015 paso 3).
+
+Evaluacion de taste del generado (comun, "gangster de utileria"): 6/6
+- facetado/low-poly con colores planos: si
+- epoca 40-50 / noir: si (traje cruzado a rayas, fedora)
+- paleta sin amarillo/violeta/cian saturados: si (rojo ladrillo; un poco mas vivo que "apagado", se puede bajar en el material de UE)
+- silueta legible a ~22 m: si (fedora + figura flaca y larga)
+- <=20k tris, pivote base, humanoide riggeable: si (10K quads ~20K tris, al limite)
+- coherente con el Director: si (misma referencia de estilo)
+
+Fuente elegida: generado: Gemini + Rodin (D-015 paso 3).
+- Referencia: referencia.png, generada con gemini-3-pro-image usando docs/product/arte/model-sheet/director-front-v1.png como referencia de estilo (prompt en prompt-gemini.txt).
+- Rodin web, Image to 3D, Gen-2.5 High, Caption Override apagado. Geometria: Clean Topology, Quad, 10K caras (~20K tris). Material PBR 2K + Face Restore.
+- Rig: Skeleton > Templates Human > Create skeleton (22 huesos, Hips raiz, 52 clusters de skin).
+- Animaciones: Idle y Walking, In Place (en el FBX: AnimStacks Armature|human_000089 y Armature|human_000093).
+- Export: .fbx, pivote Bottom, Custom height 175 cm. Zip original: rodin-comun.zip; descomprimido en rodin/ (base.fbx, base_basic_pbr.fbx, base_basic_shaded.fbx, texturas, shaded.png).
+- Tarea Rodin: https://hyper3d.ai/workspace/rodin/dfd49aaa-2456-4f46-a4f2-3f3076cb975d
+- Creditos Rodin: 1 generacion, sin retry. Saldo de la billetera: 416.5 antes de empezar, ~407 al terminar las 3 (≈3 creditos por personaje; la billetera la comparte con otras sesiones, asi que es aproximado).
+- Captura para revisar: render-rodin.jpg (visor de Rodin con material) (rodin/shaded.png es el atlas de textura, no un render).
