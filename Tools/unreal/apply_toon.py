@@ -69,8 +69,12 @@ def exposure_independent(mat, node):
     if not EYE_INVERSE:
         return node
     inv = expr(mat, EYE_INVERSE, 300, 100)
-    link(node, inv, "LightValue")
-    return inv
+    # UE 5.8: el pin se llama "LightValueInput" (nombre de la propiedad). Con "LightValue" la conexión fallaba en
+    # silencio y el nodo devolvía blanco (1,1,1) * inversa: personajes como silueta blanca plana.
+    for pin in ("LightValueInput", "LightValue"):
+        if mel.connect_material_expressions(node, "", inv, pin):
+            return inv
+    fail("no se pudo conectar EyeAdaptationInverse (pin LightValueInput/LightValue)")
 
 
 def build_master(default_tex):

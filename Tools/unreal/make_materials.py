@@ -249,7 +249,10 @@ def build_light_piece():
     eye_inverse = getattr(unreal, "MaterialExpressionEyeAdaptationInverse", None)
     if eye_inverse:  # brillo estable aunque la auto-exposure suba en la escena oscura (si no, se quema)
         inv = mel.create_material_expression(mat, eye_inverse, 300, 100)
-        mel.connect_material_expressions(final, "", inv, "LightValue")
+        # UE 5.8: el pin es "LightValueInput"; con "LightValue" no conectaba y el nodo devolvía blanco * inversa.
+        if not (mel.connect_material_expressions(final, "", inv, "LightValueInput")
+                or mel.connect_material_expressions(final, "", inv, "LightValue")):
+            fail("no se pudo conectar EyeAdaptationInverse en M_TDCLightPiece")
         final = inv
     mel.connect_material_property(final, "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
 
