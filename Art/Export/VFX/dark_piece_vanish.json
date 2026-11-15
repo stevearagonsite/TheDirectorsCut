@@ -1,0 +1,281 @@
+{
+ "frames": [
+  {
+   "filename": "dark-piece-vanish 0",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "dark-piece-vanish 1",
+   "frame": {
+    "x": 136,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "dark-piece-vanish 2",
+   "frame": {
+    "x": 272,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "dark-piece-vanish 3",
+   "frame": {
+    "x": 0,
+    "y": 60,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "dark-piece-vanish 4",
+   "frame": {
+    "x": 136,
+    "y": 60,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "dark-piece-vanish 5",
+   "frame": {
+    "x": 272,
+    "y": 60,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "dark-piece-vanish 6",
+   "frame": {
+    "x": 0,
+    "y": 120,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "dark-piece-vanish 7",
+   "frame": {
+    "x": 136,
+    "y": 120,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "dark-piece-vanish 8",
+   "frame": {
+    "x": 272,
+    "y": 120,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "dark-piece-vanish 9",
+   "frame": {
+    "x": 0,
+    "y": 180,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "dark-piece-vanish 10",
+   "frame": {
+    "x": 136,
+    "y": 180,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  }
+ ],
+ "meta": {
+  "app": "https://github.com/patch-gg/pixelfx",
+  "version": "1",
+  "image": "dark-piece-vanish.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 408,
+   "h": 240
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "dark-piece-vanish",
+    "from": 0,
+    "to": 10,
+    "direction": "forward"
+   }
+  ],
+  "pixelfx": {
+   "id": "tdc/dark-piece-vanish",
+   "name": "Dark piece vanish",
+   "fps": 25,
+   "loop": false,
+   "frames": 11,
+   "frameSize": [
+    136,
+    60
+   ],
+   "pivot": [
+    68,
+    40
+   ],
+   "columns": 3
+  }
+ }
+}
