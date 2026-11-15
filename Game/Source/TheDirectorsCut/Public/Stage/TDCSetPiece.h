@@ -42,6 +42,8 @@ public:
 
 	UStaticMeshComponent* GetMesh() const { return Mesh; }
 
+	UTDCLightReactiveComponent* GetLightReactive() const { return LightReactive; }
+
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;

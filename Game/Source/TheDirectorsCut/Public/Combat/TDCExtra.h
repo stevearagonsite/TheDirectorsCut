@@ -65,6 +65,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "TDC|Extra")
 	bool IsDefeated() const { return bDefeated; }
 
+	UFUNCTION(BlueprintPure, Category = "TDC|Extra")
+	bool IsStunned() const { return StunRemaining > 0.f; }
+
 	virtual void Tick(float DeltaSeconds) override;
 
 protected:
