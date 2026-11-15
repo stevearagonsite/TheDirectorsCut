@@ -162,6 +162,12 @@ def main():
     if not os.path.isfile(FBX):
         raise RuntimeError("No existe " + FBX)
     unreal.SystemLibrary.execute_console_command(None, "Interchange.FeatureFlags.Import.FBX False")
+    # Import limpio: si cambió el rig (p. ej. FBX re-exportado en cm), reimportar encima deja el skeleton viejo.
+    if eal.does_directory_exist(DEST):
+        for path in eal.list_assets(DEST, recursive=True, include_folder=False):
+            if not eal.delete_asset(path.split(".")[0]):
+                raise RuntimeError("[TDC] ERROR no pude borrar %s (¿falta git lfs lock?)" % path)
+        log("borrado el contenido previo de " + DEST)
 
     scale = 1.0
     paths = import_fbx(scale)
