@@ -23,7 +23,8 @@ mínimo de ambas.
 - Si `tdc.local.ps1`, gitleaks, etc. ya están de una sesión anterior, no los repitas.
 
 ## Pasos
-0. **Reenvío 5.** Permisos del worker restablecidos: `tdc.ps1` en todas sus formas (no `Start-Process` ni `UnrealEditor` directo:
+0. **Reenvío 6.** test-e4 cerró los `UnrealEditor`/`LiveCodingConsole` que bloqueaban el build por Live Coding. Si vuelve a
+   pasar, reportá `bloqueado` sin reintentar. (Reenvío 5:) Permisos del worker restablecidos: `tdc.ps1` en todas sus formas (no `Start-Process` ni `UnrealEditor` directo:
    para eso están `tdc.ps1 play`, `editor`, `shot` y `python -InEditor`). test-e4 instaló el .NET Framework 4.8 SDK (VS 2026 Community y BuildTools), gitleaks y la identidad de git. `gh` puede seguir sin autenticar: si el push falla, reportá igual por VirtualKvm.
    En el clon: `git restore --staged --worktree Game/TheDirectorsCut.uproject docs/tasks/T-0008-prototipo-windows.md` y `git pull`.
    El stash de T-0001 dejalo como está.
