@@ -1,7 +1,7 @@
 ---
 id: T-0007
 titulo: Personaje del director (Rodin) corriendo en el juego
-estado: nueva
+estado: parcial
 tipo: mixto
 rama: t/T-0007-personaje-skeletal
 creada: 2026-11-15
@@ -56,9 +56,10 @@ quedarse quieto en el juego. Epic AI MegaJam: cierre 2026-11-15 22:59 ART. Depen
 ---
 
 ## Reporte (lo completa Windows)
-- estado:
-- sha:
-- resumen:
+- estado: parcial
+- sha: ver T-0011
+- resumen: se ejecutó dentro de T-0011 (ver `docs/tasks/T-0011-color-lectura.md`, Reporte): import OK (180 cm, AS_Director_*,
+  SM_Clapperboard), pero en la captura el director se ve diminuto.
 - errores:
-- evidencia:
+- evidencia: docs/evidence/T-0011/
 - notas / preguntas:

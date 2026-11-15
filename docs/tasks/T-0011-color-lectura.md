@@ -1,7 +1,7 @@
 ---
 id: T-0011
 titulo: Build integrado para la jam (director + claquetazo + cámara/cielo + colores de lectura)
-estado: bloqueada
+estado: parcial
 tipo: mixto
 rama: t/T-0011-color-lectura
 creada: 2026-11-15
@@ -56,16 +56,34 @@ Un único ciclo de PC antes del package de la Epic AI MegaJam (21:00 ART). La ra
 ---
 
 ## Reporte (lo completa Windows)
-- estado: bloqueada
-- sha: 660f3de (rama validada; sin cambios de contenido)
-- resumen: paso 0 no se pudo hacer. El worker sin interfaz no tiene permiso para cerrar procesos: `Stop-Process -Name UnrealEditor`,
-  `Get-Process` y `taskkill` piden aprobación y no hay nadie para darla. El juego de T-0008 sigue abierto, así que el paso 1
-  (`tdc.ps1 build`) falla por Live Coding. No se corrieron los pasos 2 a 8 porque necesitan el build nuevo (C++ de T-0009/T-0010).
-  No existía `docs/tasks/T-0008-reporte.tmp`.
-- errores: `Game/Saved/Logs/tdc-build.log`:
-  `Unable to build while Live Coding is active. Exit the editor and game, or press Ctrl+Alt+F11 if iterating on code in the editor or game`
-  `Result: Failed (OtherCompilationError)` (tdc.ps1: build falló, código 6)
-- evidencia: ninguna (no se llegó a las capturas)
-- notas / preguntas: hace falta cerrar a mano `UnrealEditor` y `LiveCodingConsole` en la PC (como en el reenvío 6 de T-0008) o
-  permitirle al worker `Stop-Process -Name UnrealEditor,LiveCodingConsole`. Después, reenviar T-0011 sin cambios. Para la
-  próxima: el paso 8 ("dejá el juego abierto") siempre bloquea el build de la tarea siguiente si el worker no puede cerrarlo.
+- estado: parcial
+- sha: 69acf21 (validado) + commit de este reporte
+- resumen:
+  - Paso 0: `tdc.ps1 stop` → "no había editor/juego de este proyecto abierto". No existía `T-0008-reporte.tmp`.
+    En el clon había un `Game/Content/Maps/L_Slice.umap` sin trackear, idéntico (mismo blob LFS) al de la rama; se pisó con el checkout.
+  - Paso 1: build OK (`Result: Succeeded`, 14 acciones, sin errores).
+  - Paso 2: `make_materials.py` OK → `/Game/Materials/M_TDCColor`.
+  - Paso 3: `import_director.py` OK: `altura importada: 180.0 cm`; `Idle -> AS_Director_Idle`, `Jogging -> AS_Director_Run`,
+    `Jumping -> AS_Director_Jump`, `Two_Cycle_Sprint -> AS_Director_Sprint`, `Walking -> AS_Director_Walk`,
+    `AS_Director_Clap -> AS_Director_Clap`; `SM_Clapperboard importado (alto 27.2 cm)`. Warnings FBX: sin smoothing groups;
+    SM_Clapperboard con tangentes degeneradas.
+  - Paso 4: `build_slice.py` loguea "construido y guardado" pero **no guardaba**: `L_Slice.umap` es LFS lockable y queda
+    read-only (`Unable to save package ... because the file is read-only!`, el mensaje no falla el script). Con
+    `git lfs lock Game/Content/Maps/L_Slice.umap` + `-InEditor` se guardó bien. (Sugerencia: que `build_slice.py` verifique el
+    resultado de `save_current_level()` y falle.)
+  - Paso 5: tests `ok=4 fallidos=0`: TDC.Combat.ResolveClap, TDC.Stage.Lighting.IsLit, TDC.Stage.Lighting.Presence, TDC.Stage.Time.History.
+  - Paso 6: captura `01-sala.png`. Se ven el cielo (SkyAtmosphere + niebla), Floor_A y el extra X1 rojo. **No cumple**:
+    (a) el director no se lee: en la posición del jugador (centro, sobre el piso) hay solo una marca gris de pocos píxeles,
+    mucho más chica que el extra de 170 cm; no se ve ni el director a escala ni la cápsula greybox. Sospecha: las animaciones
+    (Mixamo/Rodin) traen escala 0.01 en el root/armature y achican el mesh al reproducirse, aunque el ref pose mida 180 cm;
+    (b) un solo piso en cuadro (Floor_B empieza en X=2200 y queda fuera); (c) de los colores solo se ve el rojo del extra:
+    la plataforma amarilla P1 es ONLY_IN_LIGHT con L1 apagado, el resto está fuera de cuadro.
+  - Paso 7: commit de `Game/Content/` (L_Slice, Materials/M_TDCColor, Characters/Director/*) por LFS, evidencia y reportes de
+    T-0007 (parcial) y T-0009 (ok). No se commiteó `Art/Export/Director/Director_rigged_anims.fbm/` (texturas que extrae el import).
+  - Paso 8: juego abierto con `tdc.ps1 play`.
+- errores: ninguno de compilación ni de tests. Paso 4: `Unable to save package to .../Game/Content/Maps/L_Slice.umap because the file is read-only!` (resuelto con lock).
+- evidencia: `docs/evidence/T-0011/01-sala.png`; extractos de import y tests arriba.
+- notas / preguntas: 1) revisar escala del director en juego (animaciones con escala de armature; probar reimport con
+  `convert_scene`/`remove_root_motion` o forzar escala 1 en el root de las AS_*), 2) encuadre: con brazo 2200 y FOV 60 desde
+  PlayerStart (X=200) no entra un segundo piso; ¿mover PlayerStart o la cámara? 3) `L_Slice.umap` se lockeó para el paso 4 y se
+  desbloqueó después del push.

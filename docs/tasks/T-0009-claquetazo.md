@@ -1,7 +1,7 @@
 ---
 id: T-0009
 titulo: Claquetazo y extras en la sala
-estado: enviada
+estado: ok
 tipo: mixto
 rama: t/T-0009-claquetazo
 creada: 2026-11-15
@@ -59,9 +59,10 @@ Depende de T-0007: esta rama está encima de ella.
 ---
 
 ## Reporte (lo completa Windows)
-- estado:
-- sha:
-- resumen:
+- estado: ok
+- sha: ver T-0011
+- resumen: se ejecutó dentro de T-0011 (ver `docs/tasks/T-0011-color-lectura.md`, Reporte): compila, X1/X2/X3 en L_Slice,
+  `TDC.Combat.ResolveClap` pasa.
 - errores:
-- evidencia:
+- evidencia: docs/evidence/T-0011/
 - notas / preguntas:
