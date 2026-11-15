@@ -146,7 +146,11 @@ void ATDCCharacter::LoadCharacterAssets()
 	RunAnim = LoadQuiet<UAnimSequence>(RunAnimPath);
 	WalkAnim = LoadQuiet<UAnimSequence>(WalkAnimPath);
 	SprintAnim = LoadQuiet<UAnimSequence>(SprintAnimPath);
-	LocomotionBlendSpace = LoadQuiet<UBlendSpace1D>(LocomotionBlendSpacePath);
+	LocomotionBlendSpace = bUseLocomotionBlendSpace ? LoadQuiet<UBlendSpace1D>(LocomotionBlendSpacePath) : nullptr;
+	if (LocomotionBlendSpace && LocomotionBlendSpace->GetBlendSamples().Num() < 2)
+	{
+		LocomotionBlendSpace = nullptr; // un BS sin muestras deja la pose congelada
+	}
 	JumpAnim = LoadQuiet<UAnimSequence>(JumpAnimPath);
 	if (IdleAnim || RunAnim || JumpAnim)
 	{

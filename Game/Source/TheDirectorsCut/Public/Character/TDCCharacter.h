@@ -93,7 +93,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
 	FSoftObjectPath SprintAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Sprint.AS_Director_Sprint"));
 
-	/** Si existe (fix_director_look.py), la locomoción usa este blendspace por velocidad: transiciones suaves. */
+	/**
+	 * Blendspace de locomoción por velocidad. APAGADO por defecto: el que arma fix_director_look.py por Python
+	 * congelaba la pose (sin muestras válidas). Encenderlo solo con un BS verificado en el editor.
+	 */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	bool bUseLocomotionBlendSpace = false;
+
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
 	FSoftObjectPath LocomotionBlendSpacePath = FSoftObjectPath(TEXT("/Game/Characters/Director/BS_Director_Locomotion.BS_Director_Locomotion"));
 
