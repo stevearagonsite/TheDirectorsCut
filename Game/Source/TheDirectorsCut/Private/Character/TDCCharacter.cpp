@@ -173,7 +173,16 @@ void ATDCCharacter::Tick(float DeltaSeconds)
 
 void ATDCCharacter::TickAutoRun(float DeltaSeconds)
 {
+	if (AutoRunTime == 0.f && CameraBoom)
+	{
+		CameraBoom->TargetArmLength = 900.f; // demo: más cerca, para que la pose se lea en las capturas
+	}
 	AutoRunTime += DeltaSeconds;
+	// Claquetazo cada 0.6 s: limpia al extra común de Beat 1 (si no, lo toca y reaparece al inicio).
+	if (Director && FMath::Fmod(AutoRunTime, 0.6f) < DeltaSeconds)
+	{
+		Director->Clap();
+	}
 	// 0-1 s quieto (idle), después corre a la derecha y salta cada 2.5 s, hasta los 12 s.
 	if (AutoRunTime > 1.f && AutoRunTime < 12.f)
 	{
@@ -188,10 +197,10 @@ void ATDCCharacter::TickAutoRun(float DeltaSeconds)
 	{
 		StopJumping();
 	}
-	if (AutoRunTime > NextAutoShot && AutoShotIndex < 12)
+	if (AutoRunTime > NextAutoShot && AutoShotIndex < 24)
 	{
 		FScreenshotRequest::RequestScreenshot(FString::Printf(TEXT("TDCAutoRun_%02d"), AutoShotIndex++), false, false);
-		NextAutoShot += 1.f;
+		NextAutoShot += 0.5f;
 	}
 }
 

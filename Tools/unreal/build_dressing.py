@@ -190,6 +190,9 @@ def night_lighting():
             comp.set_light_color(unreal.LinearColor(0.55, 0.65, 1.0, 1.0))
         elif label == "Sky_Light":
             actor.get_component_by_class(unreal.SkyLightComponent).set_intensity(0.3)
+        elif label == "Pit_Floor":
+            # El fondo del pozo se veía lila al bajar la cámara: oscuro, como el escenario.
+            actor.set_editor_property("color_override", unreal.LinearColor(0.03, 0.03, 0.04, 1.0))
         elif label == "Height_Fog":
             # Poca niebla y solo lejos: el telón ya trae su bruma pintada; la niebla densa lo lavaba.
             fog = actor.get_component_by_class(unreal.ExponentialHeightFogComponent)
@@ -221,6 +224,8 @@ def post_process():
 
 def build():
     require_writable(MAP_PATH, ".umap")
+    require_writable(f"{DEST}/T_Backdrop_Noir", ".uasset")
+    require_writable(f"{DEST}/M_Backdrop", ".uasset")
     les.load_level(MAP_PATH)
     clear_dressing()
 
