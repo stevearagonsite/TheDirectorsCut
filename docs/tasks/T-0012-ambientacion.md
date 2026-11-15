@@ -1,7 +1,7 @@
 ---
 id: T-0012
 titulo: Director a escala + ambientación noir (último ciclo antes del package)
-estado: enviada
+estado: parcial
 tipo: mixto
 rama: t/T-0012-ambientacion
 creada: 2026-11-15
@@ -56,9 +56,18 @@ creada: 2026-11-15
 ---
 
 ## Reporte (lo completa Windows)
-- estado:
-- sha:
-- resumen:
-- errores:
-- evidencia:
-- notas / preguntas:
+- estado: parcial
+- sha: 853919e (base)
+- resumen: compila; `import_director.py` hace import limpio y loguea **180.0 cm** (no reescala) con Idle, Run (Jogging),
+  Jump, Sprint, Walk y Clap, y `SM_Clapperboard importado (alto 27.2 cm)`; `make_materials.py` y `build_slice.py` (commandlet,
+  sin `-InEditor`) OK; tests ok=4 fallidos=0. **El director ya se ve a escala humana**: en `01-sala.png` mide lo mismo que el
+  cilindro coral de la plataforma, con los pies apoyados en el piso y sombra. La ambientación **no** se aplicó: no existe
+  `Tools/unreal/build_dressing.py` en este sha (paso 6 salteado, según la tarea).
+- errores: ninguno. Warnings benignos del import: `LogLinker: ... Error opening file` de los assets que el script borra antes de
+  reimportar; `FBXImport: No smoothing group information` y tangentes degeneradas en `SM_Clapperboard`.
+- evidencia: `docs/evidence/T-0012/01-sala.png`, `docs/evidence/T-0012/log-extractos.txt`.
+- notas / preguntas: qué se ve en la captura: el director (gris oscuro, gorra y sobretodo) a la izquierda sobre una plataforma
+  blanca, un cilindro coral a la derecha de él, una esfera gris flotando y el borde de un segundo piso entrando por el borde
+  derecho (más de un piso, pero el segundo apenas asoma). Cielo y fondo son el cielo azul por defecto: sin backdrop, sin props
+  de Rodin y sin luz de noche (falta el segundo envío con `build_dressing.py`). El director queda en el tercio izquierdo, con
+  espacio hacia adelante (look-ahead). Locks LFS liberados y el juego quedó abierto (`tdc.ps1 play`).

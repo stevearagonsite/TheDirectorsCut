@@ -1,0 +1,38 @@
+T-0012 - extractos de log (rutas relativas al repo)
+
+== build (tdc.ps1 build) ==
+[1/9] Compile [x64] Module.TheDirectorsCut.gen.cpp ... [9/9] WriteMetadata TheDirectorsCutEditor.target
+Result: Succeeded  (sin errores ni warnings de C++ del proyecto)
+
+== import_director.py ==
+LogPython: [TDC] borrado el contenido previo de /Game/Characters/Director
+LogPython: [TDC] importado: 1 objetos
+LogPython: [TDC] altura importada: 180.0 cm        (dentro de ±10 cm: no reescala)
+LogPython: [TDC] anim SK_Director_Anim_Armature_Armature_Armature_Idle -> AS_Director_Idle (8.33 s)
+LogPython: [TDC] anim SK_Director_Anim_Armature_Armature_Armature_Jogging -> AS_Director_Run (1.17 s)
+LogPython: [TDC] anim SK_Director_Anim_Armature_Armature_Armature_Jumping -> AS_Director_Jump (1.03 s)
+LogPython: [TDC] anim SK_Director_Anim_Armature_Armature_Armature_Two_Cycle_Sprint -> AS_Director_Sprint (1.07 s)
+LogPython: [TDC] anim SK_Director_Anim_Armature_Armature_Armature_Walking -> AS_Director_Walk (2.57 s)
+LogPython: [TDC] anim AS_Director_Clap -> AS_Director_Clap (2.20 s)
+LogPython: [TDC] SM_Clapperboard importado (alto 27.2 cm)
+LogPython: [TDC] Director importado en /Game/Characters/Director
+Success - 0 error(s), 15 warning(s)
+Warnings (benignos):
+  LogLinker: Warning: [AssetLog] Game/Content/Characters/Director/<asset>.uasset: Error opening file.
+    (model_001, M_clapdk, M_claplt, texture_*, SK_Director_PhysicsAsset: el script los borró antes de reimportar)
+  FBXImport: Warning: No smoothing group information was found in this FBX scene.
+  FBXImport: Warning: SM_Clapperboard has degenerate tangent bases / nearly zero bi-normals.
+
+== make_materials.py ==
+LogPython: [TDC] /Game/Materials/M_TDCColor creado y guardado.
+Success - 0 error(s), 0 warning(s)
+
+== build_slice.py (commandlet, sin -InEditor) ==
+LogPython: [TDC] L_Slice construido y guardado.
+Success - 0 error(s), 0 warning(s)
+
+== build_dressing.py ==
+No existe Tools/unreal/build_dressing.py en el sha 853919e: paso salteado (la ambientación viene en un segundo envío).
+
+== tests (tdc.ps1 test) ==
+tests: ok=4 fallidos=0 warnings=0
