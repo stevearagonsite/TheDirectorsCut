@@ -1,0 +1,36 @@
+Galeria itch.io - The Director's Cut
+Fuente: capturas reales del juego en origin/main (docs/evidence/), escaladas 1280x720 -> 1920x1080 (Lanczos, mismo 16:9, sin deformar).
+Cada imagen tiene version sin leyenda (<nombre>.png) y con leyenda (<nombre>_caption.png). Nada pintado ni agregado salvo la leyenda.
+
+01_set_parallax
+  Origen: docs/evidence/T-0026/03-video.png (build empaquetado mejora4, segundo arranque)
+  Muestra: plano general del set de techos noir: director (gris, izq.), extra rojo, reflector en tripode, farol,
+           marquesina "THE DIRECTOR'S CUT" y capas de fondo (skyline, tanques de agua, cartel) en parallax.
+  Ajuste: brillo +12 %, contraste +6 %.
+  Leyenda: "Trapped inside his own noir film."
+
+02_director_extra_reflector
+  Origen: docs/evidence/T-0026/01-mejora4-b.png (editor -game, mejora4)
+  Muestra: recorte (x200-1160, y150-690) ampliado 2x: director con cel shading, extra comun rojo, reflector
+           (apagado) y a la derecha la pieza amarilla "de luz" como fantasma tenue.
+  Ajuste: brillo +12 %, contraste +6 %. Algo mas blanda por la ampliacion 2x.
+  Leyenda: "The director, an extra, a spotlight."
+
+03_light_pieces
+  Origen: docs/evidence/T-0026/autorun/TDCAutoRun_12.png (autorun en editor, mejora4)
+  Muestra: pieza amarilla translucida (abajo izq., estado fantasma: reflector apagado), lluvia y fondo en parallax.
+  Ajuste: ninguno.
+  Leyenda: "Lights decide what exists."
+
+04_extra
+  Origen: docs/evidence/T-0026/autorun/TDCAutoRun_02.png (autorun en editor, mejora4)
+  Muestra: extra comun rojo con cel shading caminando por la plataforma, lluvia; el director queda fuera de cuadro.
+  Ajuste: ninguno.
+  Leyenda: "Extras stand in your way."
+
+Descartadas: T-0026/02-package.png (degradé azul borroso, frame 0), T-0026/01-mejora4-a.png (personajes en silueta negra),
+T-0023/* (toon quemado/plataformas negras, ya corregido en mejora4), T-0023/autorun/TDCAutoRun_15.png (borrosa, oscura),
+T-0019/* (version anterior al cel shading), T-0026/autorun/TDCAutoRun_20.png (redundante con 03).
+
+Faltan en las capturas: rebobinado (cian / pieza "en toma"), claquetazo, un reflector encendido con la pieza amarilla
+presente (solo hay estado fantasma) y piezas violetas (solo a oscuras).
