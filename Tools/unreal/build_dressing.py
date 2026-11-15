@@ -13,6 +13,7 @@ Qué hace (idempotente: borra y rehace todo lo que tenga label "DR_"):
 Plano de juego: X = horizontal, Z = vertical, Y = profundidad (el personaje vive en Y=0).
 """
 
+import json
 import os
 
 import unreal
@@ -195,6 +196,82 @@ def build_parallax(cube):
     return True
 
 
+# Cards 2D (recortes PNG con alpha) a distintas profundidades: Art/Export/Dressing/Cards/cards.json.
+CARDS_DIR = os.path.join(SRC, "Cards")
+
+
+def card_flipbook_material(tex, name, fb, darken):
+    """MIC de M_TDCFlipbook (import_vfx.py) con la sheet en loop."""
+    parent_path = "/Game/VFX/M_TDCFlipbook"
+    if not eal.does_asset_exist(parent_path):
+        log(f"sin M_TDCFlipbook (correr import_vfx.py antes): {name} queda estática")
+        return None
+    path = f"{DEST}/Cards/MI_{name}"
+    mic = eal.load_asset(path) if eal.does_asset_exist(path) else None
+    if not mic:
+        mic = unreal.AssetToolsHelpers.get_asset_tools().create_asset(
+            f"MI_{name}", f"{DEST}/Cards", unreal.MaterialInstanceConstant, unreal.MaterialInstanceConstantFactoryNew())
+    mel.set_material_instance_parent(mic, eal.load_asset(parent_path))
+    mel.set_material_instance_texture_parameter_value(mic, "Sheet", tex)
+    for k, v in (("Cols", fb["cols"]), ("Rows", fb["rows"]), ("Frames", fb["frames"]), ("FPS", fb.get("fps", 30)),
+                 ("Loop", 1.0), ("StartTime", 0.0), ("Intensity", 1.5 * darken)):
+        mel.set_material_instance_scalar_parameter_value(mic, k, float(v))
+    eal.save_asset(path)
+    return mic
+
+
+def build_cards(cube):
+    spec = os.path.join(CARDS_DIR, "cards.json")
+    if not os.path.isfile(spec):
+        log("sin cards.json: no hay cards 2D")
+        return
+    with open(spec, encoding="utf-8") as f:
+        cards = json.load(f)
+    if isinstance(cards, dict):
+        cards = cards.get("cards", [])
+    placed = 0
+    mats = {}
+    for i, c in enumerate(cards):
+        png = os.path.join(CARDS_DIR, c["png"])
+        if not os.path.isfile(png):
+            log(f"card sin archivo: {c['png']}")
+            continue
+        base = "Card_" + os.path.splitext(os.path.basename(c["png"]))[0]
+        darken = float(c.get("darken", 1.0))
+        fb = c.get("flipbook")
+        key = (base, darken, bool(fb))
+        if key not in mats:
+            if fb:
+                tex = import_file(png, f"T_{base}", folder=f"{DEST}/Cards")
+                if tex:
+                    tex.set_editor_property("filter", unreal.TextureFilter.TF_NEAREST)
+                    tex.set_editor_property("mip_gen_settings", unreal.TextureMipGenSettings.TMGS_NO_MIPMAPS)
+                mats[key] = card_flipbook_material(tex, f"{base}_{int(darken*100)}", fb, darken) if tex else None
+            else:
+                mats[key] = parallax_material(png, f"{base}_{int(darken*100)}", bool(c.get("masked", True)), darken, 1.0)
+        mat = mats[key]
+        if not mat:
+            continue
+        # Proporción del frame (sheet / grilla para flipbooks).
+        tex_path = f"{DEST}/Cards/T_{base}" if fb else f"{DEST}/Parallax/T_{base}_{int(darken*100)}"
+        tex = eal.load_asset(tex_path) if eal.does_asset_exist(tex_path) else None
+        aspect = 1.0
+        if tex:
+            w, h = tex.blueprint_get_size_x(), tex.blueprint_get_size_y()
+            if fb:
+                w, h = w / fb["cols"], h / fb["rows"]
+            aspect = w / max(1.0, h)
+        height = float(c.get("height", 300.0))
+        width = height * aspect * (-1.0 if c.get("flip") else 1.0)
+        z = float(c.get("z", 0.0))
+        actor, comp = spawn_mesh(f"DR_Card_{i:02d}_{base}", cube, (float(c["x"]), float(c["y"]), z + height / 2.0), rot(),
+                                 vec(width / 100.0, 0.02, height / 100.0))
+        comp.set_material(0, mat)
+        comp.set_cast_shadow(False)
+        placed += 1
+    log(f"cards 2D colocadas: {placed}")
+
+
 def import_prop(name):
     fbx = os.path.join(SRC, name + ".fbx")
     if not os.path.isfile(fbx):
@@ -296,6 +373,7 @@ def build():
 
     cube = unreal.load_asset(CUBE)
     mat = None if build_parallax(cube) else backdrop_material()
+    build_cards(cube)
     if mat:
         actor, comp = spawn_mesh("DR_Backdrop", cube, BACKDROP_CENTER, rot(),
                                  vec(BACKDROP_WIDTH / 100.0, 0.02, BACKDROP_HEIGHT / 100.0))

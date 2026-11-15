@@ -1,0 +1,25 @@
+Cards 2D para The Director's Cut (zona noir). Generadas 2026-11-15.
+
+Convenciones de cards.json
+- x, y, z en cm del mundo (X horizontal, Y profundidad, Z vertical). x/y = centro de la card; z = BASE de la card (pivote abajo al centro).
+- height = alto de la card en cm; el ancho sale del aspecto del PNG (o del frame, en los animados).
+- darken = multiplicador de brillo (1 = sin cambio, 0.5 = mitad). Las siluetas ya vienen casi negras.
+- masked true = Masked (alpha recortado, sin sort). masked false = Translucent (vapor y lluvia, alpha suave).
+- flip true = espejar en X (la cortina derecha).
+
+Estáticas (Gemini 3 Pro Image + chroma key, recortadas al bbox, máx 2048 px)
+- fg_farola.png 255x2048: farola de hierro. El vidrio del farol quedó semitransparente (deja ver el fondo).
+- fg_escalera_incendio.png 1056x2048: tramo colgante con dos descansos y escalera de mano.
+- fg_cortina.png 936x2048: terciopelo bordó muy oscuro; el borde izquierdo es el lado "afuera de escena". Para la cortina derecha, flip.
+- mid_marquesina.png 2048x1147: dice THE DIRECTOR'S CUT, bien escrito. Bombillas cálidas.
+- mid_cartel_pelicula.png 1313x2048: silueta con sombrero bajo farola; el título se difuminó a mano para que no sea legible.
+- mid_cartel_2.png 1306x2048: perfil de mujer con velo + sombrero; el "título" son bloques abstractos.
+Sin halo verde: 0 píxeles verdosos visibles en las 6.
+
+Animados (pixelfx, efectos nuevos en ~/Workspace/tools/pixelfx/src/fx/tdc/)
+- anim_vapor.png + .json (tdc/steam-vent): frame 128x256, cols 14, rows 7, frames 90, fps 30, loop sí (3 s).
+  Pivote (64,252): la base del vapor = rejilla. Filtrado Nearest, sin compresión (UI / UserInterface2D).
+- anim_lluvia.png + .json (tdc/rain-overlay): frame 256x256, cols 8, rows 8, frames 60, fps 30, loop sí (2 s).
+  Solo gotas, fondo transparente. Para cubrir todo el ancho, tilear la UV en X (p. ej. x2) o poner 2 cards lado a lado.
+Material flipbook: SubUV/Flipbook con (cols, rows), frame = floor(time*fps) mod frames.
+Re-render: node tools/render.mjs tdc/steam-vent --sheet  (o tdc/rain-overlay), con --opts '{"palette":[...]}' para recolorear.

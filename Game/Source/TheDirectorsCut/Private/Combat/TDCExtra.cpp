@@ -5,6 +5,9 @@
 #include "Stage/TDCLightReactiveComponent.h"
 #include "TheDirectorsCut.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Engine/SkeletalMesh.h"
+#include "Animation/AnimSequence.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -43,6 +46,68 @@ ATDCExtra::ATDCExtra()
 	}
 
 	LightReactive = CreateDefaultSubobject<UTDCLightReactiveComponent>(TEXT("LightReactive"));
+
+	Puppet = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Puppet"));
+	Puppet->SetupAttachment(RootComponent);
+	Puppet->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Puppet->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
+}
+
+void ATDCExtra::LoadPuppet()
+{
+	const TCHAR* Type = Vulnerability == ETDCVulnerability::Common ? TEXT("Comun")
+		: Vulnerability == ETDCVulnerability::Resistant ? TEXT("Resistente") : TEXT("Sombra");
+	auto Load = [Type](const TCHAR* Suffix, UClass* Cls) -> UObject*
+	{
+		const FString Name = FString::Printf(TEXT("SK_Extra_%s%s"), Type, Suffix);
+		const FString Path = FString::Printf(TEXT("/Game/Characters/Extras/%s/%s.%s"), Type, *Name, *Name);
+		return StaticLoadObject(Cls, nullptr, *Path, nullptr, LOAD_NoWarn | LOAD_Quiet);
+	};
+	USkeletalMesh* Mesh = Cast<USkeletalMesh>(Load(TEXT(""), USkeletalMesh::StaticClass()));
+	if (!Mesh)
+	{
+		return; // sin modelo: queda el greybox
+	}
+	Puppet->SetSkeletalMesh(Mesh);
+	Puppet->SetRelativeScale3D(FVector(PuppetScale));
+	const FString AnimBase = FString::Printf(TEXT("/Game/Characters/Extras/%s/AS_Extra_%s_"), Type, Type);
+	PuppetIdle = Cast<UAnimSequence>(StaticLoadObject(UAnimSequence::StaticClass(), nullptr,
+		*(AnimBase + TEXT("Idle.AS_Extra_") + Type + TEXT("_Idle")), nullptr, LOAD_NoWarn | LOAD_Quiet));
+	PuppetWalk = Cast<UAnimSequence>(StaticLoadObject(UAnimSequence::StaticClass(), nullptr,
+		*(AnimBase + TEXT("Walk.AS_Extra_") + Type + TEXT("_Walk")), nullptr, LOAD_NoWarn | LOAD_Quiet));
+	Puppet->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+	Body->SetVisibility(false);
+	ScriptMark->SetVisibility(false);
+	bPuppetWalking = false;
+	if (PuppetIdle)
+	{
+		Puppet->PlayAnimation(PuppetIdle, true);
+	}
+	UpdatePuppet();
+}
+
+void ATDCExtra::UpdatePuppet()
+{
+	if (!Puppet || !Puppet->GetSkeletalMeshAsset())
+	{
+		return;
+	}
+	// Mira hacia donde patrulla (el FBX mira a -Y; yaw -90 = +X).
+	const float Yaw = Direction >= 0.f ? -90.f : 90.f;
+	if (Yaw != PuppetFacing)
+	{
+		PuppetFacing = Yaw;
+		Puppet->SetRelativeRotation(FRotator(0.f, Yaw, 0.f));
+	}
+	const bool bWalk = PuppetWalk && StunRemaining <= 0.f && PatrolDistance > 0.f && PatrolSpeed > 0.f;
+	if (bWalk != bPuppetWalking)
+	{
+		bPuppetWalking = bWalk;
+		if (UAnimSequence* Anim = bWalk ? PuppetWalk.Get() : PuppetIdle.Get())
+		{
+			Puppet->PlayAnimation(Anim, true);
+		}
+	}
 }
 
 FLinearColor ATDCExtra::ReadColor() const
@@ -83,6 +148,7 @@ void ATDCExtra::BeginPlay()
 {
 	Super::BeginPlay();
 	Origin = GetActorLocation();
+	LoadPuppet();
 	Capsule->OnComponentBeginOverlap.AddDynamic(this, &ATDCExtra::OnTouch);
 	LightReactive->OnPresenceChanged.AddDynamic(this, &ATDCExtra::OnPresenceChanged);
 	ApplyColor();
@@ -95,6 +161,7 @@ void ATDCExtra::Tick(float DeltaSeconds)
 	{
 		return;
 	}
+	UpdatePuppet();
 	if (StunRemaining > 0.f)
 	{
 		StunRemaining -= DeltaSeconds;
