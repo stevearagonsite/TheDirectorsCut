@@ -1,7 +1,7 @@
 ---
 id: T-0012
 titulo: Director a escala + ambientación noir (último ciclo antes del package)
-estado: ok
+estado: enviada
 tipo: mixto
 rama: t/T-0012-ambientacion
 creada: 2026-11-15
@@ -22,6 +22,23 @@ existen) → `tdc.ps1 python -Script Tools\unreal\build_dressing.py` (con `-InEd
 captura `tdc.ps1 shot -Map /Game/Maps/L_Slice -Task T-0012 -Name 02-ambientacion` → commit de `Game/Content/**` + evidencia +
 un párrafo "Segundo envío" en el Reporte → `git lfs unlock` → push → `[TDC-REPORT]` → `tdc.ps1 play`.
 No hace falta recompilar ni reimportar al director. Si `build_dressing.py` falla, reportá el error exacto (lo arregla la Mac).
+
+## Pasos (tercer envío: C++ de locomoción + look del director + dressing noir)
+Despacha la Mac (thedirectorscut-48). Si algo de C++ no compila, **pará** y reportá `fallo` con `archivo:línea` y el mensaje
+exacto: gamedesigner lo arregla enseguida. No reviertas nada por tu cuenta.
+1. `git pull`. `.\Tools\scripts\tdc.ps1 stop`.
+2. `.\Tools\scripts\tdc.ps1 build` (trae c73baf5: locomoción walk/run/sprint, BlendSpace opcional, pose aérea, aviso de luces).
+3. Locks: `git lfs lock Game/Content/Maps/L_Slice.umap` y, **si existen**, `Game/Content/Characters/Director/M_Director.uasset`
+   y `Game/Content/Characters/Director/BS_Director_Locomotion.uasset`, más los `.uasset` de `Game/Content/Dressing/` que ya estén en el repo.
+4. `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\fix_director_look.py` (M_Director sin metallic + BS_Director_Locomotion).
+5. `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\build_dressing.py` (post-proceso noir, niebla lejana, telón y los props
+   `Art/Export/Dressing/SM_*.fbx` que haya). Si el commandlet no alcanza, agregá `-InEditor`.
+6. `.\Tools\scripts\tdc.ps1 test`.
+7. Dos capturas: `.\Tools\scripts\tdc.ps1 shot -Map /Game/Maps/L_Slice -Task T-0012 -Name 03-noir-a` y después `-Name 03-noir-b`
+   (la primera puede salir con shaders compilando; la que vale es la b). Describí qué se ve: director con material difuso (no
+   metálico), telón, props, post-proceso oscuro pero legible, colores de lectura todavía distinguibles.
+8. Commit de `Game/Content/**` (LFS) + evidencia + Reporte, `git lfs unlock` de todo lo bloqueado, push y `[TDC-REPORT]`.
+9. `.\Tools\scripts\tdc.ps1 play` (dejar el juego abierto).
 
 ## Pasos (primer envío, ya hechos)
 0. `.\Tools\scripts\tdc.ps1 stop` (cierra el juego de este proyecto si quedó abierto).
