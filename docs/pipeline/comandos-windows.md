@@ -58,3 +58,7 @@ git lfs lock Game/Content/Maps/L_Slice.umap
 git lfs unlock Game/Content/Maps/L_Slice.umap
 git lfs locks                            # quién tiene qué
 ```
+
+Los `.umap`/`.uasset` son lockables: sin lock quedan **read-only** y Unreal no los guarda. Antes de regenerar un asset
+con un script de `Tools/unreal/` (por ejemplo, `L_Slice` o `M_TDCColor`), hacé `git lfs lock` del archivo. Los scripts cortan con
+`[TDC] ERROR` si falta el lock, y `tdc.ps1 python` falla en ese caso.
