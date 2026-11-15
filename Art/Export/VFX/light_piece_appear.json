@@ -1,0 +1,281 @@
+{
+ "frames": [
+  {
+   "filename": "light-piece-appear 0",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "light-piece-appear 1",
+   "frame": {
+    "x": 136,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "light-piece-appear 2",
+   "frame": {
+    "x": 272,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "light-piece-appear 3",
+   "frame": {
+    "x": 0,
+    "y": 60,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "light-piece-appear 4",
+   "frame": {
+    "x": 136,
+    "y": 60,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "light-piece-appear 5",
+   "frame": {
+    "x": 272,
+    "y": 60,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "light-piece-appear 6",
+   "frame": {
+    "x": 0,
+    "y": 120,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "light-piece-appear 7",
+   "frame": {
+    "x": 136,
+    "y": 120,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "light-piece-appear 8",
+   "frame": {
+    "x": 272,
+    "y": 120,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "light-piece-appear 9",
+   "frame": {
+    "x": 0,
+    "y": 180,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  },
+  {
+   "filename": "light-piece-appear 10",
+   "frame": {
+    "x": 136,
+    "y": 180,
+    "w": 136,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 136,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 136,
+    "h": 60
+   },
+   "duration": 40
+  }
+ ],
+ "meta": {
+  "app": "https://github.com/patch-gg/pixelfx",
+  "version": "1",
+  "image": "light-piece-appear.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 408,
+   "h": 240
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "light-piece-appear",
+    "from": 0,
+    "to": 10,
+    "direction": "forward"
+   }
+  ],
+  "pixelfx": {
+   "id": "tdc/light-piece-appear",
+   "name": "Light piece appear",
+   "fps": 25,
+   "loop": false,
+   "frames": 11,
+   "frameSize": [
+    136,
+    60
+   ],
+   "pivot": [
+    68,
+    40
+   ],
+   "columns": 3
+  }
+ }
+}
