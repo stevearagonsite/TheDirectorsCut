@@ -82,9 +82,9 @@ bool FTDCTimeHistoryTest::RunTest(const FString& Parameters)
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FTDCCombatResolveClapTest, "TDC.Combat.ResolveClap", TDC_TEST_FLAGS)
 bool FTDCCombatResolveClapTest::RunTest(const FString& Parameters)
 {
-	TestEqual(TEXT("Común: el claquetazo lo derriba"), TDC::ResolveClap(ETDCVulnerability::Common), ETDCClapResult::Defeated);
-	TestEqual(TEXT("Resistente: el claquetazo lo aturde"), TDC::ResolveClap(ETDCVulnerability::Resistant), ETDCClapResult::Stunned);
-	TestEqual(TEXT("De guion: el claquetazo rebota"), TDC::ResolveClap(ETDCVulnerability::Scripted), ETDCClapResult::Immune);
+	TestEqual(TEXT("Común: el claquetazo lo derriba"), static_cast<int32>(TDC::ResolveClap(ETDCVulnerability::Common)), static_cast<int32>(ETDCClapResult::Defeated));
+	TestEqual(TEXT("Resistente: el claquetazo lo aturde"), static_cast<int32>(TDC::ResolveClap(ETDCVulnerability::Resistant)), static_cast<int32>(ETDCClapResult::Stunned));
+	TestEqual(TEXT("De guion: el claquetazo rebota"), static_cast<int32>(TDC::ResolveClap(ETDCVulnerability::Scripted)), static_cast<int32>(ETDCClapResult::Immune));
 	return true;
 }
 

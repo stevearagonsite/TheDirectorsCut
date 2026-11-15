@@ -1,4 +1,5 @@
 #include "Stage/TDCStageLight.h"
+#include "Core/TDCVisuals.h"
 #include "Stage/TDCStageSubsystem.h"
 #include "Components/PointLightComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -87,7 +88,7 @@ void ATDCStageLight::ApplyVisuals()
 
 	if (!BulbMaterial && Bulb->GetMaterial(0))
 	{
-		BulbMaterial = Bulb->CreateDynamicMaterialInstance(0);
+		BulbMaterial = TDC::CreateReadColorMID(Bulb);
 	}
 	if (BulbMaterial)
 	{

@@ -1,4 +1,5 @@
 #include "Character/TDCCharacter.h"
+#include "Core/TDCVisuals.h"
 #include "Director/TDCDirectorComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -231,7 +232,7 @@ void ATDCCharacter::BeginPlay()
 	LoadCharacterAssets();
 	UpdatePlaceholderVisibility();
 
-	if (UMaterialInstanceDynamic* Mat = HasCharacterMesh() ? nullptr : Body->CreateDynamicMaterialInstance(0))
+	if (UMaterialInstanceDynamic* Mat = HasCharacterMesh() ? nullptr : TDC::CreateReadColorMID(Body))
 	{
 		Mat->SetVectorParameterValue(TEXT("Color"), FLinearColor(0.9f, 0.25f, 0.2f));
 	}
@@ -324,7 +325,7 @@ void ATDCCharacter::OnClap()
 	}
 	if (ClapAnim && GetWorld())
 	{
-		ClapAnimUntil = GetWorld()->GetTimeSeconds() + FMath::Max(0.2f, ClapAnim->GetPlayLength());
+		ClapAnimUntil = GetWorld()->GetTimeSeconds() + FMath::Max(0.2f, static_cast<float>(ClapAnim->GetPlayLength()));
 		AnimState = EAnimState::None; // fuerza el cambio de estado en el próximo UpdateAnimState
 		UpdateAnimState();
 	}

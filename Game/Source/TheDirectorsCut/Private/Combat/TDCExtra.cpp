@@ -1,4 +1,5 @@
 #include "Combat/TDCExtra.h"
+#include "Core/TDCVisuals.h"
 #include "Character/TDCCharacter.h"
 #include "Stage/TDCLightReactiveComponent.h"
 #include "TheDirectorsCut.h"
@@ -61,7 +62,7 @@ void ATDCExtra::ApplyColor()
 {
 	if (!Material && Body->GetMaterial(0))
 	{
-		Material = Body->CreateDynamicMaterialInstance(0);
+		Material = TDC::CreateReadColorMID(Body);
 	}
 	if (Material)
 	{
