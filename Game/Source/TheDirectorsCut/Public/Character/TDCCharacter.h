@@ -32,6 +32,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void Landed(const FHitResult& Hit) override;
 	virtual void FellOutOfWorld(const UDamageType& DamageType) override;
@@ -67,6 +68,8 @@ protected:
 	TObjectPtr<UInputAction> RewindAction;
 
 private:
+	bool HasCharacterMesh() const;
+	void UpdatePlaceholderVisibility();
 	void BuildDefaultInput();
 	void Move(const FInputActionValue& Value);
 

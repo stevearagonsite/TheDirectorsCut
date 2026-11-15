@@ -2,6 +2,7 @@
 #include "Director/TDCDirectorComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/LocalPlayer.h"
@@ -77,15 +78,39 @@ ATDCCharacter::ATDCCharacter()
 		Nose->SetStaticMesh(Cube.Object);
 	}
 
+	// Mesh final (Skeletal Mesh del director): se asigna en BP_Director. Pies en la base de la cápsula.
+	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	Director = CreateDefaultSubobject<UTDCDirectorComponent>(TEXT("Director"));
+}
+
+bool ATDCCharacter::HasCharacterMesh() const
+{
+	return GetMesh() && GetMesh()->GetSkeletalMeshAsset() != nullptr;
+}
+
+void ATDCCharacter::UpdatePlaceholderVisibility()
+{
+	// Con mesh final, el greybox (cilindro + nariz) se oculta.
+	const bool bShowPlaceholder = !HasCharacterMesh();
+	Body->SetVisibility(bShowPlaceholder);
+	Nose->SetVisibility(bShowPlaceholder);
+}
+
+void ATDCCharacter::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+	UpdatePlaceholderVisibility();
 }
 
 void ATDCCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	RespawnLocation = GetActorLocation();
+	UpdatePlaceholderVisibility();
 
-	if (UMaterialInstanceDynamic* Mat = Body->CreateDynamicMaterialInstance(0))
+	if (UMaterialInstanceDynamic* Mat = HasCharacterMesh() ? nullptr : Body->CreateDynamicMaterialInstance(0))
 	{
 		Mat->SetVectorParameterValue(TEXT("Color"), FLinearColor(0.9f, 0.25f, 0.2f));
 	}
