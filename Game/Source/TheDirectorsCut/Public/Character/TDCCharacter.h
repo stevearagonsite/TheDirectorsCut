@@ -55,6 +55,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "TDC|Director")
 	TObjectPtr<UTDCDirectorComponent> Director;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "TDC|Character")
+	TObjectPtr<UStaticMeshComponent> Clapper;
+
 	/**
 	 * Mesh y animaciones finales del director. Se cargan por ruta en BeginPlay; si no existen, queda el greybox.
 	 * Sin AnimBP: el estado (Idle / Run / Jump) se elige en Tick y se reproduce en modo Single Node.
@@ -67,6 +70,17 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
 	FSoftObjectPath RunAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Run.AS_Director_Run"));
+
+	/** Golpe con la claqueta (opcional: sin animación, el claquetazo funciona igual). */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FSoftObjectPath ClapAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Clap.AS_Director_Clap"));
+
+	/** Claqueta en la mano (opcional). Se engancha al socket/hueso ClapperSocket del mesh. */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FSoftObjectPath ClapperMeshPath = FSoftObjectPath(TEXT("/Game/Characters/Director/SM_Clapperboard.SM_Clapperboard"));
+
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FName ClapperSocket = TEXT("RightHand");
 
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
 	FSoftObjectPath JumpAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Jump.AS_Director_Jump"));
@@ -98,8 +112,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Input")
 	TObjectPtr<UInputAction> RewindAction;
 
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Input")
+	TObjectPtr<UInputAction> ClapAction;
+
 private:
-	enum class EAnimState : uint8 { None, Idle, Run, Jump };
+	enum class EAnimState : uint8 { None, Idle, Run, Jump, Clap };
+
+	void OnClap();
 
 	void LoadCharacterAssets();
 	void UpdateAnimState();
@@ -118,6 +137,12 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<UAnimSequence> JumpAnim;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> ClapAnim;
+
+	/** Hasta cuándo (segundos de mundo) la animación del claquetazo tiene prioridad. */
+	double ClapAnimUntil = 0.0;
 
 	EAnimState AnimState = EAnimState::None;
 };

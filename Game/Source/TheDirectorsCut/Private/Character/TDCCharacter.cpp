@@ -86,6 +86,11 @@ ATDCCharacter::ATDCCharacter()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	Director = CreateDefaultSubobject<UTDCDirectorComponent>(TEXT("Director"));
+
+	Clapper = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Clapper"));
+	Clapper->SetupAttachment(GetMesh());
+	Clapper->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Clapper->SetVisibility(false);
 }
 
 namespace
@@ -119,6 +124,13 @@ void ATDCCharacter::LoadCharacterAssets()
 	{
 		return;
 	}
+	if (UStaticMesh* ClapperMesh = LoadQuiet<UStaticMesh>(ClapperMeshPath))
+	{
+		Clapper->SetStaticMesh(ClapperMesh);
+		Clapper->AttachToComponent(MeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, ClapperSocket);
+		Clapper->SetVisibility(true);
+	}
+	ClapAnim = LoadQuiet<UAnimSequence>(ClapAnimPath);
 	IdleAnim = LoadQuiet<UAnimSequence>(IdleAnimPath);
 	RunAnim = LoadQuiet<UAnimSequence>(RunAnimPath);
 	JumpAnim = LoadQuiet<UAnimSequence>(JumpAnimPath);
@@ -147,7 +159,11 @@ void ATDCCharacter::UpdateAnimState()
 	const bool bInAir = GetCharacterMovement() && GetCharacterMovement()->IsFalling();
 
 	EAnimState NewState = EAnimState::Idle;
-	if (bInAir && JumpAnim)
+	if (ClapAnim && GetWorld() && GetWorld()->GetTimeSeconds() < ClapAnimUntil)
+	{
+		NewState = EAnimState::Clap;
+	}
+	else if (bInAir && JumpAnim)
 	{
 		NewState = EAnimState::Jump;
 	}
@@ -168,6 +184,10 @@ void ATDCCharacter::UpdateAnimState()
 	AnimState = NewState;
 	switch (NewState)
 	{
+	case EAnimState::Clap:
+		MeshComp->PlayAnimation(ClapAnim, /*bLooping*/ false);
+		MeshComp->SetPlayRate(1.f);
+		break;
 	case EAnimState::Jump:
 		MeshComp->PlayAnimation(JumpAnim, /*bLooping*/ false);
 		break;
@@ -218,7 +238,7 @@ void ATDCCharacter::BeginPlay()
 	if (GEngine && IsPlayerControlled())
 	{
 		GEngine->AddOnScreenDebugMessage(7000, 15.f, FColor::White,
-			TEXT("A/D mover  ·  Espacio saltar  ·  E luces  ·  Q (mantener) rebobinar"));
+			TEXT("A/D mover  ·  Espacio saltar  ·  F claquetazo  ·  E luces  ·  Q (mantener) rebobinar"));
 	}
 }
 
@@ -236,6 +256,7 @@ void ATDCCharacter::BuildDefaultInput()
 	MakeAction(JumpAction, TEXT("IA_Jump_Default"), EInputActionValueType::Boolean);
 	MakeAction(LightsAction, TEXT("IA_Lights_Default"), EInputActionValueType::Boolean);
 	MakeAction(RewindAction, TEXT("IA_Rewind_Default"), EInputActionValueType::Boolean);
+	MakeAction(ClapAction, TEXT("IA_Clap_Default"), EInputActionValueType::Boolean);
 
 	if (MappingContext)
 	{
@@ -263,6 +284,10 @@ void ATDCCharacter::BuildDefaultInput()
 
 	MappingContext->MapKey(RewindAction, EKeys::Q);
 	MappingContext->MapKey(RewindAction, EKeys::Gamepad_LeftTrigger);
+
+	MappingContext->MapKey(ClapAction, EKeys::F);
+	MappingContext->MapKey(ClapAction, EKeys::LeftMouseButton);
+	MappingContext->MapKey(ClapAction, EKeys::Gamepad_FaceButton_Right);
 }
 
 void ATDCCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -287,6 +312,21 @@ void ATDCCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Input->BindAction(RewindAction, ETriggerEvent::Started, Director.Get(), &UTDCDirectorComponent::BeginRewind);
 	Input->BindAction(RewindAction, ETriggerEvent::Completed, Director.Get(), &UTDCDirectorComponent::EndRewind);
 	Input->BindAction(RewindAction, ETriggerEvent::Canceled, Director.Get(), &UTDCDirectorComponent::EndRewind);
+	Input->BindAction(ClapAction, ETriggerEvent::Started, this, &ATDCCharacter::OnClap);
+}
+
+void ATDCCharacter::OnClap()
+{
+	if (!Director || !Director->Clap())
+	{
+		return;
+	}
+	if (ClapAnim && GetWorld())
+	{
+		ClapAnimUntil = GetWorld()->GetTimeSeconds() + FMath::Max(0.2f, ClapAnim->GetPlayLength());
+		AnimState = EAnimState::None; // fuerza el cambio de estado en el próximo UpdateAnimState
+		UpdateAnimState();
+	}
 }
 
 void ATDCCharacter::Move(const FInputActionValue& Value)

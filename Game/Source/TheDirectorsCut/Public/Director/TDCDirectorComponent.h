@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Combat/TDCCombatTypes.h"
 #include "TDCDirectorComponent.generated.h"
 
 class ATDCStageLight;
@@ -58,6 +59,22 @@ public:
 	UFUNCTION(BlueprintPure, Category = "TDC|Director")
 	bool IsRewinding() const { return bRewinding; }
 
+	/** "¡Claquetazo!": golpe básico con la claqueta hacia donde mira el director. Devuelve true si se ejecutó. */
+	UFUNCTION(BlueprintCallable, Category = "TDC|Director")
+	bool Clap();
+
+	/** Alcance del claquetazo hacia adelante (cm) y radio del golpe (cm). */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|Director")
+	float ClapReach = 90.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|Director")
+	float ClapRadius = 75.f;
+
+	/** Segundos entre claquetazos. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|Director")
+	float ClapCooldown = 0.45f;
+
 private:
 	bool bRewinding = false;
+	double LastClapTime = -1000.0;
 };
