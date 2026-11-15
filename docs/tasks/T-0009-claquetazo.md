@@ -26,7 +26,7 @@ Depende de T-0007: esta rama está encima de ella.
   (animación). `import_director.py` importa la claqueta si está `Art/Export/Director/SM_Clapperboard.fbx`.
 
 ## Pasos
-0. **Esta tarea incluye T-0007** (la rama está encima): hacé también sus pasos de import (el paso 4 de acá los cubre) y
+0. **Esta tarea incluye T-0007 y T-0010** (cámara 2200/FOV 60, cielo, AndroidFileServer off; la rama está encima): hacé también sus pasos de import (el paso 4 de acá los cubre) y
    completá el Reporte de `docs/tasks/T-0007-personaje-skeletal.md` con lo que corresponda al director.
    Si el juego de T-0008 sigue abierto (Live Coding bloquea el build), cerralo primero: `Stop-Process -Name UnrealEditor`.
    Borrá `docs/tasks/T-0008-reporte.tmp` si existe (no se commitea).
