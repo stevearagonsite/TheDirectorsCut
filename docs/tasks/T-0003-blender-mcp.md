@@ -1,12 +1,14 @@
 ---
 id: T-0003
 titulo: Instalar Blender MCP y probar el pipeline Blender -> Unreal
-estado: nueva
+estado: cancelada
 tipo: blender
 rama: t/T-0003-blender-mcp
 creada: 2026-11-15
 ---
 
+
+> **Cancelada (2026-11-15): el worker de Blender de VirtualKvm (blender-mcp en la PC) reemplazó la instalación de esta tarea. El prop Spotlight queda para después de la jam.**
 # T-0003 — Blender MCP + primer asset del pipeline
 
 ## Objetivo
