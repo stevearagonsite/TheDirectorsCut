@@ -58,6 +58,14 @@ protected:
 
 private:
 	FLinearColor ReadColor() const;
+	void ApplyPattern();
+	/** Material, color y patrón. Las piezas de luz/oscuridad usan M_TDCLightPiece (translúcido, "de luz") si existe. */
+	void SetupMaterial();
+	bool WantsLightMaterial() const;
+	UFUNCTION()
+	void HandlePresenceChanged(bool bNowPresent);
+
+	bool bLightMaterial = false;
 	/** Si cambia la luz, despertar la física: lo que estaba apoyado en una pieza que desapareció tiene que caer. */
 	void OnLightingChanged();
 

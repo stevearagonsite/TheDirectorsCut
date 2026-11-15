@@ -1,6 +1,7 @@
 #include "Combat/TDCExtra.h"
 #include "Core/TDCFlipbookFx.h"
 #include "Core/TDCVisuals.h"
+#include "Core/TDCVisuals.h"
 #include "Character/TDCCharacter.h"
 #include "Stage/TDCLightReactiveComponent.h"
 #include "TheDirectorsCut.h"
@@ -210,6 +211,7 @@ ETDCClapResult ATDCExtra::ReceiveClap(const FVector& FromLocation)
 		ApplyColor();
 		if (!StunFx.IsValid())
 		{
+			TDC::PlaySfx(this, TEXT("sfx_extra_stun"), GetActorLocation());
 			StunFx = ATDCFlipbookFx::Spawn(GetWorld(), TDC::Fx::ExtraStun, GetActorLocation() + FVector(0.f, 50.f, 110.f), 110.f,
 				false, GetRootComponent());
 		}
@@ -238,6 +240,8 @@ void ATDCExtra::Defeat()
 		return;
 	}
 	bDefeated = true;
+	TDC::PlaySfx(this, TEXT("sfx_extra_defeat"), GetActorLocation());
+	TDC::PlaySfx2D(this, TEXT("vo_corten"), 0.9f);
 	ATDCFlipbookFx::Spawn(GetWorld(), TDC::Fx::ExtraDefeat, GetActorLocation() + FVector(0.f, 60.f, 0.f), 230.f);
 	if (StunFx.IsValid())
 	{

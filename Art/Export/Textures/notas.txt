@@ -1,0 +1,36 @@
+Texturas tileables para The Director's Cut (set de filmación). Generadas 2026-11-15.
+Modelo: gemini-3-pro-image (2048 px, JPEG -> PNG con ffmpeg), sin imagen de referencia. 1 generación por textura, 0 regeneraciones.
+Salida: 1024x1024 RGB PNG. Previews 2x2 de 2048x2048. Crudos, prompts y scripts en work/ (build.py reproduce todo: python3 work/build.py work work .).
+
+Calidad (1-5) y costuras
+- T_Stage_Floor  4/5. Costuras limpias. Tablones gris-marrón casi neutros (saturación media 5.6/255). Las marcas de cinta salieron en X, no en "+".
+- T_Stage_Edge   4/5. Costuras limpias en U (la dirección en la que se usa el canto). En V también cierra, pero apila dos bandas de remaches: pensado para tilear solo en U.
+- T_Gel_Panel    4/5. Costuras limpias; gris puro (saturación 0). Cada tile es un panel con marco; en la unión los dos marcos forman un travesaño doble con un leve "fantasma" del cross-fade.
+- T_Take_Holo    4/5. Costuras limpias; gris puro. Perforaciones reconstruidas con período exacto de 128 px (8 por tile), así que tilea en V sin saltos. En U quedan dos tiras de film lado a lado (se lee como película contigua).
+Normales: T_Stage_Floor_N y T_Stage_Edge_N, convención DirectX (la de Unreal, verde = -Y). Derivadas de la luminancia: los remaches se leen como anillo, no como domo. Bajar intensidad en el material si hace falta. Gel y Holo sin normal (el gel es liso y el holo es emisivo; la luminancia daría un relieve invertido en el marco).
+
+Uso en el material
+- Floor/Edge: color base neutro; el color de juego se multiplica o se mezcla encima.
+- Gel/Holo: textura en gris -> multiplicar por el color del código (amarillo luz, violeta oscuridad, cian toma). No traen color propio.
+
+Método de tile (work/process.py + work/build.py, numpy/PIL; ffmpeg solo para JPEG->PNG y para armar las hojas)
+1. Reescalado 2048 -> 1024 (Lanczos).
+2. Cross-fade por solapamiento: los últimos b px de cada eje se funden (smoothstep) sobre los primeros b px, se descarta la franja y se reescala a 1024. Gemini ya entregó casi tileable, así que la banda es chica: Floor 16/16, Edge 32/40, Gel 24/24, Holo 16/24 (U/V).
+3. Floor: se detectan las 6 juntas de tablones y cada hilera se desplaza en X distinto (0, 430, 170, 690, 300, 820 px). Rompe la columna de empalmes en el borde del tile y sigue tileando porque cada hilera es una franja horizontal.
+4. Holo: se toma una celda pintada de 128 px de alto de las perforaciones y se repite 8 veces en las dos tiras (x 0-121 y 918-1023).
+5. Gel y Holo: conversión a luminancia (gris puro, R=G=B).
+6. Normal: blur gaussiano periódico (FFT) de la luminancia + gradiente con wrap, así la normal también tilea.
+Verificación: diferencia media en el borde de wrap contra la diferencia media entre vecinos interiores (floor 1.0-1.8 vs 1.4; edge 1.2-2.3 vs 1.3; gel 1.4-1.6 vs 1.3; holo 0.6 en V; en U 5.4 vs 3.4, que es el borde entre dos tiras de film) e inspección visual de los recortes en el cruce de 4 tiles (work/seams_v1.png).
+
+Prompts (texto exacto en work/floor.txt, edge.txt, gel.txt, holo.txt)
+Prefijo común:
+Seamless tileable square texture for a stylized 3D video game, viewed perfectly straight-on orthographic, flat even lighting with no directional shadow, no vignette, no perspective. Hand-painted stylized look like a 1940s film-noir animated feature background: simple painterly brush strokes, chunky simplified shapes, flat color areas, readable at a distance. Not photorealistic. No text, no letters, no numbers, no logos. The pattern must wrap seamlessly: the left edge continues the right edge and the top edge continues the bottom edge.
+
+- floor:
+Subject: dark worn wooden theater stage floor planks, running horizontally across the whole image, 6 planks of equal width stacked top to bottom, plank seams perfectly straight and horizontal, a few staggered butt joints, scuffs, faded paint drips and nail heads. Colors: very desaturated dark grey-brown wood (almost charcoal), muted and neutral, no yellow, no purple, no cyan. On top, two or three film set position marks: small cross shapes (plus signs) made of light grey gaffer tape strips, slightly worn, scattered and not touching the image borders.
+- edge:
+Subject: the edge trim of a theater stage platform: a single horizontal wooden molding band that fills the whole image, with a horizontal grooved profile (raised bead along the top, flat face in the middle, step along the bottom), all lines perfectly horizontal and continuous from left edge to right edge. A row of round dark iron rivets evenly spaced along the top strip and another along the bottom strip. Colors: desaturated dark brown-grey wood and dark gunmetal rivets, muted and neutral, no yellow, no purple, no cyan. Light wear on the edges, painterly scratches.
+- gel:
+Subject: a stage lighting gel panel, in pure GRAYSCALE only (black, grey and white, zero color). A thin square dark metal frame with small screws runs along all four borders of the image (frame cut exactly at the image edges so neighbouring tiles share the frame). Inside, a translucent light grey diffuser sheet with a soft frosted texture: subtle fine diagonal brushed diffusion grain, gentle cloudy brighter and darker patches, a faint soft glow toward the middle. Light grey diffuser, dark grey frame.
+- holo:
+Subject: a strip of cinema film seen straight-on, in pure GRAYSCALE only (black, grey and white, zero color). The film runs vertically: a column of evenly spaced rounded-rectangle sprocket perforation holes along the left border and an identical column along the right border, exactly 8 holes per column, evenly spaced. Between them, one large blank film frame area filled with fine horizontal scan lines, a few soft vertical scratches and faint dust specks, like a glowing hologram projection of a film take. Frame separator bars at the very top and bottom edges. Mid-grey film base, light grey scanlines, dark perforation holes.

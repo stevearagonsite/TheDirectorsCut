@@ -19,6 +19,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TDC|Light")
 	ETDCLightPresence Presence = ETDCLightPresence::Always;
 
+	/** Ocultar el actor cuando está ausente. Las piezas "de luz" lo apagan: quedan como fantasma tenue sin colisión. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TDC|Light")
+	bool bHideWhenAbsent = true;
+
 	UPROPERTY(BlueprintAssignable, Category = "TDC|Light")
 	FTDCOnPresenceChanged OnPresenceChanged;
 

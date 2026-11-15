@@ -3,6 +3,8 @@
 #include "Stage/TDCStageSubsystem.h"
 #include "Combat/TDCExtra.h"
 #include "Core/TDCFlipbookFx.h"
+#include "Core/TDCVisuals.h"
+#include "Components/AudioComponent.h"
 #include "Engine/OverlapResult.h"
 #include "CollisionShape.h"
 #include "TheDirectorsCut.h"
@@ -51,6 +53,7 @@ void UTDCDirectorComponent::ToggleNearestLight()
 	if (ATDCStageLight* Light = FindNearestLight())
 	{
 		Light->Toggle();
+		TDC::PlaySfx(this, Light->IsOn() ? TEXT("sfx_light_on") : TEXT("sfx_light_off"), Light->GetActorLocation());
 		ATDCFlipbookFx::Spawn(GetWorld(), TDC::Fx::LightToggle, Light->GetActorLocation() + FVector(0.f, 60.f, 0.f), 220.f);
 		UE_LOG(LogTDC, Log, TEXT("Luces: %s -> %s"), *Light->GetName(), Light->IsOn() ? TEXT("ON") : TEXT("OFF"));
 	}
@@ -65,6 +68,7 @@ void UTDCDirectorComponent::BeginRewind()
 	bRewinding = true;
 	if (AActor* Owner = GetOwner())
 	{
+		RewindAudio = TDC::PlaySfxAttached(TEXT("sfx_rewind_loop"), Owner->GetRootComponent(), 0.8f);
 		RewindFx = ATDCFlipbookFx::Spawn(GetWorld(), TDC::Fx::Rewind, Owner->GetActorLocation() + FVector(0.f, 60.f, 130.f),
 			150.f, false, Owner->GetRootComponent());
 	}
@@ -88,6 +92,10 @@ void UTDCDirectorComponent::EndRewind()
 	if (RewindFx.IsValid())
 	{
 		RewindFx->Destroy();
+	}
+	if (RewindAudio.IsValid())
+	{
+		RewindAudio->Stop();
 	}
 	RewindFx.Reset();
 	if (UTDCStageSubsystem* Stage = GetWorld()->GetSubsystem<UTDCStageSubsystem>())
@@ -126,6 +134,7 @@ bool UTDCDirectorComponent::Clap()
 		FCollisionShape::MakeSphere(ClapRadius), Params);
 
 	// Impacto del golpe (VFX hacia la cámara, espejado si mira a -X).
+	TDC::PlaySfx(this, TEXT("sfx_claquetazo"), Center);
 	ATDCFlipbookFx::Spawn(World, TDC::Fx::ClapImpact, Center + FVector(0.f, 60.f, 10.f), 170.f, Facing < 0.f);
 
 	FString Feedback = TEXT("¡Claquetazo!");
@@ -144,6 +153,7 @@ bool UTDCDirectorComponent::Clap()
 		case ETDCClapResult::Stunned:  Feedback = TEXT("¡Claquetazo! (aturdido)"); break;
 		default:
 			Feedback = TEXT("Rebota: es un extra de guion. Dirigí la escena.");
+			TDC::PlaySfx(this, TEXT("sfx_bounce"), Extra->GetActorLocation());
 			ATDCFlipbookFx::Spawn(World, TDC::Fx::ScriptedBounce, Extra->GetActorLocation() + FVector(-Facing * 30.f, 70.f, 20.f), 200.f, Facing < 0.f);
 			break;
 		}

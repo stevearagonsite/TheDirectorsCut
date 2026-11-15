@@ -39,6 +39,7 @@ protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void Landed(const FHitResult& Hit) override;
+	virtual void OnJumped_Implementation() override;
 	virtual void FellOutOfWorld(const UDamageType& DamageType) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "TDC|Camera")
