@@ -1,0 +1,38 @@
+Íconos HUD de poderes — The Director's Cut (post-jam)
+Modelo: gemini-3-pro-image (2K, 1:1). Generaciones usadas: 2 de 3.
+Pipeline: work/build.py (hoja 2x2 -> chroma key verde con despill -> recorte con escala común -> 256x256 RGBA).
+
+Generación 1 (usada) — work/sheet_v1.png, ref: presentacion/icon_256.png, prompt: work/prompt_sheet.txt
+-----
+A 2x2 sprite sheet of four video game HUD ability icons for "The Director's Cut", a 1940s film-noir 2.5D game. Match the style of the attached reference icon: flat stylized low-poly facets, simple flat colors, minimal texture, clean vector look.
+
+Strict layout: the square image is split into four equal quadrants. Each quadrant contains exactly ONE icon, centered, filling about 75% of its quadrant, with generous empty margin so icons never touch or overlap each other or the image border. NO grid lines, NO frames, NO tiles, NO text, NO letters, NO labels, NO numbers.
+
+Background: one single perfectly flat solid pure green color (#00FF00) across the whole image, no gradient, no shadow, no vignette, no texture.
+
+Shared style for all four icons (must be identical): bold thick near-black outline (#111118) of the same width around every icon's silhouette, like a sticker; the same lighting from the top-left with one flat lighter facet and one flat darker facet; bold simple chunky shapes readable at 48 pixels; no glow or haze extending outside the black outline (any light beam is a solid flat shape enclosed by the black outline).
+
+Top-left: a vintage film studio spotlight (fresnel stage light on a short yoke), dark gunmetal gray body, turned ON, shining a solid bright warm yellow (#FFC83A) cone-shaped beam pointing to the lower right, the beam drawn as a flat yellow wedge with a black outline.
+
+Top-right: the EXACT same spotlight with the same angle and shape, but turned OFF: lens dark, no beam; instead a solid violet/purple (#8A4FFF) crescent moon shape and small violet shadow wedge where the beam would be, outlined in black.
+
+Bottom-left: a film reel (movie reel with round holes) in dark gray, wrapped by a bold thick circular counter-clockwise rewind arrow in bright neon cyan (#2EE6F0) with a big arrowhead, outlined in black.
+
+Bottom-right: a movie clapperboard snapping shut, white and gray body with black-and-white diagonal striped clapper stick at an angle mid-close, with a small sharp white four-point star spark flash at the hinge tip, mostly white and gray, outlined in black.
+-----
+Problema: el haz amarillo de icon_luces salía cortado en seco contra el borde del cuadrante.
+Arreglo con PIL (no con IA): haz truncado en un arco a R=700 px desde el vértice del cono, con contorno negro de 24 px (mismo grosor que el resto).
+
+Generación 2 (descartada) — work/luces_v2.png, ref: sheet_v1.png, prompt: work/prompt_luces.txt
+Redibujó el reflector pero metió fantasmas borrosos de los otros íconos (carrete y claqueta). Inutilizable.
+
+Calidad (1-5) y lectura a 48 px (work/check_48px.png, fondo oscuro y claro):
+- icon_luces      4  Se lee. El haz truncado a mano queda limpio. Comparte caja con oscuridad: el reflector no se mueve al alternar.
+- icon_oscuridad  4  Se lee. La luna y la cuña violeta son chicas pero claras; el lente apagado marca el estado.
+- icon_rebobinar  5  El más legible: aro cian grueso, flecha antihoraria.
+- icon_claquetazo 4  Se lee. El destello es chico y a 48 px es solo un detalle.
+- key_frame       4  Dibujado con PIL (no IA): fondo oscuro, borde crema y contorno negro como el de los íconos. La letra se escribe encima en Unreal; en la maqueta va a 30 px con Arial Black.
+
+Consistencia: los 4 salen de la misma hoja. Escala común 0,265 (el contorno mide unos 6 px a 256 y 1,5 px a 64), misma luz desde arriba a la izquierda.
+Contra fondos muy oscuros el contorno negro se pierde y el cuerpo gris del reflector contrasta poco. Si molesta en las zonas oscuras, poner en UMG una placa translúcida detrás o un trazo exterior claro de 1 px.
+hud_preview.png: captura T-0012-02-ambientacion (1280x720 escalada a 1920x1080), íconos a 64 px en (48,48) cada 104 px, tecla de 30 px abajo a la derecha. Variante apagada: work/hud_preview_oscuridad.png.
