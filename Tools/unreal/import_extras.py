@@ -114,11 +114,14 @@ def matte_material(kind, dest, sk):
         MEL.connect_material_property(const, "", prop)
     MEL.recompile_material(mat)
     eal.save_asset(path)
+    sk.modify()
     slots = sk.get_editor_property("materials")
-    for slot in slots:
+    for i in range(len(slots)):  # en 5.8 el for devuelve copias: reasignar por índice
+        slot = slots[i]
         slot.set_editor_property("material_interface", mat)
+        slots[i] = slot
     sk.set_editor_property("materials", slots)
-    eal.save_asset(sk.get_path_name())
+    eal.save_asset(sk.get_path_name(), only_if_is_dirty=False)
 
 
 def import_type(kind, target_cm):

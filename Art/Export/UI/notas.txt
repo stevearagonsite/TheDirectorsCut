@@ -1,0 +1,32 @@
+Arte de presentacion - The Director's Cut (2026-11-15)
+Modelo: gemini-3-pro-image (2K). Prompts completos en work/*.txt. 4 generaciones en total.
+
+1) Icono - calidad 4/5
+   icon_g1 (ref: hoja de modelo de la claqueta): descartado, el tablero era del mismo navy que el fondo y a 16 px desaparecia.
+   icon_g2 (ref: icon_g1, prompt work/icon2.txt): tablero gris pizarra, 3 franjas gruesas por palo y contorno amarillo continuo. Se usa para 32/48/256.
+   16 px: version simplificada pixel-aligned dibujada con PIL (work/icon16.py), mismos colores. Se lee como claqueta (dos palos a rayas y el tablero).
+   TheDirectorsCut.ico = 16 (a mano) + 32/48/256 (g2). Sin texto.
+
+2) Fondo del menu - calidad 4/5
+   title_g1 (ref: key art sin titulo, prompt work/title_bg.txt): escenario vacio, telon entreabierto con skyline pintado, marquesina con cartel en blanco y reflector a la derecha.
+   Post: oscurecido suave del 42% izquierdo para los botones (work/post.py).
+   Titulo: title.py con cx=0.245 cy=0.16 tw=0.40 shade=0.45, arriba a la izquierda.
+   Detalle: el cartel de la marquesina es muy claro y hay lluvia dentro del escenario.
+
+3) Carga - calidad 4/5
+   loading_g1 (ref: hoja de modelo de la claqueta, prompt work/loading.txt): claqueta frontal bajo un cenital amarillo, sobre negro.
+   "TAKE 1" con Chalkduster (tiza) en el tablero, con PIL (work/post.py).
+
+--- PROMPTS ---
+[icon]
+Use the attached clapperboard as the exact object design. Create a square app icon for a video game: a single film clapperboard, stylized low-poly faceted 3D with flat colors, seen almost from the front with a slight 3/4 tilt, the striped clapper stick open at a bold angle. The clapperboard fills about 80% of the canvas, centered, with big simple chunky shapes and only 4 thick black-and-white diagonal stripes on each stick so it stays readable when shrunk to 16x16 pixels. The board face is blank (no writing). Background: a plain very dark navy-violet backdrop with a soft circular warm golden-yellow spotlight glow behind the clapperboard, and a strong warm yellow rim light along the top and right edges of the clapperboard to separate it from the background. High contrast silhouette. Style coherent with a painted stylized film-noir video game key art. No other objects, no text, no letters, no numbers, no logos, no watermark, no border, no rounded-square frame.
+
+[icon2]
+Redesign this app icon so it stays readable when shrunk to 16x16 pixels. Keep the same stylized low-poly faceted film clapperboard and the same dark navy-violet background with a warm golden-yellow spotlight glow, but: make the board body a lighter medium slate grey (clearly lighter than the background) with simple facets; use only 3 very thick black-and-white diagonal stripes on each stick; open the top stick wider (about 25 degrees); add a continuous thick warm golden-yellow rim light outlining the whole silhouette (top, right and left edges) so the shape pops from the background; make the clapperboard fill about 85% of the canvas, centered. Flat colors, bold simple shapes, high contrast. Board face blank. No text, no letters, no numbers, no logos, no watermark, no border frame.
+
+[title_bg]
+Using the attached key art only as the style reference (same painted stylized video-game look, same rainy night palette, same marquee lights and studio spotlight design), create a wide main-menu background for the game, WITHOUT any characters and WITHOUT any text. Scene: an empty old movie-theater stage at night seen from the audience, inside a 1940s film studio. On the RIGHT half of the image: a heavy velvet stage curtain partly open (parted in the middle, a dark gap showing a painted night-city backdrop with art-deco skyline and moon behind it), the curtain in very dark desaturated charcoal-plum velvet with soft folds; above the stage a vintage cinema marquee with rows of glowing warm bulbs and a blank sign panel; a big studio spotlight on a tripod stand at the far right casting a strong visible volumetric cone of warm golden-yellow light onto the empty wooden stage floor, making a pool of light. Light dust and a few faint rain streaks in the light beam. The LEFT 40% of the image must be calm, dark and uncluttered (deep shadow of the side curtain and dark wooden stage wings, almost flat dark navy-violet tones) as empty space for menu buttons, and the TOP 30% of the image must also be dark and calm (dark rigging and the top border of the proscenium in shadow) as empty space for the game title. Color: mostly desaturated navy, charcoal and muted wood tones; the ONLY saturated colors are the warm yellow of the lights and a deep dark violet in the shadows. No red, no cyan, no green. Absolutely NO text, NO letters, NO words, NO numbers anywhere (marquee sign blank), no people, no creatures, no logos, no watermark.
+
+[loading]
+Use the attached clapperboard as the exact object design. Create a wide 16:9 loading screen image: a single film clapperboard, stylized low-poly faceted 3D with flat colors, seen straight from the front (orthographic-like, no perspective distortion), the striped clapper stick slightly open at a small angle, placed in the center of the frame and occupying about 45% of the image height. The board face is a flat dark slate, completely BLANK, with no lines, no writing, no grid, so text can be added later. Background: pure black, with a soft warm golden-yellow spotlight from above that lights the clapperboard and fades into black around it, a faint warm rim light on the top edge of the stick, faint dust particles in the light. Painted stylized film-noir video game look, coherent with a painted key art. The only saturated color allowed is that warm yellow light; everything else black, white and grey. Absolutely NO text, NO letters, NO numbers, no logos, no watermark.
+
