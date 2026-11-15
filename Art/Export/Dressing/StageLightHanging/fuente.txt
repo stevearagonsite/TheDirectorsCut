@@ -1,0 +1,30 @@
+Asset: reflector de estudio colgante (fresnel de los 40 con viseras, yugo y caño corto al techo). Uso: el reflector interactivo (E) que hoy es una esfera a 3.5 m.
+
+Busqueda Sketchfab (2026-11-15):
+- Modelos propios de stevearagon92 (14: castle, robot, girl, spaceship, escaneos...): ninguno es un reflector.
+- Descargables CC0/CC-BY: 'hanging stage light', 'fresnel light', 'vintage studio light', 'film light barn doors', 'theater spotlight', 'stage light low poly', 'fresnel spotlight', 'stage light', 'studio light', 'movie light', 'spot light vintage', 'cinema light'. ~40 resultados con nombre de luz; 12 relevantes en contacto.
+Mejores candidatos (contacto en sketchfab-candidatos.png):
+- 03 FRESNEL LED (Victor.Ferreira1, CC-BY, 6.5k caras): 3/6. Buena silueta y viseras, pero LED moderno, liso/realista, sin caño al techo, no coherente.
+- 07 Spotlight (R3indeer, CC-BY, 1.5k): 3/6. Low-poly con viseras, pero textura violeta (color de mecanica) y estilo mod de Roblox.
+- 10 STAGE LIGHTS (maximeguinard, CC-BY, 1.8k): 3/6. Fresnel con viseras sin material (blanco), teatro moderno.
+- 14 Stage Light (aperkinsNorthernQuest, CC-BY, 1.2k): 3/6. Facetado plano, pero lente amarillo saturado (color de mecanica).
+Ninguno llega a 5/6 -> se genera (D-015 paso 3).
+
+Evaluacion de taste del generado: 6/6 (5/6 si se exige gris oscuro sin tocar el material)
+- Estilo facetado, colores planos: si (cuerpo de facetas grandes, poca textura).
+- Epoca/tema: si (fresnel de estudio con viseras, yugo y caño a la parrilla).
+- Paleta: si, neutros grises. Ojo: el material salio gris claro, mas claro que la referencia (gris oscuro); se baja en el material de UE (tint del diffuse) para que no compita con el cono de luz.
+- Silueta a ~22 m: si (caño + yugo + cuerpo + 4 viseras se leen como reflector).
+- Tecnico: si. 2,895 poligonos quad (~5.8K tris), 1 malla, alto 90 cm, sin rig.
+- Coherencia: si (misma referencia de estilo que prop-spotlight-v1, el reflector de tripode).
+
+Fuente elegida: generado: Gemini + Rodin (D-015 paso 3).
+- Referencia: referencia.png, generada con gemini-3-pro-image usando ../dressing/prop-spotlight-v1.png como referencia de estilo (prompt en prompt-gemini.txt).
+- Rodin web, Image to 3D, Gen-2.5 High, Caption Override apagado (caption automatico: "Stage spotlight fixture."). Geometria: Clean Topology, Quad, 6K caras, Baked Normal. Material: Native (PBR), High, 2K.
+- Export: .fbx, Base Model, Shaded + PBR 2K. Pivote: Bottom (Rodin solo ofrece Bottom y Center; no hay Top). Custom height 90 cm.
+  Medido en el FBX: Z de 0 a 0.90, X +-0.24, Y +-0.33 -> el pivote queda en la punta de abajo (la visera inferior), NO arriba del caño.
+  Para colgarlo de la parrilla en UE: o se corre el pivote al tope del caño (Modeling Mode > Pivot, o en el import offset Z -90 cm), o se ubica el actor 90 cm por debajo del punto de cuelgue.
+- Zip original: rodin-stagelight.zip; descomprimido en rodin/ (base.fbx, base_basic_pbr.fbx, base_basic_shaded.fbx, texture_*.png, shaded.png).
+- Tarea Rodin: https://hyper3d.ai/workspace/rodin/9f52eefa-6b5f-4d2a-a044-ceecbe74eae3
+- Creditos Rodin: 1 generacion, sin retry. Billetera 412 antes; la billetera la comparten otras sesiones, asi que el costo exacto no se pudo aislar (orden de ~3-6 creditos).
+- Captura para revisar: render-rodin.jpg (visor de Rodin con material). rodin/shaded.png es el atlas de textura, no un render.
