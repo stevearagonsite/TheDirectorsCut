@@ -158,6 +158,7 @@ private:
 	enum class EAnimState : uint8 { None, Idle, Walk, Run, Sprint, Locomotion, JumpRise, JumpFall, Clap };
 
 	void UpdateLightPrompt();
+	void ShowControls();
 
 	/** Modo demo para evidencia sin jugador (-TDCAutoRun): corre a la derecha, salta cada 2.5 s y captura 1 frame/s. */
 	void TickAutoRun(float DeltaSeconds);

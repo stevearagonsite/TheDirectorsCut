@@ -164,6 +164,7 @@ void ATDCCharacter::Tick(float DeltaSeconds)
 	}
 	UpdateAnimState();
 	UpdateLightPrompt();
+	ShowControls();
 }
 
 void ATDCCharacter::TickAutoRun(float DeltaSeconds)
@@ -188,6 +189,24 @@ void ATDCCharacter::TickAutoRun(float DeltaSeconds)
 		FScreenshotRequest::RequestScreenshot(FString::Printf(TEXT("TDCAutoRun_%02d"), AutoShotIndex++), false, false);
 		NextAutoShot += 1.f;
 	}
+}
+
+void ATDCCharacter::ShowControls()
+{
+	// Arriba a la izquierda, siempre: los mensajes con clave se reemplazan cada frame (no se acumulan).
+	if (!GEngine || !IsPlayerControlled())
+	{
+		return;
+	}
+	const FColor Ink(235, 235, 235);
+	GEngine->AddOnScreenDebugMessage(7010, 0.f, Ink, TEXT("CONTROLES (teclado / gamepad)"));
+	GEngine->AddOnScreenDebugMessage(7011, 0.f, Ink, TEXT("  A / D ........ moverse        (stick)"));
+	GEngine->AddOnScreenDebugMessage(7012, 0.f, Ink, TEXT("  Espacio ...... saltar         (A)"));
+	GEngine->AddOnScreenDebugMessage(7013, 0.f, Ink, TEXT("  F / clic ..... claquetazo     (B)"));
+	GEngine->AddOnScreenDebugMessage(7014, 0.f, Ink, TEXT("  E ............ prender/apagar el reflector cercano  (X)"));
+	GEngine->AddOnScreenDebugMessage(7015, 0.f, Ink, TEXT("  Q (mantener) . rebobinar lo celeste  (gatillo izq.)"));
+	GEngine->AddOnScreenDebugMessage(7016, 0.f, FColor(150, 150, 150),
+		TEXT("  Amarillo = existe con luz · Violeta = a oscuras · Celeste = se rebobina · Rojo/naranja/negro = extras"));
 }
 
 void ATDCCharacter::UpdateLightPrompt()
@@ -329,8 +348,7 @@ void ATDCCharacter::BeginPlay()
 
 	if (GEngine && IsPlayerControlled())
 	{
-		GEngine->AddOnScreenDebugMessage(7000, 15.f, FColor::White,
-			TEXT("A/D mover  ·  Espacio saltar  ·  F claquetazo  ·  E luces  ·  Q (mantener) rebobinar"));
+		// Los controles se muestran siempre desde Tick (ShowControls).
 	}
 }
 
