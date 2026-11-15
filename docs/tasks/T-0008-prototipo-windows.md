@@ -1,7 +1,7 @@
 ---
 id: T-0008
 titulo: Prototipo jugable corriendo en la PC Windows (build + L_Slice + juego abierto)
-estado: enviada
+estado: bloqueada
 tipo: mixto
 rama: t/T-0008-prototipo-windows
 creada: 2026-11-15
@@ -69,9 +69,26 @@ mínimo de ambas.
 ---
 
 ## Reporte (lo completa Windows)
-- estado:
-- sha:
-- resumen:
+- estado: bloqueada
+- sha: d662f17 (base)
+- resumen: reenvío 5. Paso 0 OK (`git restore` + `git pull` a d662f17, árbol limpio, stash de T-0001 intacto).
+  Paso 1 `doctor` OK: UE_5.8 → True, Blender, git, git-lfs, gitleaks y gh presentes, `hooksPath: .githooks`.
+  Paso 2: el `.uproject` ya tenía `"EngineAssociation": "5.8"` (sin cambios). Paso 3: `projectfiles` → `Result: Succeeded`;
+  `build` → **falla antes de compilar** porque UBT detecta una sesión de Live Coding activa de `UnrealEditor.exe` de UE 5.8
+  (reintentado una vez, mismo resultado). No llegó a compilar ningún archivo de C++, así que no hay errores de código que
+  reportar. Pasos 4 a 8 no se corrieron (sin build no hay tests, mapa, captura ni juego).
 - errores:
-- evidencia:
+  ```
+  Checking for live coding mutex: Global\LiveCoding_C++Program Files+Epic Games+UE_5.8+Engine+Binaries+Win64+UnrealEditor.exe
+  Unable to build while Live Coding is active. Exit the editor and game, or press Ctrl+Alt+F11 if iterating on code in the editor or game
+  Result: Failed (OtherCompilationError)   (Build.bat código 6)
+  ```
+- evidencia: ninguna (log local en `Game/Saved/Logs/tdc-build.log`, no versionado).
 - notas / preguntas:
+  - Hay un `UnrealEditor.exe` de UE 5.8 (o su `LiveCodingConsole.exe`) vivo en la PC que no es de este proyecto:
+    `Game/Saved/Logs` no tiene log de editor. El log del motor (`%LOCALAPPDATA%\UnrealEngine\5.8\Saved\Logs\Unreal.log`) muestra
+    un editor abierto desde el Epic Launcher (sin proyecto) entre 15:46 y 16:03 con Live Coding iniciado; pudo quedar un proceso
+    huérfano sosteniendo el mutex. Desde el worker no puedo listar ni cerrar procesos (`Get-Process`/`tasklist`/`Stop-Process`
+    requieren aprobación), y no cierro un editor que puede ser de Steve.
+  - **Pregunta para Steve:** ¿cierra los `UnrealEditor.exe` / `LiveCodingConsole.exe` abiertos en la PC (Administrador de
+    tareas) y reenvía T-0008? Alternativa: permitir al worker `tdc.ps1` con un subcomando que cierre esos procesos.
