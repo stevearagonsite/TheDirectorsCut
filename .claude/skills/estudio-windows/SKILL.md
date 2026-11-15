@@ -10,8 +10,11 @@ Protocolo completo: `docs/pipeline/protocolo-mac-windows.md` (leelo al empezar l
 
 ## Al empezar la sesión
 
-1. `mcp__vkvm__peer_inbox` (sin espera) para ver si hay tareas pendientes.
-2. `git status` limpio y `git fetch`. Si hay cambios sin commitear de una tarea anterior, terminá o reportá esa tarea primero.
+1. `mcp__vkvm__peer_status`: la bandeja propia tiene que ser `thedirectorscut` (la fija `VKVM_MAILBOX` en
+   `.claude/settings.json`). Si no figura, el `vkvm mcp` es anterior a 0.1.3: pedile a Steve `/mcp` → vkvm → Reconnect.
+2. `mcp__vkvm__peer_inbox` (sin espera) para ver si hay tareas pendientes.
+3. Toda respuesta a la Mac (ACK, ASK, REPORT, PONG) va con `peer_send` y `to: thedirectorscut`.
+4. `git status` limpio y `git fetch`. Si hay cambios sin commitear de una tarea anterior, terminá o reportá esa tarea primero.
 
 ## Al recibir `[TDC-TASK T-XXXX]`
 

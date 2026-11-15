@@ -11,7 +11,9 @@ Protocolo completo (formatos, estados, autorización, privacidad): `docs/pipelin
 ## Antes de delegar
 
 1. ¿Lo puede hacer la Mac sola? (código, docs, scripts) → hacelo acá. Delegá solo lo que necesita Windows.
-2. `mcp__vkvm__peer_status` → `phatom-desktop` tiene que figurar `connected`. Si no: avisá a Steve y seguí con trabajo local.
+2. `mcp__vkvm__peer_status` → `phatom-desktop` tiene que figurar `connected` y la bandeja propia tiene que ser
+   `thedirectorscut`. Si no figura la bandeja, el `vkvm mcp` es viejo: pedile a Steve `/mcp` → vkvm → Reconnect.
+   Si la PC no está conectada: avisá a Steve y seguí con trabajo local.
 3. `[TDC-PING]` si no hubo contacto en esta sesión, para saber si está libre u ocupado.
 
 ## Enviar una tarea
@@ -25,7 +27,8 @@ Protocolo completo (formatos, estados, autorización, privacidad): `docs/pipelin
    - Una tarea = un resultado revisable. Si son más de ~45 min de trabajo en Windows, partila.
    - Sección `Permite` vacía salvo que haga falta tocar archivos de Windows o instalar algo.
 4. `estado: enviada`, commit, `git push -u origin HEAD`. Anotá el sha corto.
-5. `mcp__vkvm__peer_send` con el `[TDC-TASK]` del protocolo (rama, sha, archivo, tipo, prioridad). Nada más: el detalle está en el archivo.
+5. `mcp__vkvm__peer_send` con `to: thedirectorscut` y el `[TDC-TASK]` del protocolo (rama, sha, archivo, tipo, prioridad).
+   Nada más: el detalle está en el archivo. Todo mensaje a Windows (PING, ANSWER, CANCEL) va con ese `to`.
 
 ## Esperar
 
@@ -47,6 +50,7 @@ Protocolo completo (formatos, estados, autorización, privacidad): `docs/pipelin
 ## Errores comunes
 
 - Mandar código o instrucciones largas por VirtualKvm en vez de en el archivo de tarea.
+- `peer_send` sin `to`: lo puede leer otra sesión de la PC (por ejemplo, una de VirtualKvm) y la tarea nunca llega.
 - Olvidar pushear antes del `[TDC-TASK]` (Windows responde `bloqueado: sha no existe`).
 - Pushear a la rama mientras Windows la tiene.
 - Pedir que Windows edite C++: es de la Mac. Si un error de build es trivial y bloquea, se puede autorizar en `Permite`.
