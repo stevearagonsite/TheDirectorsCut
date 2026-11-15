@@ -23,9 +23,9 @@ mínimo de ambas.
 - Si `tdc.local.ps1`, gitleaks, etc. ya están de una sesión anterior, no los repitas.
 
 ## Pasos
-0. **Reenvío 3.** Steve verificó en la PC: existe `NETFXSDK\4.8`, `gitleaks version` responde, `git config --global user.email`
-   tiene valor y reinició vkvm-worker. `Game/.vsconfig` ahora está en `.gitignore`. En el clon: `git restore --staged --worktree Game/TheDirectorsCut.uproject docs/tasks/T-0008-prototipo-windows.md`
-   y `git pull` (esta versión ya trae `EngineAssociation` 5.8). Seguí desde el paso 1 (ver **Permite**). El stash de T-0001 dejalo como está.
+0. **Reenvío 4.** test-e4 instaló el .NET Framework 4.8 SDK (VS 2026 Community y BuildTools), gitleaks y la identidad de git.
+   En el clon: `git restore --staged --worktree Game/TheDirectorsCut.uproject docs/tasks/T-0008-prototipo-windows.md` y `git pull`.
+   El stash de T-0001 dejalo como está.
 1. `.\Tools\scripts\tdc.ps1 doctor` (UE 5.8 tiene que figurar `True`).
 2. `Game/TheDirectorsCut.uproject`: `"EngineAssociation": "5.8"` (o el identificador que use tu instalación).
 3. `.\Tools\scripts\tdc.ps1 projectfiles` y `.\Tools\scripts\tdc.ps1 build`.
@@ -39,10 +39,11 @@ mínimo de ambas.
 6. Captura: `.\Tools\scripts\tdc.ps1 shot -Map /Game/Maps/L_Slice -Task T-0008 -Name 01-juego`.
    Revisala: tiene que verse el personaje (cilindro rojo) y las plataformas. Si está todo negro o quemado, ajustá la luz
    `Ambient_Sun` en el mapa (o sumá un SkyLight) y anotá los valores para pasarlos al script.
-7. Commit de `Game/Content/Maps/L_Slice.umap` (LFS), el `.uproject`, la evidencia y el Reporte. Push y `[TDC-REPORT]`.
-8. **Dejá el juego abierto en la pantalla** para Steve (no lo cierres):
+7. **Dejá el juego abierto en la pantalla** para Steve (no lo cierres):
    `& "$UE\Engine\Binaries\Win64\UnrealEditor.exe" "<repo>\Game\TheDirectorsCut.uproject" /Game/Maps/L_Slice -game -windowed -ResX=1600 -ResY=900`
    (con `Start-Process`, sin esperar). Confirmá en el reporte que la ventana quedó abierta y con foco.
+8. Commit de `Game/Content/Maps/L_Slice.umap` (LFS), el `.uproject`, la evidencia y el Reporte. Push y `[TDC-REPORT]`.
+   Si el commit falla (hook, identidad), igual dejá el juego abierto y reportá `parcial` con el error.
 
 ## Criterios de aceptación
 - [ ] `TheDirectorsCutEditor Win64 Development` compila sin errores (listar warnings de nuestro código si hay).
@@ -52,7 +53,7 @@ mínimo de ambas.
 - [ ] El juego quedó corriendo en una ventana en la PC.
 
 ## Permite
-- Steve instaló a mano en la PC (2026-11-15) el .NET Framework 4.8 Developer Pack, gitleaks y la identidad global de git.
+- test-e4 instaló en la PC (2026-11-15) el .NET Framework 4.8 SDK, gitleaks y la identidad global de git.
   Si `doctor` o el build siguen marcando que falta algo, reportá `bloqueado` con el detalle; no instales nada.
 - Editar `Game/TheDirectorsCut.uproject` (solo `EngineAssociation`), `Tools/scripts/tdc.ps1` y `Tools/unreal/build_slice.py`
   (solo compatibilidad de API o luz ambiente, sin cambiar el layout).
