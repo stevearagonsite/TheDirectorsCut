@@ -350,7 +350,10 @@ def post_process():
     ppv.set_folder_path("Dressing")
     ppv.set_editor_property("unbound", True)
     st = ppv.get_editor_property("settings")
-    for name, value in (("auto_exposure_bias", -0.3),
+    # Adaptación casi instantánea: el build arrancaba oscuro (frame 0) mientras el auto-exposure se adaptaba.
+    for name, value in (("auto_exposure_speed_up", 20.0),
+                        ("auto_exposure_speed_down", 20.0),
+                        ("auto_exposure_bias", -0.3),
                         ("vignette_intensity", 0.45),
                         ("film_grain_intensity", 0.25),
                         ("color_saturation", unreal.Vector4(0.8, 0.8, 0.85, 1.0)),
