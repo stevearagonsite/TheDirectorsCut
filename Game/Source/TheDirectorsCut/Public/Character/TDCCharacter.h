@@ -9,6 +9,7 @@ class UCameraComponent;
 class UStaticMeshComponent;
 class USkeletalMesh;
 class UAnimSequence;
+class UBlendSpace1D;
 class UInputAction;
 class UInputMappingContext;
 class UTDCDirectorComponent;
@@ -87,6 +88,33 @@ protected:
 	FTransform ClapperOffset = FTransform::Identity;
 
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FSoftObjectPath WalkAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Walk.AS_Director_Walk"));
+
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FSoftObjectPath SprintAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Sprint.AS_Director_Sprint"));
+
+	/** Si existe (fix_director_look.py), la locomoción usa este blendspace por velocidad: transiciones suaves. */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FSoftObjectPath LocomotionBlendSpacePath = FSoftObjectPath(TEXT("/Game/Characters/Director/BS_Director_Locomotion.BS_Director_Locomotion"));
+
+	/** Velocidad (cm/s) a la que cada animación no patina: el play rate se escala con Speed / esta velocidad. */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	float WalkAnimSpeed = 160.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	float RunAnimSpeed = 380.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	float SprintAnimSpeed = 600.f;
+
+	/** Pose de salto fija (fracción de AS_Director_Jump) subiendo y cayendo; evita el anticipo en el piso del clip. */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	float JumpRisePose = 0.35f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	float JumpFallPose = 0.6f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
 	FSoftObjectPath JumpAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Jump.AS_Director_Jump"));
 
 	/**
@@ -127,7 +155,9 @@ protected:
 	TObjectPtr<UInputAction> ClapAction;
 
 private:
-	enum class EAnimState : uint8 { None, Idle, Run, Jump, Clap };
+	enum class EAnimState : uint8 { None, Idle, Walk, Run, Sprint, Locomotion, JumpRise, JumpFall, Clap };
+
+	void UpdateLightPrompt();
 
 	void OnClap();
 
@@ -148,6 +178,15 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<UAnimSequence> JumpAnim;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> WalkAnim;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> SprintAnim;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UBlendSpace1D> LocomotionBlendSpace;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UAnimSequence> ClapAnim;

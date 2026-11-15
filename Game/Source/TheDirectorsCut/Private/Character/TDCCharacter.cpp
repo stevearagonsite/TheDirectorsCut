@@ -5,6 +5,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimSequence.h"
+#include "Animation/BlendSpace1D.h"
+#include "Animation/AnimSingleNodeInstance.h"
+#include "Stage/TDCStageLight.h"
 #include "Engine/SkeletalMesh.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/Engine.h"
@@ -138,6 +141,9 @@ void ATDCCharacter::LoadCharacterAssets()
 	ClapAnim = LoadQuiet<UAnimSequence>(ClapAnimPath);
 	IdleAnim = LoadQuiet<UAnimSequence>(IdleAnimPath);
 	RunAnim = LoadQuiet<UAnimSequence>(RunAnimPath);
+	WalkAnim = LoadQuiet<UAnimSequence>(WalkAnimPath);
+	SprintAnim = LoadQuiet<UAnimSequence>(SprintAnimPath);
+	LocomotionBlendSpace = LoadQuiet<UBlendSpace1D>(LocomotionBlendSpacePath);
 	JumpAnim = LoadQuiet<UAnimSequence>(JumpAnimPath);
 	if (IdleAnim || RunAnim || JumpAnim)
 	{
@@ -150,6 +156,21 @@ void ATDCCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	UpdateAnimState();
+	UpdateLightPrompt();
+}
+
+void ATDCCharacter::UpdateLightPrompt()
+{
+	// Legibilidad: si hay un reflector al alcance, decir qué tecla lo dirige.
+	if (!GEngine || !IsPlayerControlled() || !Director || !Director->HasPower(ETDCPower::Lights))
+	{
+		return;
+	}
+	if (const ATDCStageLight* Light = Director->FindNearestLight())
+	{
+		GEngine->AddOnScreenDebugMessage(7003, 0.15f, FColor(255, 220, 90),
+			Light->IsOn() ? TEXT("[E] ¡Luces!: apagar el reflector") : TEXT("[E] ¡Luces!: prender el reflector"));
+	}
 }
 
 void ATDCCharacter::UpdateAnimState()
@@ -163,49 +184,83 @@ void ATDCCharacter::UpdateAnimState()
 	const float Speed = FVector(Velocity.X, Velocity.Y, 0.f).Size();
 	const bool bInAir = GetCharacterMovement() && GetCharacterMovement()->IsFalling();
 
+	// Estado objetivo. Con blendspace, idle/walk/run/sprint son un solo estado que mezcla por velocidad (sin cortes).
 	EAnimState NewState = EAnimState::Idle;
+	UAnimSequence* LoopAnim = IdleAnim;
+	float NativeSpeed = 0.f;
 	if (ClapAnim && GetWorld() && GetWorld()->GetTimeSeconds() < ClapAnimUntil)
 	{
 		NewState = EAnimState::Clap;
 	}
 	else if (bInAir && JumpAnim)
 	{
-		NewState = EAnimState::Jump;
+		NewState = Velocity.Z > 0.f ? EAnimState::JumpRise : EAnimState::JumpFall;
 	}
-	else if (Speed > RunSpeedThreshold && RunAnim)
+	else if (LocomotionBlendSpace)
 	{
-		NewState = EAnimState::Run;
+		NewState = EAnimState::Locomotion;
+	}
+	else if (Speed > RunSpeedThreshold)
+	{
+		// Histéresis simple por umbrales intermedios entre las velocidades nativas de cada clip.
+		if (SprintAnim && Speed > 0.5f * (RunAnimSpeed + SprintAnimSpeed))
+		{
+			NewState = EAnimState::Sprint; LoopAnim = SprintAnim; NativeSpeed = SprintAnimSpeed;
+		}
+		else if (RunAnim && (!WalkAnim || Speed > 0.5f * (WalkAnimSpeed + RunAnimSpeed)))
+		{
+			NewState = EAnimState::Run; LoopAnim = RunAnim; NativeSpeed = RunAnimSpeed;
+		}
+		else if (WalkAnim)
+		{
+			NewState = EAnimState::Walk; LoopAnim = WalkAnim; NativeSpeed = WalkAnimSpeed;
+		}
 	}
 
-	if (NewState == EAnimState::Run && RunAnim)
+	if (NewState != AnimState)
 	{
-		const float MaxSpeed = GetCharacterMovement() ? FMath::Max(1.f, GetCharacterMovement()->MaxWalkSpeed) : 600.f;
-		MeshComp->SetPlayRate(RunPlayRate * FMath::Clamp(Speed / MaxSpeed, 0.3f, 1.2f));
-	}
-	if (NewState == AnimState)
-	{
-		return;
-	}
-	AnimState = NewState;
-	switch (NewState)
-	{
-	case EAnimState::Clap:
-		MeshComp->PlayAnimation(ClapAnim, /*bLooping*/ false);
-		MeshComp->SetPlayRate(1.f);
-		break;
-	case EAnimState::Jump:
-		MeshComp->PlayAnimation(JumpAnim, /*bLooping*/ false);
-		break;
-	case EAnimState::Run:
-		MeshComp->PlayAnimation(RunAnim, /*bLooping*/ true);
-		break;
-	default:
-		if (IdleAnim)
+		AnimState = NewState;
+		switch (NewState)
 		{
-			MeshComp->PlayAnimation(IdleAnim, /*bLooping*/ true);
+		case EAnimState::Clap:
+			MeshComp->PlayAnimation(ClapAnim, /*bLooping*/ false);
+			MeshComp->SetPlayRate(1.f);
+			break;
+		case EAnimState::JumpRise:
+		case EAnimState::JumpFall:
+		{
+			// Pose fija del salto: el clip de Rodin anticipa en el piso, así que se congela en el tramo aéreo.
+			MeshComp->PlayAnimation(JumpAnim, /*bLooping*/ false);
+			const float Fraction = NewState == EAnimState::JumpRise ? JumpRisePose : JumpFallPose;
+			MeshComp->SetPosition(static_cast<float>(JumpAnim->GetPlayLength()) * Fraction, /*bFireNotifies*/ false);
+			MeshComp->Stop();
+			break;
 		}
-		MeshComp->SetPlayRate(1.f);
-		break;
+		case EAnimState::Locomotion:
+			MeshComp->PlayAnimation(LocomotionBlendSpace, /*bLooping*/ true);
+			MeshComp->SetPlayRate(1.f);
+			break;
+		default:
+			if (LoopAnim)
+			{
+				MeshComp->PlayAnimation(LoopAnim, /*bLooping*/ true);
+			}
+			MeshComp->SetPlayRate(1.f);
+			break;
+		}
+	}
+
+	if (AnimState == EAnimState::Locomotion)
+	{
+		if (UAnimSingleNodeInstance* Single = MeshComp->GetSingleNodeInstance())
+		{
+			Single->SetBlendSpacePosition(FVector(Speed, 0.f, 0.f));
+		}
+	}
+	else if (NativeSpeed > 0.f)
+	{
+		// Los pies acompañan la velocidad real: menos patinaje.
+		MeshComp->SetPlayRate(RunPlayRate * FMath::Clamp(Speed / NativeSpeed, 0.5f, 1.5f));
 	}
 }
 
