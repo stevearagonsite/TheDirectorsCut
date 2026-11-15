@@ -23,7 +23,8 @@ mínimo de ambas.
 - Si `tdc.local.ps1`, gitleaks, etc. ya están de una sesión anterior, no los repitas.
 
 ## Pasos
-0. **Reenvío 4.** test-e4 instaló el .NET Framework 4.8 SDK (VS 2026 Community y BuildTools), gitleaks y la identidad de git.
+0. **Reenvío 5.** Permisos del worker restablecidos: `tdc.ps1` en todas sus formas (no `Start-Process` ni `UnrealEditor` directo:
+   para eso están `tdc.ps1 play`, `editor`, `shot` y `python -InEditor`). test-e4 instaló el .NET Framework 4.8 SDK (VS 2026 Community y BuildTools), gitleaks y la identidad de git. `gh` puede seguir sin autenticar: si el push falla, reportá igual por VirtualKvm.
    En el clon: `git restore --staged --worktree Game/TheDirectorsCut.uproject docs/tasks/T-0008-prototipo-windows.md` y `git pull`.
    El stash de T-0001 dejalo como está.
 1. `.\Tools\scripts\tdc.ps1 doctor` (UE 5.8 tiene que figurar `True`).
@@ -33,15 +34,14 @@ mínimo de ambas.
      reales (no la cascada). La Mac los arregla y reenvía.
 4. `.\Tools\scripts\tdc.ps1 test` (3 tests `TDC.Stage.*`). Si fallan, anotalo y seguí.
 5. Generar el mapa: `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\build_slice.py` → tiene que loguear
-   `[TDC] L_Slice construido y guardado.` Si `-run=pythonscript` no puede usar los subsistemas del editor, usá
-   `UnrealEditor-Cmd.exe "<proj>" -ExecutePythonScript="<repo>\Tools\unreal\build_slice.py" -unattended -nosplash` o el
-   Output Log del editor. Si falla por API de Python de 5.8, arreglá `build_slice.py` sin cambiar el layout.
+   `[TDC] L_Slice construido y guardado.` Si el commandlet no puede usar los subsistemas del editor, repetí con `-InEditor`
+   (abre el editor sin ventana y lo cierra al terminar). Si falla por API de Python de 5.8, arreglá `build_slice.py` sin
+   cambiar el layout.
 6. Captura: `.\Tools\scripts\tdc.ps1 shot -Map /Game/Maps/L_Slice -Task T-0008 -Name 01-juego`.
-   Revisala: tiene que verse el personaje (cilindro rojo) y las plataformas. Si está todo negro o quemado, ajustá la luz
-   `Ambient_Sun` en el mapa (o sumá un SkyLight) y anotá los valores para pasarlos al script.
-7. **Dejá el juego abierto en la pantalla** para Steve (no lo cierres):
-   `& "$UE\Engine\Binaries\Win64\UnrealEditor.exe" "<repo>\Game\TheDirectorsCut.uproject" /Game/Maps/L_Slice -game -windowed -ResX=1600 -ResY=900`
-   (con `Start-Process`, sin esperar). Confirmá en el reporte que la ventana quedó abierta y con foco.
+   Revisala: tiene que verse el personaje (cilindro rojo) y las plataformas. Si está todo negro o quemado, ajustá en `build_slice.py`
+   la intensidad de `Ambient_Sun` (o sumá un SkyLight), regenerá el mapa (paso 5) y anotá los valores.
+7. **Dejá el juego abierto en la pantalla** para Steve (no lo cierres): `.\Tools\scripts\tdc.ps1 play`.
+   Confirmá en el reporte que la ventana quedó abierta.
 8. Commit de `Game/Content/Maps/L_Slice.umap` (LFS), el `.uproject`, la evidencia y el Reporte. Push y `[TDC-REPORT]`.
    Si el commit falla (hook, identidad), igual dejá el juego abierto y reportá `parcial` con el error.
 

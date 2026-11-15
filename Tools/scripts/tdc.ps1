@@ -12,10 +12,12 @@
   .\Tools\scripts\tdc.ps1 python -Script Tools\unreal\import_assets.py
   .\Tools\scripts\tdc.ps1 blender -Blend Art\Source\Spotlight.blend -Script Tools\blender\export_fbx.py -- --out Art\Export\Spotlight.fbx
   .\Tools\scripts\tdc.ps1 shot -Map /Game/Maps/L_Slice -Task T-0002 -Name sala
+  .\Tools\scripts\tdc.ps1 play                  # abre el juego en ventana (L_Slice) y no espera
+  .\Tools\scripts\tdc.ps1 python -Script Tools\unreal\build_slice.py -InEditor   # si el commandlet no alcanza
 #>
 param(
   [Parameter(Position = 0, Mandatory = $true)]
-  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot')]
+  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot', 'play')]
   [string]$Command,
   [string]$Filter = 'TDC.',
   [string]$Script,
@@ -23,6 +25,7 @@ param(
   [string]$Map = '/Game/Maps/L_Slice',
   [string]$Task,
   [string]$Name = 'shot',
+  [switch]$InEditor,
   [Parameter(ValueFromRemainingArguments = $true)]
   [string[]]$Rest
 )
@@ -105,7 +108,13 @@ switch ($Command) {
   'python' {
     Need-UE
     if (-not $Script) { throw 'Falta -Script' }
-    & $UECmd "$Proj" -run=pythonscript -script="$(Join-Path $Repo $Script)" -unattended -nosplash; Check-Exit 'python'
+    $path = Join-Path $Repo $Script
+    if ($InEditor) {
+      # Editor completo sin ventana: el script tiene que cerrar el editor al terminar (build_slice.py lo hace).
+      & $UECmd "$Proj" -ExecutePythonScript="$path" -unattended -nosplash -nopause; Check-Exit 'python'
+    } else {
+      & $UECmd "$Proj" -run=pythonscript -script="$path" -unattended -nosplash; Check-Exit 'python'
+    }
   }
   'blender' {
     Need-Blender
@@ -126,5 +135,10 @@ switch ($Command) {
     New-Item -ItemType Directory -Force $dest | Out-Null
     Copy-Item $png.FullName (Join-Path $dest "$Name.png")
     "captura: docs/evidence/$Task/$Name.png"
+  }
+  'play' {
+    Need-UE
+    $p = Start-Process $UEEditor -PassThru -ArgumentList "`"$Proj`" $Map -game -windowed -ResX=1600 -ResY=900"
+    "juego abierto: $Map (pid $($p.Id))"
   }
 }

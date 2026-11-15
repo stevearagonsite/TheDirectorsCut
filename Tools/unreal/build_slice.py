@@ -145,3 +145,7 @@ def build():
 
 
 build()
+
+# Lanzado con -ExecutePythonScript (tdc.ps1 python -InEditor): cerrar el editor al terminar.
+if "-executepythonscript" in unreal.SystemLibrary.get_command_line().lower():
+    unreal.SystemLibrary.quit_editor()
