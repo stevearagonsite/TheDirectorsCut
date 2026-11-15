@@ -31,6 +31,8 @@ Prefijo + nombre en PascalCase en inglés: `BP_` Blueprint, `SM_` static mesh, `
 
 ## Blender → Unreal
 
+**Keys de generadores en `.blend`:** BlenderMCP guarda las keys de Hyper3D, Sketchfab y PolyPizza como propiedades de escena (`blendermcp_*_api_key`) y gitleaks no ve dentro de los binarios LFS. Las keys van en las preferencias del addon, nunca en el panel de la escena. Antes de commitear un `.blend`, verificar con Python que esas propiedades estén vacías en todas las escenas.
+
 - Unidades: métrico, escala 1.0 = 1 m; Unreal usa cm (el exportador aplica la escala).
 - Eje: frente −Y en Blender, el exportador convierte a +X de Unreal.
 - Pivote en la base del objeto, transforms aplicados antes de exportar.
