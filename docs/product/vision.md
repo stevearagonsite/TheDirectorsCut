@@ -1,6 +1,6 @@
 # The Director's Cut — Visión de producto
 
-**Versión:** 0.4 · **Actualizado:** 2026-11-15 · [Features](#feature-index) · [Decisiones](decisiones.md) · [Cambios](#cambios)
+**Versión:** 0.5 · **Actualizado:** 2026-11-15 · [Features](#feature-index) · [Decisiones](decisiones.md) · [Cambios](#cambios)
 
 > Lo marcado con 🔶 o `[ASSUMPTION]` es una interpretación a validar.
 
@@ -58,7 +58,7 @@ En las zonas de descanso se equipa 1 poder por departamento. Todos gastan Rollo.
 | Movimiento 2.5D | in progress | Prototipo | Correr y saltar en el plano XZ, cámara lateral, reaparecer tras caer | [design](features/movimiento/design.md) |
 | Dirección de fotografía (luz) | in progress | Prototipo | Prender/apagar reflectores; piezas que existen solo con luz o solo a oscuras | [design](features/fotografia/design.md) |
 | Tiempo | in progress | Prototipo | Mantener para rebobinar lo que está "en toma" | [design](features/tiempo/design.md) |
-| Combate | idea | Post-prototipo | Claquetazo y vulnerabilidad por enemigo (D-002, D-003) | — |
+| Combate | idea | Jam (D-014) | Claquetazo (F) y extras: común lo derriba, resistente lo aturde, de guion inmune (D-002, D-003); código en T-0009 | — |
 | Rollo | idea | Post-prototipo | Barra compartida que gastan los poderes; latas la alargan (D-004) | — |
 | Equipamiento y progresión | idea | Post-prototipo | 1 poder por departamento en descanso; jefes dan slots, fragmentos dan skill tree (D-007, D-008) | — |
 | Corte | idea | Post-prototipo | Salto de toma (mueve al jugador) y Tijera (corta un fragmento del mundo) (D-006) | — |
@@ -82,7 +82,7 @@ Objetivo: probar que **dirigir se siente bien** antes de producir arte. Tarea: `
 - 1 asset hecho en Blender exportado a Unreal (prueba del pipeline Mac ⇄ Windows ⇄ Blender ⇄ Unreal).
 - **Hecho cuando:** un jugador nuevo resuelve la sala sin explicación en menos de 3 minutos.
 
-Fuera de alcance: combate, Rollo, equipamiento, narrativa, arte final, audio, guardado, mapa y menús.
+Entra en la jam (D-014): claquetazo, 3 extras y el Director de Rodin animado. Fuera de alcance: Rollo, equipamiento, Corte, Escenografía, narrativa, audio, guardado, mapa y menús.
 
 ## Preguntas abiertas
 
@@ -100,6 +100,7 @@ Spoilers, guion y documentos de negocio sensibles van en `private/` (ignorado po
 
 ## Cambios
 
+- **0.5 (2026-11-15):** el claquetazo y los extras entran a la jam (D-014).
 - **0.4 (2026-11-15):** dirección de arte con los conceptos de personaje y de nivel y cámara ([arte](arte/direccion-de-arte.md)); D-011 y D-012.
 - **0.3 (2026-11-15):** índice de features; notas de [movimiento](features/movimiento/design.md), [fotografía](features/fotografia/design.md) y [tiempo](features/tiempo/design.md) escritas contra el código; las decisiones pasan a [decisiones.md](decisiones.md).
 - **0.2 (2026-11-15):** protagonista, combate, Rollo, tres departamentos, equipamiento en descanso y tono por género (D-001 a D-010).
