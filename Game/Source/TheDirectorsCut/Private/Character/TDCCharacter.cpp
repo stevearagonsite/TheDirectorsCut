@@ -128,6 +128,7 @@ void ATDCCharacter::LoadCharacterAssets()
 	{
 		Clapper->SetStaticMesh(ClapperMesh);
 		Clapper->AttachToComponent(MeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, ClapperSocket);
+		Clapper->SetRelativeTransform(ClapperOffset);
 		Clapper->SetVisibility(true);
 	}
 	ClapAnim = LoadQuiet<UAnimSequence>(ClapAnimPath);

@@ -82,6 +82,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
 	FName ClapperSocket = TEXT("RightHand");
 
+	/** Ajuste de la claqueta respecto del hueso de la mano (ubicación en cm, rotación, escala). Se edita sin recompilar. */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FTransform ClapperOffset = FTransform::Identity;
+
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
 	FSoftObjectPath JumpAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Jump.AS_Director_Jump"));
 
