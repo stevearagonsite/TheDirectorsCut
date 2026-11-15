@@ -15,6 +15,7 @@ Este repo lo trabajan dos Claude Code en paralelo, comunicados por VirtualKvm (`
 
 Skills de dominio (de terceros, ver `.claude/skills/THIRD_PARTY.md`): `ue-*` para C++/Unreal (apuntan a UE 5.8; contrastar con
 la versión real del proyecto, 5.6; contexto en `.agents/ue-project-context.md`) y `text-to-blender` + `blender-*` para Blender (requieren Blender MCP en Windows).
+UI: `game-ui-ux` (layout, escalado, foco con gamepad) + `ue-ui-umg-slate` (UMG, Common UI y Slate en C++).
 Diseño de juego: `game-docs` mantiene `docs/product/` (índice de features en `vision.md`, notas en `features/<slug>/`); después de
 cambiar diseño o código correr `python3 .claude/skills/game-docs/scripts/check_docs.py docs/product --gdd vision.md`.
 
