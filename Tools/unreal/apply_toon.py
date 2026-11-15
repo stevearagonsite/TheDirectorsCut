@@ -210,8 +210,11 @@ def apply(master, name, folder, sk_name, tint, kind):
     sk = eal.load_asset(sk_path)
     sk.modify()
     slots = sk.get_editor_property("materials")
-    for slot in slots:
+    # UE 5.8: iterar el array devuelve copias del struct; hay que reasignar por índice o el cambio se pierde.
+    for i in range(len(slots)):
+        slot = slots[i]
         slot.set_editor_property("material_interface", mi)
+        slots[i] = slot
     sk.set_editor_property("materials", slots)
     eal.save_asset(sk_path, only_if_is_dirty=False)
     log(f"{name}: MI_Toon asignado a {len(slots)} slot(s) con {tex.get_name()}")
@@ -221,7 +224,7 @@ def apply(master, name, folder, sk_name, tint, kind):
 def main():
     default_tex = None
     for _, folder, _, _, kind in CHARACTERS:
-        if eal.does_asset_exist(folder):
+        if eal.does_directory_exist(folder):  # does_asset_exist devuelve False para carpetas
             default_tex = texture_for(folder, kind)
             if default_tex:
                 break
