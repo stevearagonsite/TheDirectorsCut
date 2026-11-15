@@ -95,6 +95,16 @@ def build():
     sun = spawn(unreal.DirectionalLight, "Ambient_Sun", (0.0, 0.0, 2000.0), "Lighting", rot(pitch=-55.0, yaw=-70.0))
     sun_comp = sun.get_component_by_class(unreal.DirectionalLightComponent)
     sun_comp.set_intensity(1.5)
+    sun_comp.set_editor_property("atmosphere_sun_light", True)
+    # Cielo y luz ambiente: sin esto el fondo queda negro. Tono de cine negro: cielo apagado + niebla baja.
+    spawn(unreal.SkyAtmosphere, "Sky_Atmosphere", (0.0, 0.0, 0.0), "Lighting")
+    sky = spawn(unreal.SkyLight, "Sky_Light", (0.0, 0.0, 1500.0), "Lighting")
+    sky_comp = sky.get_component_by_class(unreal.SkyLightComponent)
+    sky_comp.set_editor_property("real_time_capture", True)
+    sky_comp.set_intensity(0.6)
+    fog = spawn(unreal.ExponentialHeightFog, "Height_Fog", (0.0, 0.0, -200.0), "Lighting")
+    fog_comp = fog.get_component_by_class(unreal.ExponentialHeightFogComponent)
+    fog_comp.set_editor_property("fog_density", 0.02)
 
     spawn(unreal.PlayerStart, "PlayerStart", (200.0, 0.0, 120.0), "Gameplay")
 

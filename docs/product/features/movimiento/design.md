@@ -25,7 +25,8 @@ El director corre y salta en un plano lateral mientras la cámara lo sigue de co
 | Fricción en el piso | 8 | — | — |
 | Frenado caminando | 2400 | cm/s² | ¿frena en seco o patina? |
 | Velocidad de giro | 1080 | °/s | — |
-| Distancia de cámara | 1400 | cm | ¿se ve la sala entera y el reflector a tiempo? |
+| Distancia de cámara | 2200 | cm | ¿se ve el tramo que viene y el reflector a tiempo? (D-012; antes 1400) |
+| FOV de cámara | 60 | ° | ancho visible ≈ 2540 cm a esa distancia |
 | Altura de la cámara sobre el personaje | 120 | cm | — |
 | Velocidad del retraso de cámara | 6 | — | mareo vs rigidez |
 
@@ -42,3 +43,4 @@ Los valores derivados salen de v²/2g y 2v/g. Son métricas para diseñar salas 
 
 ## History
 - 2026-11-15: nota escrita contra el código del prototipo.
+- 2026-11-15: cámara a 2200 cm / FOV 60 tras el primer playtest de T-0008 (solo entraba Floor_A).

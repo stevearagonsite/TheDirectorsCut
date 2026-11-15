@@ -43,7 +43,7 @@ ATDCCharacter::ATDCCharacter()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->SetUsingAbsoluteRotation(true);
 	CameraBoom->SetRelativeRotation(FRotator(-5.f, -90.f, 0.f));
-	CameraBoom->TargetArmLength = 1400.f;
+	CameraBoom->TargetArmLength = 2200.f; // D-012: encuadre amplio para anticipar el tramo que viene
 	CameraBoom->SocketOffset = FVector(0.f, 0.f, 120.f);
 	CameraBoom->bDoCollisionTest = false;
 	CameraBoom->bEnableCameraLag = true;
@@ -52,7 +52,7 @@ ATDCCharacter::ATDCCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
-	Camera->SetFieldOfView(55.f);
+	Camera->SetFieldOfView(60.f);
 
 	// Greybox del personaje: cilindro + "nariz" que indica hacia dónde mira.
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> Cylinder(TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
