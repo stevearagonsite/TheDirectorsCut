@@ -33,6 +33,9 @@ extras animados en lugar del greybox. Genera `Game\Saved\stevearagonsite_TheDire
    Describí: ¿se ven cards de primer plano y plano medio (farolas, marquesina, afiches), lluvia o vapor? ¿el extra rojo es
    un personaje animado de **tamaño humano** (ni gigante ni diminuto) y mira hacia donde camina? ¿el director y los colores de
    lectura se siguen leyendo? ¿no aparece "LIGHTING NEEDS TO BE REBUILT"?
+7b. **Si los extras no miden ~180 cm** (como el director): corregilos sin recompilar y repetí el shot:
+   `$env:TDC_PUPPET_SCALE = "1"` si se ven gigantes, o `"10000"` si se ven diminutos, y después
+   `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\set_extra_scale.py`. Anotá el valor que quedó.
 8. `.\Tools\scripts\tdc.ps1 package -Zip stevearagonsite_TheDirectorsCut_mejora2`
 9. `.\Tools\scripts\tdc.ps1 smoke -Task T-0019 -Name 02-package -Wait 60 -Zip stevearagonsite_TheDirectorsCut_mejora2`
 10. Commit de `Game/Content/**` (LFS), evidencia y Reporte (con el tamaño del zip). `git lfs unlock`. Push y `[TDC-REPORT]`.
