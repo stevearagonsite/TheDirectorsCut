@@ -1,7 +1,7 @@
 ---
 id: T-0008
 titulo: Prototipo jugable corriendo en la PC Windows (build + L_Slice + juego abierto)
-estado: ok
+estado: mergeada
 tipo: mixto
 rama: t/T-0008-prototipo-windows
 creada: 2026-11-15
