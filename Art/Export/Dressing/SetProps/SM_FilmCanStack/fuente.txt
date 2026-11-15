@@ -1,0 +1,31 @@
+Prop: pila de latas de película 35mm (utilería de set, años 40)
+Archivo: SM_FilmCanStack.glb (glTF binario, metros, Y-up, pivote en la base centrada)
+
+Origen: GENERADO PROCEDURALMENTE (script propio generador_latas_gltf.py), no Sketchfab ni Rodin.
+  - Sketchfab: no hubo candidato >=5/6 (ver abajo). Rodin: el cupo de 2 generaciones se usó en silla y boom.
+  - Referencia: referencia.png, Gemini gemini-3-pro-image (prompt en prompt.txt; v3, sin imagen de estilo
+    porque con prop-spotlight-v1.png como referencia Gemini metía el reflector en la imagen).
+  - El .glb sigue la referencia: 5 latas facetadas (14 lados), 36 cm de diámetro, la de arriba abierta con
+    rollo oscuro y tapa apoyada torcida, 2 etiquetas de cinta en blanco.
+Licencia: propia (sin terceros). Sin créditos.
+
+Datos: 626 tris, alto 43,5 cm (40 cm de pila + tapa inclinada), 5 materiales planos (sin texturas):
+  CanGrey, CanOlive, LidLight, Film, Tape (metallic 0, roughness 0.85-0.95).
+
+Taste D-015 (6/6):
+  1 Estilo: facetado simple, colores planos, sin textura ............ OK
+  2 Época: lata de 35mm de estudio de los 40 .......................... OK
+  3 Paleta: grises, oliva, beige; sin amarillo/violeta/cian ........... OK
+  4 Silueta: pila ancha y escalonada, se lee a 22 m .................... OK
+  5 Técnico: 626 tris, escala real, pivote en la base, sin rig ........ OK
+  6 Coherencia: mismos grises/oliva que reflector y cajas ............. OK (validar en Unreal junto al Director)
+Nota: es más simple que los props de Rodin (sin bevels ni normal map). Si desentona al lado de ellos,
+  regenerar con Rodin desde referencia.png (40 cm, pivot Bottom).
+
+Candidatos Sketchfab descartados (búsqueda 2026-11-15):
+  - Film Can, 321Blender (CC-BY) https://sketchfab.com/3d-models/9573a3fce4324a5cae5676b9b7c75a52 : lata única, metal brillante, etiqueta (3/6)
+  - film-can, Mylom (CC-BY) https://sketchfab.com/3d-models/ba00f6a90ece4057b76052b7e772905d : tapa estampada a lunares de colores (2/6)
+  - Film Canister, hollowmj (CC-BY) https://sketchfab.com/3d-models/68668eb7282b49c9a2b50ba0753dd9d8 : es un tarro blanco, no lata de film (2/6)
+  - Film Reel, sedayuzlu / Phoenix_Moore (CC-BY): rollos sueltos sin lata, blancos o cobre brillante (2-3/6)
+  - Modelos de Steve (stevearagon92): ninguno de utilería de cine.
+Captura: captura.png (render plano propio, sin iluminación de Unreal).

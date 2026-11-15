@@ -1,0 +1,31 @@
+Prop: micrófono boom con pértiga sobre trípode (utilería de set, años 40)
+Modelo: modelo/ (zip de Rodin descomprimido): base.fbx, base_basic_pbr.fbx (PBR, texturas embebidas),
+  base_basic_shaded.fbx, texture_*.png (2K), shaded.png
+Recomendado para Unreal: base_basic_pbr.fbx.
+
+Origen: GENERADO con Rodin (Hyper3D, de Deemos), plan Business de Steve. Generación 2 de 2.
+  https://hyper3d.ai/workspace/rodin/347ed610-d09b-453e-bd87-f5bdf0b56b97
+  Image to 3D, Gen-2.5 High, Caption Override apagado, Clean Topology Quad 4K (Baked Normal),
+  material Native PBR (temperatura 7), export FBX, Custom height 220 cm, pivot Bottom, texturas 2K.
+Referencia: referencia.png, Gemini gemini-3-pro-image con prop-spotlight-v1.png como estilo (prompt en prompt.txt).
+Licencia: asset generado por Steve con Rodin (sin terceros). Créditos: "3D generado con Rodin (Hyper3D)" si la entrega acredita herramientas.
+
+Datos medidos en el FBX: 1.912 polígonos / 3.286 tris, alto 2,20 m, pértiga de 1,64 m de largo, base en z=0.
+
+Taste D-015 (5/6):
+  1 Estilo: facetado, colores planos ......................................... OK
+  2 Época: micrófono de cinta vintage colgando de pértiga, trípode ........... OK
+  3 Paleta: negro y grises; patas de madera clara anaranjada (no es
+    amarillo de mecánica, pero conviene oscurecerlas en el material) ......... OK
+  4 Silueta: la pértiga se lee, pero el tubo y el micrófono son finos y
+    chicos para una cámara a ~22 m .......................................... FLOJO
+  5 Técnico: 3,3k tris, 220 cm, pivote en la base, sin rig ................... OK
+  6 Coherencia: mismo pipeline Gemini+Rodin que el reflector ................. OK
+Captura: captura-rodin.png (visor de Rodin, 3/4).
+
+Candidatos Sketchfab descartados (búsqueda 2026-11-15, descargables CC):
+  - Boom Mic, glowbox3d (CC-BY) https://sketchfab.com/3d-models/2b8236d4329a439baff0bc2056fcbb80
+    solo la cabeza con zeppelin moderno, sin pértiga, textura realista (2/6)
+  - Microphone Stand With Boom Arm (Legged), JMGameDev (CC-BY) https://sketchfab.com/3d-models/9bee76120cd8472b9f68db91d820f5ff
+    pie de micrófono de estudio moderno, sin micrófono de época (3/6)
+  - Modelos de Steve (stevearagon92): ninguno de utilería de cine.

@@ -1,0 +1,31 @@
+Prop: silla de director plegable de lona (utilería de set, años 40)
+Modelo: modelo/ (zip de Rodin descomprimido): base.fbx (malla), base_basic_pbr.fbx (PBR, texturas embebidas),
+  base_basic_shaded.fbx, texture_diffuse/metallic/normal/roughness/pbr.png (2K), shaded.png
+Recomendado para Unreal: base_basic_pbr.fbx.
+
+Origen: GENERADO con Rodin (Hyper3D, de Deemos), plan Business de Steve. Generación 1 de 2.
+  https://hyper3d.ai/workspace/rodin/8e5b9e56-7f51-45c6-80ba-103a62985239
+  Image to 3D, Gen-2.5 High, Caption Override apagado, Clean Topology Quad 4K (Baked Normal),
+  material Native PBR (temperatura 7), export FBX, Custom height 90 cm, pivot Bottom, texturas 2K.
+Referencia: referencia.png, Gemini gemini-3-pro-image con prop-spotlight-v1.png como estilo (prompt en prompt.txt).
+Licencia: asset generado por Steve con Rodin (sin terceros). Créditos: "3D generado con Rodin (Hyper3D)" si la entrega acredita herramientas.
+
+Datos medidos en el FBX: 1.926 polígonos / 3.560 tris, alto 0,90 m, ancho 0,56 m, base en z=0.
+
+Taste D-015 (6/6, 4 y 6 a validar en Unreal):
+  1 Estilo: facetado, colores planos, poca textura ......................... OK
+  2 Época: silla de director clásica de madera y lona ........................ OK
+  3 Paleta: madera marrón media y lona gris (el visor de Rodin la muestra
+    salmón por su luz; la textura difusa real es marrón apagado) ............. OK
+  4 Silueta: X de las patas y respaldo se leen; patas finas a 22 m ........... OK (justo)
+  5 Técnico: 3,5k tris, 90 cm, pivote en la base, sin rig .................... OK
+  6 Coherencia: mismo pipeline Gemini+Rodin que el reflector ................. OK
+Captura: captura-rodin.png (visor de Rodin, 3/4).
+
+Candidatos Sketchfab descartados (búsqueda 2026-11-15, descargables CC):
+  - Director's Chair, creativejenna (CC-BY) https://sketchfab.com/3d-models/d664c3ed7e1d48f5a0c0ad7f6581477b
+    silla alta tipo banqueta, 28,7k tris, texturas realistas (3/6)
+  - directors_chair, ap-school (CC-BY) https://sketchfab.com/3d-models/1cc7def3255d433988ddaa13675f49ce : copia del anterior (3/6)
+  - Director's Chair 321Blender (75k tris), davidangelo46 (451k), lexis_w (224k), escaneo de crucifix (201k): fuera de presupuesto técnico
+  - Director Chair, LazyAstronaut: licencia Free Standard (no CC), no se consideró
+  - Modelos de Steve (stevearagon92): "Old chair (3D Scan)" es fotorrealista y no es silla de director.
