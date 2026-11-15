@@ -1,0 +1,32 @@
+{
+  "generador": "Google Gemini API, modelo gemini-3-pro-image (Nano Banana Pro), 2K",
+  "fecha": "2026-11-15",
+  "uso": "Referencias ortográficas para modelar el protagonista en Blender (T-0005). No son assets del juego.",
+  "imagenes": [
+    {
+      "archivo": "director-turnaround-v1.png",
+      "referencia": "../referencias/personaje-director-v1.png",
+      "prompt": "Character model sheet (turnaround) for a 3D modeler, based EXACTLY on the character in the reference image: a young film director with a dark grey newsboy cap, short open grey trench coat, olive vest, grey scarf, dark trousers, boots, holding a black-and-white film clapperboard.\nShow the SAME character three times side by side, full body, in a neutral A-pose (arms angled down about 45 degrees away from the body, legs slightly apart), same scale and same height for all three views, feet on the same ground line:\n1) front view, 2) left side profile view, 3) back view.\nStrict orthographic views, no perspective, camera at mid-body height. Flat light grey background, even neutral studio lighting, no shadows on the background, no text, no labels, no grid.\nStyle: stylized 3D game character with simple faceted low-poly forms and flat colors, large head (about 3.5 to 4 heads tall), slightly oversized hands and boots, clean readable silhouette. Keep the coat tails and scarf hanging down (no wind). The clapperboard is held in the right hand.\nDo not use saturated yellow, violet or cyan anywhere on the character."
+    },
+    {
+      "archivo": "director-front-v1.png",
+      "referencia": "director-turnaround-v1.png",
+      "prompt": "Using the character in the reference image (the young director with grey newsboy cap, grey coat, olive vest, grey scarf, dark trousers, brown boots), render ONLY ONE view: front view, facing the camera.\nFull body, centered, strict orthographic view with no perspective, camera at mid-body height, character standing in a neutral A-pose (arms angled down about 45 degrees, hands open, legs slightly apart), feet touching the bottom margin line.\nPerfectly flat uniform light grey background (#D9D9D9), no environment, no floor, no shadows, no props, no text, no labels. The character does NOT hold the clapperboard in this image.\nKeep exactly the same stylized faceted low-poly 3D style, proportions, colors and details as the reference; scarf and coat tails hang straight down."
+    },
+    {
+      "archivo": "director-side-v1.png",
+      "referencia": "director-turnaround-v1.png",
+      "prompt": "Using the character in the reference image (the young director with grey newsboy cap, grey coat, olive vest, grey scarf, dark trousers, brown boots), render ONLY ONE view: left side profile view, character facing to the left of the image.\nFull body, centered, strict orthographic view with no perspective, camera at mid-body height, character standing in a neutral A-pose (arms angled down about 45 degrees, hands open, legs slightly apart), feet touching the bottom margin line.\nPerfectly flat uniform light grey background (#D9D9D9), no environment, no floor, no shadows, no props, no text, no labels. The character does NOT hold the clapperboard in this image.\nKeep exactly the same stylized faceted low-poly 3D style, proportions, colors and details as the reference; scarf and coat tails hang straight down."
+    },
+    {
+      "archivo": "director-back-v1.png",
+      "referencia": "director-turnaround-v1.png",
+      "prompt": "Using the character in the reference image (the young director with grey newsboy cap, grey coat, olive vest, grey scarf, dark trousers, brown boots), render ONLY ONE view: back view, character facing away from the camera.\nFull body, centered, strict orthographic view with no perspective, camera at mid-body height, character standing in a neutral A-pose (arms angled down about 45 degrees, hands open, legs slightly apart), feet touching the bottom margin line.\nPerfectly flat uniform light grey background (#D9D9D9), no environment, no floor, no shadows, no props, no text, no labels. The character does NOT hold the clapperboard in this image.\nKeep exactly the same stylized faceted low-poly 3D style, proportions, colors and details as the reference; scarf and coat tails hang straight down."
+    },
+    {
+      "archivo": "clapperboard-v1.png",
+      "referencia": null,
+      "prompt": "Orthographic prop model sheet of a single classic film clapperboard (movie slate) for a stylized 3D game.\nMatte black slate board with a few thin white horizontal lines, a black-and-white diagonal striped clapper stick on a hinge on top.\nShow the same clapperboard three times side by side at identical scale: front view with the clapper stick slightly open, side view, top view.\nStylized faceted low-poly 3D look, flat colors, no characters, no hands.\nPerfectly flat uniform light grey background, no shadows, no environment, no text, no writing, no labels."
+    }
+  ]
+}

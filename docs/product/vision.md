@@ -1,6 +1,6 @@
 # The Director's Cut — Visión de producto
 
-**Versión:** 0.3 · **Actualizado:** 2026-11-15 · [Features](#feature-index) · [Decisiones](decisiones.md) · [Cambios](#cambios)
+**Versión:** 0.4 · **Actualizado:** 2026-11-15 · [Features](#feature-index) · [Decisiones](decisiones.md) · [Cambios](#cambios)
 
 > Lo marcado con 🔶 o `[ASSUMPTION]` es una interpretación a validar.
 
@@ -71,6 +71,8 @@ Un género de cine por zona dentro de un mismo estudio; el backlot (andamios, tr
 
 En greybox, los colores de lectura son: gris = fija, amarillo = solo con luz, violeta = solo a oscuras, celeste = en toma (rebobinable), verde = salida.
 
+Personaje, cámara, capas y lenguaje de color: [arte/direccion-de-arte.md](arte/direccion-de-arte.md) (D-011, D-012).
+
 ## Prototipo (vertical slice gris)
 
 Objetivo: probar que **dirigir se siente bien** antes de producir arte. Tarea: `docs/tasks/T-0002-slice-greybox.md`.
@@ -98,6 +100,7 @@ Spoilers, guion y documentos de negocio sensibles van en `private/` (ignorado po
 
 ## Cambios
 
+- **0.4 (2026-11-15):** dirección de arte con los conceptos de personaje y de nivel y cámara ([arte](arte/direccion-de-arte.md)); D-011 y D-012.
 - **0.3 (2026-11-15):** índice de features; notas de [movimiento](features/movimiento/design.md), [fotografía](features/fotografia/design.md) y [tiempo](features/tiempo/design.md) escritas contra el código; las decisiones pasan a [decisiones.md](decisiones.md).
 - **0.2 (2026-11-15):** protagonista, combate, Rollo, tres departamentos, equipamiento en descanso y tono por género (D-001 a D-010).
 - **0.1 (2026-11-15):** primer borrador.
