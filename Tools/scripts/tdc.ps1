@@ -17,10 +17,12 @@
   .\Tools\scripts\tdc.ps1 python -Script Tools\unreal\build_slice.py -InEditor   # si el commandlet no alcanza
   .\Tools\scripts\tdc.ps1 package                 # build Win64 Development + zip para la jam
   .\Tools\scripts\tdc.ps1 package -Config Shipping -Zip Equipo_Juego
+  .\Tools\scripts\tdc.ps1 smoke -Task T-0006 -Name 01-package     # prueba el zip: arranca el exe, captura y log
+  .\Tools\scripts\tdc.ps1 smoke -Task T-0006 -Name 02-final -Keep # igual, pero deja el juego abierto
 #>
 param(
   [Parameter(Position = 0, Mandatory = $true)]
-  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot', 'play', 'stop', 'package')]
+  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot', 'play', 'stop', 'package', 'smoke')]
   [string]$Command,
   [string]$Filter = 'TDC.',
   [string]$Script,
@@ -29,6 +31,8 @@ param(
   [string]$Task,
   [string]$Name = 'shot',
   [switch]$InEditor,
+  [int]$Wait = 40,
+  [switch]$Keep,
   [ValidateSet('Development', 'Shipping')]
   [string]$Config = 'Development',
   [string]$Zip = 'stevearagonsite_TheDirectorsCut',
@@ -180,5 +184,39 @@ switch ($Command) {
     "build: $(Redact $game.FullName)"
     "zip:   $(Redact $zipPath)  ($mb MB)"
     if ($mb -ge 1024) { Write-Warning 'El zip pesa 1 GB o más: la jam pide subirlo con butler.' }
+  }
+  'smoke' {
+    # Prueba el zip tal como lo baja el jurado: lo descomprime en Game\Saved\PackageTest (ignorado), arranca el exe,
+    # saca una captura, resume el log y lo cierra (o lo deja abierto con -Keep).
+    if (-not $Task) { throw 'Falta -Task (ej. T-0006)' }
+    $zipPath = Join-Path $Repo "Game\Saved\$Zip.zip"
+    if (-not (Test-Path $zipPath)) { throw "No existe Game\Saved\$Zip.zip: correr antes tdc.ps1 package" }
+    $dir = Join-Path $Repo 'Game\Saved\PackageTest'
+    Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -and $_.ExecutablePath -like "$dir\*" } |
+      ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+    if (Test-Path $dir) { Remove-Item -Recurse -Force $dir }
+    Expand-Archive -Path $zipPath -DestinationPath $dir
+    $exe = Join-Path $dir 'TheDirectorsCut.exe'
+    if (-not (Test-Path $exe)) { throw 'El zip no tiene TheDirectorsCut.exe en la raíz' }
+    $before = Get-Date
+    Start-Process $exe -ArgumentList "-windowed -ResX=1280 -ResY=720 -log -ExecCmds=`"HighResShot 1280x720`"" | Out-Null
+    Start-Sleep -Seconds $Wait
+    $running = @(Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -and $_.ExecutablePath -like "$dir\*" })
+    "seguía corriendo a los $Wait s: $(if ($running.Count) { 'sí' } else { 'NO (¿crash?)' })"
+    $png = Get-ChildItem $dir -Recurse -Filter *.png -ErrorAction SilentlyContinue |
+      Where-Object LastWriteTime -gt $before | Sort-Object LastWriteTime | Select-Object -Last 1
+    if ($png) {
+      $dest = Join-Path $Repo "docs\evidence\$Task"
+      New-Item -ItemType Directory -Force $dest | Out-Null
+      Copy-Item $png.FullName (Join-Path $dest "$Name.png")
+      "captura: docs/evidence/$Task/$Name.png"
+    } else { 'captura: no se generó' }
+    if (-not $Keep) { $running | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue } }
+    else { 'juego abierto (-Keep)' }
+    $gameLog = Get-ChildItem $dir -Recurse -Filter 'TheDirectorsCut.log' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not $gameLog) { throw 'No hay log del juego (¿no arrancó?)' }
+    "`n--- log del juego (extracto) ---"
+    Redact ((Select-String -Path $gameLog.FullName -Pattern 'LoadMap|Fatal|Error:|Failed to (load|find)|Couldn''t find|M_TDCColor|SK_Director' |
+      Select-Object -First 40 | ForEach-Object Line) -join "`n")
   }
 }

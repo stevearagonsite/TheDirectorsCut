@@ -1,48 +1,58 @@
 ---
 id: T-0006
-titulo: Primer package Win64 para la Epic AI MegaJam
+titulo: Package Win64 para la Epic AI MegaJam (build + zip + prueba del exe)
 estado: nueva
 tipo: build
 rama: t/T-0006-package
 creada: 2026-11-15
 ---
 
-# T-0006 — Primer package Win64 (jam)
+# T-0006 — Package Win64 (jam)
 
 ## Objetivo
-Generar el build empaquetado de Windows que se entrega en la Epic AI MegaJam (cierre 2026-11-15 22:59 ART) y comprobar
-que arranca. Es el **primer package de prueba** (meta: 19:00 ART), con la sala greybox y el personaje cápsula.
-Depende de T-0001 (compila) y T-0002 (`/Game/Maps/L_Slice` existe; sin el mapa no hay nada que cocinar).
+Generar el build empaquetado de Windows que se entrega en la Epic AI MegaJam (cierre 2026-11-15 22:59 ART, subir a las 22:00)
+y comprobar que el **zip** arranca y se ve bien: L_Slice con colores de lectura, el director Rodin animado y los extras.
+Checklist de entrega: [`docs/jam/entrega.md`](../jam/entrega.md).
 
 ## Contexto
-- `tdc.ps1 package` (nuevo en esta rama): RunUAT BuildCookRun Win64, **Development** por defecto (Shipping oculta los
-  mensajes en pantalla que hoy son el HUD), archiva en `Game\Saved\Package` y arma `Game\Saved\stevearagonsite_TheDirectorsCut.zip`.
-- `DefaultGame.ini` cocina siempre `/Game/Characters` (el GameMode carga `BP_Director` por ruta cuando exista).
-- Lo ejecuta un agente sin interfaz: no puede jugar. Solo arranca el exe y lee el log.
+- La rama sale de `main` después de T-0011 y se rebasea sobre `main` cuando cierre T-0012 (ambientación + director en cm).
+- `tdc.ps1 package`: RunUAT BuildCookRun Win64 **Development** (Shipping oculta los mensajes en pantalla, que hoy son el HUD),
+  archiva en `Game\Saved\Package` y arma `Game\Saved\stevearagonsite_TheDirectorsCut.zip`.
+- `tdc.ps1 smoke` (nuevo): descomprime el zip en `Game\Saved\PackageTest` (ignorado), arranca `TheDirectorsCut.exe` en ventana,
+  saca una captura a `docs/evidence/<Task>/<Name>.png`, imprime un extracto del log del juego y lo cierra (`-Keep` lo deja abierto).
+- `DefaultGame.ini` cocina siempre `/Game/Characters` y `/Game/Materials`: el director, sus animaciones y `M_TDCColor` se
+  cargan por ruta y sin eso no entrarían al package.
 
 ## Pasos
-1. `git merge origin/main` si la rama quedó atrás (tiene que incluir T-0001 y T-0002).
+1. `git pull` en la rama. `.\Tools\scripts\tdc.ps1 stop`: el juego de la tarea anterior tiene Live Coding y bloquea el build.
 2. `.\Tools\scripts\tdc.ps1 build` (por si cambió el C++) y `.\Tools\scripts\tdc.ps1 package`.
-3. Si falla: extracto de errores de `Game\Saved\Logs\tdc-package.log` (primeros errores reales, no la cascada) y reportar. Si el
-   error es del script `tdc.ps1`, arreglarlo (permitido) y explicarlo.
-4. Si sale: descomprimir el zip en una carpeta temporal fuera del repo, arrancar `TheDirectorsCut.exe -windowed -ResX=1280 -ResY=720`
-   unos 30 s y cerrarlo. Revisar su log (`<carpeta>\TheDirectorsCut\Saved\Logs\TheDirectorsCut.log`): mapa cargado, GameMode,
-   errores o `Fatal`. Una captura 1280x720 si se puede (`-ExecCmds="HighResShot 1280x720"`) en `docs/evidence/T-0006/01-package.png`.
-5. Commit solo de `docs/tasks/T-0006-package.md` (Reporte) y la evidencia. **El zip no va al repo.**
+   Si falla: los primeros errores reales de `Game\Saved\Logs\tdc-package.log` (no la cascada) y reportar `fallo`. Si es del
+   script `tdc.ps1`, arreglarlo (permitido) y explicarlo.
+3. `.\Tools\scripts\tdc.ps1 smoke -Task T-0006 -Name 01-package`. Revisá la salida:
+   - `seguía corriendo a los 40 s: sí`;
+   - en el log, `LoadMap` a `/Game/Maps/L_Slice`, sin `Fatal` ni `Failed to load`/`Couldn't find` de `M_TDCColor`, `SK_Director`
+     ni `AS_Director_*`;
+   - en la captura, piezas de colores (no todo gris), el director Rodin (no el cilindro) y el fondo con cielo.
+   Si la captura sale negra porque tomó el primer frame, repetí con `-Wait 60`.
+4. Commit del Reporte y la evidencia, push y `[TDC-REPORT]`. **El zip no va al repo.** Anotá el tamaño del zip.
+5. Dejá el build empaquetado abierto para Steve, que graba el video desde ahí:
+   `.\Tools\scripts\tdc.ps1 smoke -Task T-0006 -Name 02-final -Keep` (esta captura no hace falta commitearla).
 
 ## Criterios de aceptación
 - [ ] `tdc.ps1 package` termina sin errores y el zip pesa menos de 1 GB (anotar el tamaño).
-- [ ] El exe arranca, carga `L_Slice` y no tiene `Fatal` ni errores de assets faltantes en el log.
+- [ ] El exe del zip arranca y a los 40 s sigue corriendo; el log carga `L_Slice` y no tiene `Fatal` ni assets faltantes.
+- [ ] `docs/evidence/T-0006/01-package.png` muestra colores de lectura y el director.
+- [ ] El build empaquetado quedó abierto en la PC.
 
 ## Permite
-- Editar `Tools/scripts/tdc.ps1` solo para que `package` funcione.
+- Editar `Tools/scripts/tdc.ps1` solo para que `package`/`smoke` funcionen.
 
 ## No hacer
 - No commitear el zip, `Game/Saved/` ni binarios del build.
 - No cambiar C++ ni el mapa: reportar.
 
 ## Evidencia pedida
-Tamaño del zip, extracto del log del exe (rutas con `%USERPROFILE%`) y la captura si salió.
+Tamaño del zip, extracto del log del exe que imprime `smoke` (ya redactado) y `01-package.png`.
 
 ---
 
