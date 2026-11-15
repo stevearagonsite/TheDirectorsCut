@@ -53,3 +53,6 @@ Game/Config/Default*Credentials*.ini
 .claude/settings.local.json
 Tools/scripts/tdc.local.ps1
 *.local.json
+
+# Texturas que extrae el importador FBX de Unreal junto al .fbx
+Art/**/*.fbm/

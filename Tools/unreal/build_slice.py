@@ -18,6 +18,9 @@ Beats:
   3. TIEMPO    - Puente de tablas celestes (en toma) que se desploma al acercarse -> mantener Q para rebobinarlo.
   4. COMBO     - Salida alta. Caja celeste sobre un estante amarillo; escalón violeta. Apagar L3 tira la caja y
                  hace aparecer el escalón: caja -> escalón -> salida. Si la caja cae mal, rebobinar.
+
+Extras (claquetazo, F): rojo = común (lo derriba), naranja = resistente (lo aturde y empuja),
+negro con franja = de guion (inmune: en Beat 2 es una sombra que solo existe a oscuras -> prender L2 la saca de la toma).
 """
 
 import unreal
@@ -31,6 +34,7 @@ SET_PIECE = unreal.load_class(None, "/Script/TheDirectorsCut.TDCSetPiece")
 STAGE_LIGHT = unreal.load_class(None, "/Script/TheDirectorsCut.TDCStageLight")
 FALL_TRIGGER = unreal.load_class(None, "/Script/TheDirectorsCut.TDCFallTrigger")
 RESPAWN = unreal.load_class(None, "/Script/TheDirectorsCut.TDCRespawnVolume")
+EXTRA = unreal.load_class(None, "/Script/TheDirectorsCut.TDCExtra")
 
 ALWAYS = unreal.TDCLightPresence.ALWAYS
 IN_LIGHT = unreal.TDCLightPresence.ONLY_IN_LIGHT
@@ -74,6 +78,15 @@ def stage_light(label, loc, radius, on, folder):
     return light
 
 
+def extra(label, x, folder, vulnerability, patrol=200.0, presence=ALWAYS):
+    """Extra fuera de guion parado sobre el piso (z=0); patrulla en X."""
+    actor = spawn(EXTRA, label, (x, 0.0, 90.0), folder)
+    actor.set_editor_property("vulnerability", vulnerability)
+    actor.set_editor_property("presence", presence)
+    actor.set_editor_property("patrol_distance", patrol)
+    return actor
+
+
 def floor(label, x0, x1, folder):
     return box(label, x0, x1, -100.0, 0.0, folder, safe=True)
 
@@ -95,6 +108,16 @@ def build():
     sun = spawn(unreal.DirectionalLight, "Ambient_Sun", (0.0, 0.0, 2000.0), "Lighting", rot(pitch=-55.0, yaw=-70.0))
     sun_comp = sun.get_component_by_class(unreal.DirectionalLightComponent)
     sun_comp.set_intensity(1.5)
+    sun_comp.set_editor_property("atmosphere_sun_light", True)
+    # Cielo y luz ambiente: sin esto el fondo queda negro. Tono de cine negro: cielo apagado + niebla baja.
+    spawn(unreal.SkyAtmosphere, "Sky_Atmosphere", (0.0, 0.0, 0.0), "Lighting")
+    sky = spawn(unreal.SkyLight, "Sky_Light", (0.0, 0.0, 1500.0), "Lighting")
+    sky_comp = sky.get_component_by_class(unreal.SkyLightComponent)
+    sky_comp.set_editor_property("real_time_capture", True)
+    sky_comp.set_intensity(0.6)
+    fog = spawn(unreal.ExponentialHeightFog, "Height_Fog", (0.0, 0.0, -200.0), "Lighting")
+    fog_comp = fog.get_component_by_class(unreal.ExponentialHeightFogComponent)
+    fog_comp.set_editor_property("fog_density", 0.02)
 
     spawn(unreal.PlayerStart, "PlayerStart", (200.0, 0.0, 120.0), "Gameplay")
 
@@ -108,6 +131,7 @@ def build():
     floor("Floor_A", 0.0, 1000.0, f)
     box("P1_LightPlatform", 1450.0, 1750.0, -50.0, 0.0, f, presence=IN_LIGHT)
     stage_light("L1", (1600.0, -150.0, 350.0), 500.0, False, f)
+    extra("X1_Common", 650.0, f, unreal.TDCVulnerability.COMMON, patrol=180.0)
 
     # --- Beat 2: SOMBRA ---
     f = "Beat2_Shadow"
@@ -115,6 +139,8 @@ def build():
     box("W1_LightWall", 2800.0, 2860.0, 0.0, 400.0, f, presence=IN_LIGHT)
     stage_light("L2", (3050.0, -150.0, 350.0), 600.0, True, f)
     box("S1_DarkPlatform", 3350.0, 3650.0, -50.0, 0.0, f, presence=IN_DARK)
+    # Sombra de guion: L2 la tapa al inicio; al apagar L2 para abrir la pared aparece. Prender L2 otra vez la elimina.
+    extra("X2_ScriptedShadow", 2650.0, f, unreal.TDCVulnerability.SCRIPTED, patrol=80.0, presence=IN_DARK)  # siempre dentro del radio de L2
 
     # --- Beat 3: TIEMPO ---
     f = "Beat3_Time"
@@ -132,6 +158,7 @@ def build():
     box("SH_LightShelf", 6500.0, 6600.0, 250.0, 300.0, f, presence=IN_LIGHT)
     box("C1_Crate", 6505.0, 6595.0, 302.0, 392.0, f, depth=90.0, record=True, simulate=True)
     box("P3_DarkStep", 6700.0, 7000.0, 200.0, 240.0, f, presence=IN_DARK)
+    extra("X3_Resistant", 6250.0, f, unreal.TDCVulnerability.RESISTANT, patrol=150.0)
     stage_light("L3", (6750.0, -150.0, 550.0), 450.0, True, f)
     box("Exit_Ledge", 7200.0, 7600.0, 0.0, 380.0, f, safe=True)
     box("Exit_Marker", 7450.0, 7520.0, 380.0, 520.0, f, depth=70.0, color=(0.2, 0.9, 0.3, 1.0))
@@ -140,7 +167,8 @@ def build():
     settings = world.get_world_settings()
     settings.set_editor_property("kill_z", -1500.0)
 
-    les.save_current_level()
+    if not les.save_current_level():
+        raise RuntimeError("[TDC] No se pudo guardar L_Slice (¿read-only por LFS? hacer git lfs lock Game/Content/Maps/L_Slice.umap)")
     unreal.log("[TDC] L_Slice construido y guardado.")
 
 

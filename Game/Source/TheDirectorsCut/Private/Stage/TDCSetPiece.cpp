@@ -1,4 +1,5 @@
 #include "Stage/TDCSetPiece.h"
+#include "Core/TDCVisuals.h"
 #include "Stage/TDCLightReactiveComponent.h"
 #include "Stage/TDCTimelineComponent.h"
 #include "Stage/TDCStageSubsystem.h"
@@ -55,7 +56,7 @@ void ATDCSetPiece::OnConstruction(const FTransform& Transform)
 
 	if (!Material && Mesh->GetMaterial(0))
 	{
-		Material = Mesh->CreateDynamicMaterialInstance(0);
+		Material = TDC::CreateReadColorMID(Mesh);
 	}
 	if (Material)
 	{
@@ -75,6 +76,16 @@ void ATDCSetPiece::BeginPlay()
 		Timeline->SetComponentTickEnabled(false);
 	}
 	Mesh->SetSimulatePhysics(bStartsSimulating);
+
+	// En el build empaquetado el construction script no corre para las piezas del nivel: el color se aplica acá también.
+	if (!Material)
+	{
+		Material = TDC::CreateReadColorMID(Mesh);
+	}
+	if (Material)
+	{
+		Material->SetVectorParameterValue(TEXT("Color"), ReadColor());
+	}
 
 	if (UTDCStageSubsystem* Stage = GetWorld()->GetSubsystem<UTDCStageSubsystem>())
 	{

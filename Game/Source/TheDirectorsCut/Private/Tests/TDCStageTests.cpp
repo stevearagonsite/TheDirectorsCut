@@ -1,5 +1,6 @@
 #include "Misc/AutomationTest.h"
 #include "Stage/TDCStageTypes.h"
+#include "Combat/TDCCombatTypes.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 
@@ -75,6 +76,15 @@ bool FTDCTimeHistoryTest::RunTest(const FString& Parameters)
 	History.Pop(Out);
 	TestEqual(TEXT("El más viejo que sobrevivió (el 1 fue pisado)"), Out.Transform.GetLocation().X, 2.0);
 	TestFalse(TEXT("Vacío al final"), History.Pop(Out));
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FTDCCombatResolveClapTest, "TDC.Combat.ResolveClap", TDC_TEST_FLAGS)
+bool FTDCCombatResolveClapTest::RunTest(const FString& Parameters)
+{
+	TestEqual(TEXT("Común: el claquetazo lo derriba"), static_cast<int32>(TDC::ResolveClap(ETDCVulnerability::Common)), static_cast<int32>(ETDCClapResult::Defeated));
+	TestEqual(TEXT("Resistente: el claquetazo lo aturde"), static_cast<int32>(TDC::ResolveClap(ETDCVulnerability::Resistant)), static_cast<int32>(ETDCClapResult::Stunned));
+	TestEqual(TEXT("De guion: el claquetazo rebota"), static_cast<int32>(TDC::ResolveClap(ETDCVulnerability::Scripted)), static_cast<int32>(ETDCClapResult::Immune));
 	return true;
 }
 

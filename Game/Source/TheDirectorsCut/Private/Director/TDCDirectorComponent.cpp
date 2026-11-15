@@ -1,6 +1,9 @@
 #include "Director/TDCDirectorComponent.h"
 #include "Stage/TDCStageLight.h"
 #include "Stage/TDCStageSubsystem.h"
+#include "Combat/TDCExtra.h"
+#include "Engine/OverlapResult.h"
+#include "CollisionShape.h"
 #include "TheDirectorsCut.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
@@ -83,4 +86,53 @@ void UTDCDirectorComponent::EndRewind()
 	{
 		GEngine->RemoveOnScreenDebugMessage(7001);
 	}
+}
+
+bool UTDCDirectorComponent::Clap()
+{
+	AActor* Owner = GetOwner();
+	UWorld* World = GetWorld();
+	if (!Owner || !World)
+	{
+		return false;
+	}
+	const double Now = World->GetTimeSeconds();
+	if (Now - LastClapTime < ClapCooldown)
+	{
+		return false;
+	}
+	LastClapTime = Now;
+
+	// En 2.5D el director mira en +X o -X: el golpe sale hacia ese lado, sobre el plano de juego.
+	const float Facing = Owner->GetActorForwardVector().X >= 0.f ? 1.f : -1.f;
+	const FVector Center = Owner->GetActorLocation() + FVector(Facing * ClapReach, 0.f, 0.f);
+
+	TArray<FOverlapResult> Overlaps;
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(TDCClap), false, Owner);
+	World->OverlapMultiByObjectType(Overlaps, Center, FQuat::Identity,
+		FCollisionObjectQueryParams(FCollisionObjectQueryParams::AllDynamicObjects),
+		FCollisionShape::MakeSphere(ClapRadius), Params);
+
+	FString Feedback = TEXT("¡Claquetazo!");
+	TSet<AActor*> Hit;
+	for (const FOverlapResult& Overlap : Overlaps)
+	{
+		ATDCExtra* Extra = Cast<ATDCExtra>(Overlap.GetActor());
+		if (!Extra || Hit.Contains(Extra))
+		{
+			continue;
+		}
+		Hit.Add(Extra);
+		switch (Extra->ReceiveClap(Owner->GetActorLocation()))
+		{
+		case ETDCClapResult::Defeated: Feedback = TEXT("¡Corten! Extra fuera de la toma"); break;
+		case ETDCClapResult::Stunned:  Feedback = TEXT("¡Claquetazo! (aturdido)"); break;
+		default:                       Feedback = TEXT("Rebota: es un extra de guion. Dirigí la escena."); break;
+		}
+	}
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(7002, 1.2f, FColor::Yellow, Feedback);
+	}
+	return true;
 }

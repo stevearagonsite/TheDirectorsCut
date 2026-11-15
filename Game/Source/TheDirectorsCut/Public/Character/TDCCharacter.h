@@ -7,6 +7,8 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UStaticMeshComponent;
+class USkeletalMesh;
+class UAnimSequence;
 class UInputAction;
 class UInputMappingContext;
 class UTDCDirectorComponent;
@@ -32,6 +34,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
+	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void Landed(const FHitResult& Hit) override;
 	virtual void FellOutOfWorld(const UDamageType& DamageType) override;
@@ -51,6 +55,59 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "TDC|Director")
 	TObjectPtr<UTDCDirectorComponent> Director;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "TDC|Character")
+	TObjectPtr<UStaticMeshComponent> Clapper;
+
+	/**
+	 * Mesh y animaciones finales del director. Se cargan por ruta en BeginPlay; si no existen, queda el greybox.
+	 * Sin AnimBP: el estado (Idle / Run / Jump) se elige en Tick y se reproduce en modo Single Node.
+	 */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FSoftObjectPath CharacterMeshPath = FSoftObjectPath(TEXT("/Game/Characters/Director/SK_Director.SK_Director"));
+
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FSoftObjectPath IdleAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Idle.AS_Director_Idle"));
+
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FSoftObjectPath RunAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Run.AS_Director_Run"));
+
+	/** Golpe con la claqueta (opcional: sin animación, el claquetazo funciona igual). */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FSoftObjectPath ClapAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Clap.AS_Director_Clap"));
+
+	/** Claqueta en la mano (opcional). Se engancha al socket/hueso ClapperSocket del mesh. */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FSoftObjectPath ClapperMeshPath = FSoftObjectPath(TEXT("/Game/Characters/Director/SM_Clapperboard.SM_Clapperboard"));
+
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FName ClapperSocket = TEXT("RightHand");
+
+	/** Ajuste de la claqueta respecto del hueso de la mano (ubicación en cm, rotación, escala). Se edita sin recompilar. */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FTransform ClapperOffset = FTransform::Identity;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	FSoftObjectPath JumpAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Jump.AS_Director_Jump"));
+
+	/**
+	 * Escala del mesh cargado por ruta. Las animaciones exportadas desde Blender traen escala 0.01 en la pista del root
+	 * ("Armature"); 100 la compensa. Fix de fondo post-jam: re-export con FBX Units Scale y volver a 1.
+	 */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	float AnimatedMeshScale = 100.f;
+
+	/** Rotación del mesh respecto de la cápsula (el FBX mira a -Y; el personaje avanza en +X). */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	float MeshYaw = -90.f;
+
+	/** Velocidad horizontal (cm/s) a partir de la cual se reproduce Run. */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	float RunSpeedThreshold = 10.f;
+
+	/** Velocidad de reproducción de Run a MaxWalkSpeed (para que los pies no patinen; ajustar en playtest). */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	float RunPlayRate = 1.f;
+
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Input")
 	TObjectPtr<UInputMappingContext> MappingContext;
 
@@ -66,9 +123,37 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Input")
 	TObjectPtr<UInputAction> RewindAction;
 
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Input")
+	TObjectPtr<UInputAction> ClapAction;
+
 private:
+	enum class EAnimState : uint8 { None, Idle, Run, Jump, Clap };
+
+	void OnClap();
+
+	void LoadCharacterAssets();
+	void UpdateAnimState();
+	bool HasCharacterMesh() const;
+	void UpdatePlaceholderVisibility();
 	void BuildDefaultInput();
 	void Move(const FInputActionValue& Value);
 
 	FVector RespawnLocation = FVector::ZeroVector;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> IdleAnim;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> RunAnim;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> JumpAnim;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> ClapAnim;
+
+	/** Hasta cuándo (segundos de mundo) la animación del claquetazo tiene prioridad. */
+	double ClapAnimUntil = 0.0;
+
+	EAnimState AnimState = EAnimState::None;
 };

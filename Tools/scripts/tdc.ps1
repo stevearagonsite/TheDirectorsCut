@@ -13,11 +13,12 @@
   .\Tools\scripts\tdc.ps1 blender -Blend Art\Source\Spotlight.blend -Script Tools\blender\export_fbx.py -- --out Art\Export\Spotlight.fbx
   .\Tools\scripts\tdc.ps1 shot -Map /Game/Maps/L_Slice -Task T-0002 -Name sala
   .\Tools\scripts\tdc.ps1 play                  # abre el juego en ventana (L_Slice) y no espera
+  .\Tools\scripts\tdc.ps1 stop                  # cierra el editor/juego de ESTE proyecto y su Live Coding (antes de build)
   .\Tools\scripts\tdc.ps1 python -Script Tools\unreal\build_slice.py -InEditor   # si el commandlet no alcanza
 #>
 param(
   [Parameter(Position = 0, Mandatory = $true)]
-  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot', 'play')]
+  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot', 'play', 'stop')]
   [string]$Command,
   [string]$Filter = 'TDC.',
   [string]$Script,
@@ -135,6 +136,15 @@ switch ($Command) {
     New-Item -ItemType Directory -Force $dest | Out-Null
     Copy-Item $png.FullName (Join-Path $dest "$Name.png")
     "captura: docs/evidence/$Task/$Name.png"
+  }
+  'stop' {
+    # Solo procesos de este proyecto (la línea de comandos contiene el .uproject) y sus LiveCodingConsole hijos.
+    $procs = Get-CimInstance Win32_Process -Filter "Name='UnrealEditor.exe' OR Name='UnrealEditor-Cmd.exe'" |
+      Where-Object { $_.CommandLine -and $_.CommandLine -like "*$Proj*" }
+    $ids = @($procs | ForEach-Object { $_.ProcessId })
+    $lc = Get-CimInstance Win32_Process -Filter "Name='LiveCodingConsole.exe'" | Where-Object { $ids -contains $_.ParentProcessId }
+    foreach ($p in @($lc) + @($procs)) { if ($p) { Stop-Process -Id $p.ProcessId -Force -ErrorAction SilentlyContinue; "cerrado: $($p.Name) (pid $($p.ProcessId))" } }
+    if (-not $ids.Count) { 'no había editor/juego de este proyecto abierto' }
   }
   'play' {
     Need-UE
