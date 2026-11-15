@@ -176,6 +176,7 @@ void ATDCCharacter::TickAutoRun(float DeltaSeconds)
 	if (AutoRunTime == 0.f && CameraBoom)
 	{
 		CameraBoom->TargetArmLength = 900.f; // demo: más cerca, para que la pose se lea en las capturas
+		CameraBoom->TargetOffset = FVector::ZeroVector; // con el brazo corto, el offset de anticipación lo dejaba fuera de cuadro
 	}
 	AutoRunTime += DeltaSeconds;
 	// Claquetazo cada 0.6 s: limpia al extra común de Beat 1 (si no, lo toca y reaparece al inicio).
