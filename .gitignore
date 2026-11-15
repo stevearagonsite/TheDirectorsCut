@@ -7,6 +7,7 @@ Game/Saved/
 Game/Plugins/*/Binaries/
 Game/Plugins/*/Intermediate/
 Game/.vs/
+Game/.vsconfig
 Game/.vscode/
 Game/.idea/
 Game/*.sln

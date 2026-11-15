@@ -23,7 +23,8 @@ mínimo de ambas.
 - Si `tdc.local.ps1`, gitleaks, etc. ya están de una sesión anterior, no los repitas.
 
 ## Pasos
-0. **Reenvío 2 (después del bloqueo por .NET SDK).** En el clon: `git restore --staged --worktree Game/TheDirectorsCut.uproject docs/tasks/T-0008-prototipo-windows.md`
+0. **Reenvío 3.** Steve verificó en la PC: existe `NETFXSDK\4.8`, `gitleaks version` responde, `git config --global user.email`
+   tiene valor y reinició vkvm-worker. `Game/.vsconfig` ahora está en `.gitignore`. En el clon: `git restore --staged --worktree Game/TheDirectorsCut.uproject docs/tasks/T-0008-prototipo-windows.md`
    y `git pull` (esta versión ya trae `EngineAssociation` 5.8). Seguí desde el paso 1 (ver **Permite**). El stash de T-0001 dejalo como está.
 1. `.\Tools\scripts\tdc.ps1 doctor` (UE 5.8 tiene que figurar `True`).
 2. `Game/TheDirectorsCut.uproject`: `"EngineAssociation": "5.8"` (o el identificador que use tu instalación).
