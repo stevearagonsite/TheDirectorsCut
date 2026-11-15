@@ -93,7 +93,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
 	FSoftObjectPath SprintAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Sprint.AS_Director_Sprint"));
 
-	/** Si existe (fix_director_look.py), la locomoción usa este blendspace por velocidad: transiciones suaves. */
+	/**
+	 * Blendspace de locomoción por velocidad. APAGADO por defecto: el que arma fix_director_look.py por Python
+	 * congelaba la pose (sin muestras válidas). Encenderlo solo con un BS verificado en el editor.
+	 */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
+	bool bUseLocomotionBlendSpace = false;
+
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
 	FSoftObjectPath LocomotionBlendSpacePath = FSoftObjectPath(TEXT("/Game/Characters/Director/BS_Director_Locomotion.BS_Director_Locomotion"));
 
@@ -158,6 +164,15 @@ private:
 	enum class EAnimState : uint8 { None, Idle, Walk, Run, Sprint, Locomotion, JumpRise, JumpFall, Clap };
 
 	void UpdateLightPrompt();
+	void ShowControls();
+
+	/** Modo demo para evidencia sin jugador (-TDCAutoRun): corre a la derecha, salta cada 2.5 s y captura 1 frame/s. */
+	void TickAutoRun(float DeltaSeconds);
+	bool bAutoRun = false;
+	float AutoRunTime = 0.f;
+	float NextAutoJump = 1.5f;
+	float NextAutoShot = 0.5f;
+	int32 AutoShotIndex = 0;
 
 	void OnClap();
 

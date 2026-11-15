@@ -1,4 +1,5 @@
 #include "Stage/TDCStageTriggers.h"
+#include "Engine/Engine.h"
 #include "Stage/TDCSetPiece.h"
 #include "Character/TDCCharacter.h"
 #include "Components/BoxComponent.h"
@@ -29,6 +30,12 @@ void ATDCFallTrigger::OnOverlap(UPrimitiveComponent*, AActor* OtherActor, UPrimi
 		{
 			Piece->Release();
 		}
+	}
+	// Legibilidad: el puente cae a propósito; hay que decir cómo se dirige la escena.
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(7020, 6.f, FColor(110, 200, 255),
+			TEXT("¡Se cayó el puente! Lo celeste está \"en toma\": mantené Q para rebobinarlo y cruzá."));
 	}
 }
 

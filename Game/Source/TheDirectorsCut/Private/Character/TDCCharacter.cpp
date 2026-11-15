@@ -8,6 +8,9 @@
 #include "Animation/BlendSpace1D.h"
 #include "Animation/AnimSingleNodeInstance.h"
 #include "Stage/TDCStageLight.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
+#include "UnrealClient.h"
 #include "Engine/SkeletalMesh.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/Engine.h"
@@ -143,7 +146,11 @@ void ATDCCharacter::LoadCharacterAssets()
 	RunAnim = LoadQuiet<UAnimSequence>(RunAnimPath);
 	WalkAnim = LoadQuiet<UAnimSequence>(WalkAnimPath);
 	SprintAnim = LoadQuiet<UAnimSequence>(SprintAnimPath);
-	LocomotionBlendSpace = LoadQuiet<UBlendSpace1D>(LocomotionBlendSpacePath);
+	LocomotionBlendSpace = bUseLocomotionBlendSpace ? LoadQuiet<UBlendSpace1D>(LocomotionBlendSpacePath) : nullptr;
+	if (LocomotionBlendSpace && LocomotionBlendSpace->GetBlendSamples().Num() < 2)
+	{
+		LocomotionBlendSpace = nullptr; // un BS sin muestras deja la pose congelada
+	}
 	JumpAnim = LoadQuiet<UAnimSequence>(JumpAnimPath);
 	if (IdleAnim || RunAnim || JumpAnim)
 	{
@@ -155,8 +162,64 @@ void ATDCCharacter::LoadCharacterAssets()
 void ATDCCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	if (bAutoRun)
+	{
+		TickAutoRun(DeltaSeconds);
+	}
 	UpdateAnimState();
 	UpdateLightPrompt();
+	ShowControls();
+}
+
+void ATDCCharacter::TickAutoRun(float DeltaSeconds)
+{
+	if (AutoRunTime == 0.f && CameraBoom)
+	{
+		CameraBoom->TargetArmLength = 900.f; // demo: más cerca, para que la pose se lea en las capturas
+	}
+	AutoRunTime += DeltaSeconds;
+	// Claquetazo cada 0.6 s: limpia al extra común de Beat 1 (si no, lo toca y reaparece al inicio).
+	if (Director && FMath::Fmod(AutoRunTime, 0.6f) < DeltaSeconds)
+	{
+		Director->Clap();
+	}
+	// 0-1 s quieto (idle), después corre a la derecha y salta cada 2.5 s, hasta los 12 s.
+	if (AutoRunTime > 1.f && AutoRunTime < 12.f)
+	{
+		AddMovementInput(FVector::ForwardVector, 1.f);
+	}
+	if (AutoRunTime > NextAutoJump && AutoRunTime < 12.f)
+	{
+		Jump();
+		NextAutoJump += 2.5f;
+	}
+	else if (AutoRunTime > NextAutoJump - 2.3f)
+	{
+		StopJumping();
+	}
+	if (AutoRunTime > NextAutoShot && AutoShotIndex < 24)
+	{
+		FScreenshotRequest::RequestScreenshot(FString::Printf(TEXT("TDCAutoRun_%02d"), AutoShotIndex++), false, false);
+		NextAutoShot += 0.5f;
+	}
+}
+
+void ATDCCharacter::ShowControls()
+{
+	// Arriba a la izquierda, siempre: los mensajes con clave se reemplazan cada frame (no se acumulan).
+	if (!GEngine || !IsPlayerControlled())
+	{
+		return;
+	}
+	const FColor Ink(235, 235, 235);
+	GEngine->AddOnScreenDebugMessage(7010, 0.f, Ink, TEXT("CONTROLES (teclado / gamepad)"));
+	GEngine->AddOnScreenDebugMessage(7011, 0.f, Ink, TEXT("  A / D ........ moverse        (stick)"));
+	GEngine->AddOnScreenDebugMessage(7012, 0.f, Ink, TEXT("  Espacio ...... saltar         (A)"));
+	GEngine->AddOnScreenDebugMessage(7013, 0.f, Ink, TEXT("  F / clic ..... claquetazo     (B)"));
+	GEngine->AddOnScreenDebugMessage(7014, 0.f, Ink, TEXT("  E ............ prender/apagar el reflector cercano  (X)"));
+	GEngine->AddOnScreenDebugMessage(7015, 0.f, Ink, TEXT("  Q (mantener) . rebobinar lo celeste  (gatillo izq.)"));
+	GEngine->AddOnScreenDebugMessage(7016, 0.f, FColor(150, 150, 150),
+		TEXT("  Amarillo = existe con luz · Violeta = a oscuras · Celeste = se rebobina · Rojo/naranja/negro = extras"));
 }
 
 void ATDCCharacter::UpdateLightPrompt()
@@ -287,6 +350,7 @@ void ATDCCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	RespawnLocation = GetActorLocation();
+	bAutoRun = IsPlayerControlled() && FParse::Param(FCommandLine::Get(), TEXT("TDCAutoRun"));
 	LoadCharacterAssets();
 	UpdatePlaceholderVisibility();
 
@@ -297,8 +361,7 @@ void ATDCCharacter::BeginPlay()
 
 	if (GEngine && IsPlayerControlled())
 	{
-		GEngine->AddOnScreenDebugMessage(7000, 15.f, FColor::White,
-			TEXT("A/D mover  ·  Espacio saltar  ·  F claquetazo  ·  E luces  ·  Q (mantener) rebobinar"));
+		// Los controles se muestran siempre desde Tick (ShowControls).
 	}
 }
 

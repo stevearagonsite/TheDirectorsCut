@@ -19,10 +19,11 @@
   .\Tools\scripts\tdc.ps1 package -Config Shipping -Zip Equipo_Juego
   .\Tools\scripts\tdc.ps1 smoke -Task T-0006 -Name 01-package     # prueba el zip: arranca el exe, captura y log
   .\Tools\scripts\tdc.ps1 smoke -Task T-0006 -Name 02-final -Keep # igual, pero deja el juego abierto
+  .\Tools\scripts\tdc.ps1 autorun -Task T-0013  # demo -TDCAutoRun: 12 capturas a docs/evidence/T-0013/autorun
 #>
 param(
   [Parameter(Position = 0, Mandatory = $true)]
-  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot', 'play', 'stop', 'package', 'smoke')]
+  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot', 'play', 'stop', 'package', 'smoke', 'autorun')]
   [string]$Command,
   [string]$Filter = 'TDC.',
   [string]$Script,
@@ -163,6 +164,22 @@ switch ($Command) {
     Need-UE
     $p = Start-Process $UEEditor -PassThru -ArgumentList "`"$Proj`" $Map -game -windowed -ResX=1600 -ResY=900"
     "juego abierto: $Map (pid $($p.Id))"
+  }
+  'autorun' {
+    # Demo sin jugador (ATDCCharacter -TDCAutoRun): corre, salta y saca TDCAutoRun_00..11.png (1 por segundo).
+    Need-UE
+    if (-not $Task) { throw 'Falta -Task (ej. T-0013)' }
+    $shots = Join-Path $Repo 'Game\Saved\Screenshots'
+    $before = Get-Date
+    $p = Start-Process $UEEditor -PassThru -ArgumentList "`"$Proj`" $Map -game -windowed -ResX=1280 -ResY=720 -TDCAutoRun"
+    Start-Sleep -Seconds $Wait
+    Stop-Process -Id $p.Id -ErrorAction SilentlyContinue
+    $pngs = @(Get-ChildItem $shots -Recurse -Filter 'TDCAutoRun_*.png' -ErrorAction SilentlyContinue | Where-Object LastWriteTime -gt $before)
+    if (-not $pngs.Count) { throw 'No se generaron capturas TDCAutoRun_*.png (aumentar -Wait o revisar el log)' }
+    $dest = Join-Path $Repo "docs\evidence\$Task\autorun"
+    New-Item -ItemType Directory -Force $dest | Out-Null
+    $pngs | ForEach-Object { Copy-Item $_.FullName (Join-Path $dest $_.Name) -Force }
+    "capturas: $($pngs.Count) en docs/evidence/$Task/autorun/"
   }
   'package' {
     # Development por defecto: Shipping apaga los AddOnScreenDebugMessage (ayuda de controles y "REBOBINANDO").
