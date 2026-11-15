@@ -286,9 +286,15 @@ void ATDCCharacter::UpdateAnimState()
 		switch (NewState)
 		{
 		case EAnimState::Clap:
+		{
+			// Golpe seco: arranca en el tramo de impacto y el resto del clip entra en ClapDuration (≤300 ms).
+			const float Length = static_cast<float>(ClapAnim->GetPlayLength());
+			const float Start = Length * ClapStartFraction;
 			MeshComp->PlayAnimation(ClapAnim, /*bLooping*/ false);
-			MeshComp->SetPlayRate(1.f);
+			MeshComp->SetPosition(Start, /*bFireNotifies*/ false);
+			MeshComp->SetPlayRate(FMath::Max(1.f, (Length - Start) / ClapDuration));
 			break;
+		}
 		case EAnimState::JumpRise:
 		case EAnimState::JumpFall:
 		{
@@ -446,7 +452,7 @@ void ATDCCharacter::OnClap()
 	}
 	if (ClapAnim && GetWorld())
 	{
-		ClapAnimUntil = GetWorld()->GetTimeSeconds() + FMath::Max(0.2f, static_cast<float>(ClapAnim->GetPlayLength()));
+		ClapAnimUntil = GetWorld()->GetTimeSeconds() + ClapDuration;
 		AnimState = EAnimState::None; // fuerza el cambio de estado en el próximo UpdateAnimState
 		UpdateAnimState();
 	}

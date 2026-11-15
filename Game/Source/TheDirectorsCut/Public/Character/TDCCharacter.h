@@ -83,6 +83,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
 	FName ClapperSocket = TEXT("RightHand");
 
+	/** Duración total del claquetazo en pantalla (s). El golpe se aplica al apretar; la animación se comprime a esto. */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character", meta = (ClampMin = "0.1"))
+	float ClapDuration = 0.3f;
+
+	/** Fracción del clip de golpe donde empieza (salta la preparación lenta de "Throw"). */
+	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character", meta = (ClampMin = "0", ClampMax = "0.9"))
+	float ClapStartFraction = 0.35f;
+
 	/** Ajuste de la claqueta respecto del hueso de la mano (ubicación en cm, rotación, escala). Se edita sin recompilar. */
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
 	FTransform ClapperOffset = FTransform::Identity;
