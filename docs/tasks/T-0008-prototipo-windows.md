@@ -24,8 +24,7 @@ mínimo de ambas.
 
 ## Pasos
 0. **Reenvío 2 (después del bloqueo por .NET SDK).** En el clon: `git restore --staged --worktree Game/TheDirectorsCut.uproject docs/tasks/T-0008-prototipo-windows.md`
-   y `git pull` (esta versión ya trae `EngineAssociation` 5.8). Después hacé las instalaciones autorizadas en **Permite**
-   y la identidad de git, y seguí desde el paso 1. El stash de T-0001 dejalo como está.
+   y `git pull` (esta versión ya trae `EngineAssociation` 5.8). Seguí desde el paso 1 (ver **Permite**). El stash de T-0001 dejalo como está.
 1. `.\Tools\scripts\tdc.ps1 doctor` (UE 5.8 tiene que figurar `True`).
 2. `Game/TheDirectorsCut.uproject`: `"EngineAssociation": "5.8"` (o el identificador que use tu instalación).
 3. `.\Tools\scripts\tdc.ps1 projectfiles` y `.\Tools\scripts\tdc.ps1 build`.
@@ -52,11 +51,8 @@ mínimo de ambas.
 - [ ] El juego quedó corriendo en una ventana en la PC.
 
 ## Permite
-- **Autorizado por Steve (2026-11-15):**
-  - Instalar el componente de Visual Studio `Microsoft.Net.Component.4.8.SDK` (.NET Framework 4.8 SDK) con Visual Studio Installer
-    (modify de la instancia de VS que usa UBT). Steve acepta el UAC en la PC.
-  - `winget install Gitleaks.Gitleaks`.
-  - En el clon, solo local: `git config user.name "Steve Aragon"` y `git config user.email "stevearagon92@gmail.com"`.
+- Steve instaló a mano en la PC (2026-11-15) el .NET Framework 4.8 Developer Pack, gitleaks y la identidad global de git.
+  Si `doctor` o el build siguen marcando que falta algo, reportá `bloqueado` con el detalle; no instales nada.
 - Editar `Game/TheDirectorsCut.uproject` (solo `EngineAssociation`), `Tools/scripts/tdc.ps1` y `Tools/unreal/build_slice.py`
   (solo compatibilidad de API o luz ambiente, sin cambiar el layout).
 
