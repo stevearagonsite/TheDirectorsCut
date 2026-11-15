@@ -37,6 +37,19 @@ Excluidas a propósito: `text-to-blender/assets/` (imágenes de validación del 
 - `blender-cameras`
 - `blender-rendering`
 
+## gamedev-skills/awesome-gamedev-agent-skills @ c6ca6c4 (Apache-2.0)
+https://github.com/gamedev-skills/awesome-gamedev-agent-skills — sin modificar, salvo omitir `game-docs/agents/` (metadata de Codex).
+Licencia: `.claude/skills/LICENSE-APACHE-2.0` · NOTICE: `.claude/skills/NOTICE-awesome-gamedev`.
+Excluidas: Godot, Unity, Ebitengine, web, y las `unreal-*` que se solapan con las `ue-*`.
+
+- `platformer`
+- `level-design`
+- `game-feel`
+- `camera-systems`
+- `prototype-fast`
+- `game-docs`
+- `unreal-packaging`
+
 ## Licencias
 
 ```
