@@ -31,9 +31,10 @@ SET_PIECE = unreal.load_class(None, "/Script/TheDirectorsCut.TDCSetPiece")
 CUBE = "/Engine/BasicShapes/Cube.Cube"
 
 # Telón: cubre el nivel (X -1500..9000) con la proporción de la imagen (3168x1344 = 2.357).
-BACKDROP_CENTER = (3750.0, -3000.0, 1500.0)
-BACKDROP_WIDTH = 11000.0
+BACKDROP_WIDTH = 15000.0
 BACKDROP_HEIGHT = BACKDROP_WIDTH / 2.357
+# Más ancho que el nivel y con el borde inferior bajo el fondo del pozo (z=-900): no se ven bordes.
+BACKDROP_CENTER = (3750.0, -3000.0, -900.0 + BACKDROP_HEIGHT / 2.0)
 
 # Props en primer plano: (archivo sin extensión, X, Y, yaw, alto deseado en cm).
 PROPS = [
@@ -163,9 +164,32 @@ def night_lighting():
         elif label == "Sky_Light":
             actor.get_component_by_class(unreal.SkyLightComponent).set_intensity(0.3)
         elif label == "Height_Fog":
+            # Poca niebla y solo lejos: el telón ya trae su bruma pintada; la niebla densa lo lavaba.
             fog = actor.get_component_by_class(unreal.ExponentialHeightFogComponent)
-            fog.set_editor_property("fog_density", 0.035)
-            fog.set_editor_property("fog_inscattering_luminance", unreal.LinearColor(0.08, 0.11, 0.2, 1.0))
+            fog.set_editor_property("fog_density", 0.008)
+            fog.set_editor_property("start_distance", 4000.0)
+            fog.set_editor_property("fog_inscattering_luminance", unreal.LinearColor(0.03, 0.04, 0.08, 1.0))
+
+
+def post_process():
+    """Look de cine negro: exposición más baja (el auto-exposure aclaraba todo), viñeta, grano y menos saturación."""
+    ppv = eas.spawn_actor_from_class(unreal.PostProcessVolume, vec(0.0, 0.0, 0.0), rot())
+    ppv.set_actor_label("DR_PostProcess")
+    ppv.set_folder_path("Dressing")
+    ppv.set_editor_property("unbound", True)
+    st = ppv.get_editor_property("settings")
+    for name, value in (("auto_exposure_bias", -1.2),
+                        ("vignette_intensity", 0.55),
+                        ("film_grain_intensity", 0.25),
+                        ("color_saturation", unreal.Vector4(0.8, 0.8, 0.85, 1.0)),
+                        ("color_contrast", unreal.Vector4(1.15, 1.15, 1.15, 1.0)),
+                        ("scene_color_tint", unreal.LinearColor(0.85, 0.92, 1.0, 1.0))):
+        try:
+            st.set_editor_property("override_" + name, True)
+            st.set_editor_property(name, value)
+        except Exception as e:
+            unreal.log_warning(f"[TDC] post-proceso: no se pudo setear {name} ({e})")
+    ppv.set_editor_property("settings", st)
 
 
 def build():
@@ -201,6 +225,7 @@ def build():
         spawn_mesh(f"DR_{name}_{i}", sm, (x, y, FOREGROUND_TOP_Z), rot(yaw=yaw), vec(s, s, s))
 
     night_lighting()
+    post_process()
 
     if not les.save_current_level():
         fail(f"No se pudo guardar {MAP_PATH} (¿read-only por LFS? git lfs lock Game/Content/Maps/L_Slice.umap)")
