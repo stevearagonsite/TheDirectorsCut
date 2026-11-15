@@ -15,10 +15,11 @@
   .\Tools\scripts\tdc.ps1 play                  # abre el juego en ventana (L_Slice) y no espera
   .\Tools\scripts\tdc.ps1 stop                  # cierra el editor/juego de ESTE proyecto y su Live Coding (antes de build)
   .\Tools\scripts\tdc.ps1 python -Script Tools\unreal\build_slice.py -InEditor   # si el commandlet no alcanza
+  .\Tools\scripts\tdc.ps1 autorun -Task T-0013  # demo -TDCAutoRun: 12 capturas a docs/evidence/T-0013/autorun
 #>
 param(
   [Parameter(Position = 0, Mandatory = $true)]
-  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot', 'play', 'stop')]
+  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot', 'play', 'stop', 'autorun')]
   [string]$Command,
   [string]$Filter = 'TDC.',
   [string]$Script,
@@ -27,6 +28,7 @@ param(
   [string]$Task,
   [string]$Name = 'shot',
   [switch]$InEditor,
+  [int]$Wait = 40,
   [Parameter(ValueFromRemainingArguments = $true)]
   [string[]]$Rest
 )
