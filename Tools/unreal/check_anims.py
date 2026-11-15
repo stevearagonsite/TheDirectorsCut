@@ -26,7 +26,10 @@ def motion(anim, bones):
             b = unreal.AnimationLibrary.get_bone_pose_for_time(anim, bone, length * 0.5, False)
         except Exception:
             continue
-        dq = a.rotation.get_angular_distance(b.rotation) if hasattr(a.rotation, "get_angular_distance") else 0.0
+        # UE 5.8 expone Quat.angular_distance (no get_angular_distance): sin esto la rotación se ignoraba (dq=0).
+        rot = a.rotation
+        dist = getattr(rot, "angular_distance", None) or getattr(rot, "get_angular_distance", None)
+        dq = dist(b.rotation) if dist else 0.0
         dt = (a.translation - b.translation).length()
         best = max(best, dt + dq * 57.3)
     return best
