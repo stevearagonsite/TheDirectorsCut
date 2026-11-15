@@ -121,7 +121,8 @@ void ATDCSetPiece::ApplyPattern()
 	}
 	const TCHAR* Tex = bRecordTime ? TEXT("T_Take_Holo")
 		: (Presence != ETDCLightPresence::Always ? TEXT("T_Gel_Panel") : TEXT("T_Stage_Floor"));
-	const float Strength = Presence == ETDCLightPresence::Always && !bRecordTime ? 0.9f : 0.75f;
+	// T-0023: T_Stage_Floor es casi carbón; con 0.9 las plataformas salían negras. 0.35 = textura que modula el color sin apagarlo.
+	const float Strength = 0.35f;
 	TDC::ApplyReadPattern(Material, Tex, Strength);
 }
 

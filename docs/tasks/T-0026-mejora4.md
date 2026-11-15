@@ -20,7 +20,8 @@ Genera `Game\Saved\stevearagonsite_TheDirectorsCut_mejora4.zip`. **No toques** l
 
 ## Contexto
 - Si el C++ no compila, reportá `fallo` con `archivo:línea` y no empaquetes.
-- Corre después de T-0023. Re-hace todo lo de mejora 3 (es idempotente) para no depender de sus binarios.
+- **Reenvío:** la rama ya trae el resultado de T-0023 (307b830: binarios, audio, dressing y tus fixes de `apply_toon.py`).
+- Tablones: `ATDCSetPiece::ApplyPattern` baja la intensidad del patrón de 0.9 a 0.35 (en T-0023 las plataformas fijas salían casi negras).
 
 ## Pasos
 1. `git fetch` y `git checkout t/T-0026-luz-tenue` (verificá el sha). `.\Tools\scripts\tdc.ps1 stop` (y cerrá el build de T-0023).
@@ -28,12 +29,12 @@ Genera `Game\Saved\stevearagonsite_TheDirectorsCut_mejora4.zip`. **No toques** l
 3. Locks: `git lfs lock Game/Content/Maps/L_Slice.umap` y
    `git ls-files Game/Content/Materials Game/Content/Dressing Game/Content/VFX Game/Content/Audio Game/Content/Characters | ForEach-Object { git lfs lock $_ }`.
 4. `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\make_materials.py` (M_TDCColor con patrón + **M_TDCLightPiece**).
-5. `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\import_audio.py`
-6. `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\build_dressing.py` (**no** corras build_slice).
+5. (audio y dressing ya vienen de T-0023: no los repitas)
+6. (no corras build_slice ni build_dressing)
 7. `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\apply_toon.py` (si el commandlet no alcanza, `-InEditor`).
 8. `.\Tools\scripts\tdc.ps1 shot -Map /Game/Maps/L_Slice -Task T-0026 -Name 01-mejora4-a` y `-Name 01-mejora4-b`.
    Compará con `docs/evidence/T-0023/01-mejora3-b.png` (si existe) y `docs/evidence/T-0019/01-mejora2-b.png`:
-   ¿los personajes ya no se ven quemados (cel shading con bandas, ni silueta negra ni blanco lavado)? ¿la plataforma amarilla del
+   ¿los personajes ya no se ven quemados (cel shading con bandas, ni silueta negra ni blanco lavado)? ¿las plataformas fijas volvieron a gris claro con tablones visibles (no negras)? ¿la plataforma amarilla del
    inicio se ve translúcida y brillante, o como fantasma tenue si su reflector está apagado? ¿el extra común se lee rojo?
 9. `.\Tools\scripts\tdc.ps1 package -Zip stevearagonsite_TheDirectorsCut_mejora4`
 10. `.\Tools\scripts\tdc.ps1 smoke -Task T-0026 -Name 02-package -Wait 60 -Zip stevearagonsite_TheDirectorsCut_mejora4`
