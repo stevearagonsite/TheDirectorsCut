@@ -15,10 +15,12 @@
   .\Tools\scripts\tdc.ps1 play                  # abre el juego en ventana (L_Slice) y no espera
   .\Tools\scripts\tdc.ps1 stop                  # cierra el editor/juego de ESTE proyecto y su Live Coding (antes de build)
   .\Tools\scripts\tdc.ps1 python -Script Tools\unreal\build_slice.py -InEditor   # si el commandlet no alcanza
+  .\Tools\scripts\tdc.ps1 package                 # build Win64 Development + zip para la jam
+  .\Tools\scripts\tdc.ps1 package -Config Shipping -Zip Equipo_Juego
 #>
 param(
   [Parameter(Position = 0, Mandatory = $true)]
-  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot', 'play', 'stop')]
+  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot', 'play', 'stop', 'package')]
   [string]$Command,
   [string]$Filter = 'TDC.',
   [string]$Script,
@@ -27,6 +29,9 @@ param(
   [string]$Task,
   [string]$Name = 'shot',
   [switch]$InEditor,
+  [ValidateSet('Development', 'Shipping')]
+  [string]$Config = 'Development',
+  [string]$Zip = 'stevearagonsite_TheDirectorsCut',
   [Parameter(ValueFromRemainingArguments = $true)]
   [string[]]$Rest
 )
@@ -60,6 +65,7 @@ function Check-Exit([string]$what) {
 $UEBuild  = "$UE\Engine\Build\BatchFiles\Build.bat"
 $UEEditor = "$UE\Engine\Binaries\Win64\UnrealEditor.exe"
 $UECmd    = "$UE\Engine\Binaries\Win64\UnrealEditor-Cmd.exe"
+$UEUAT    = "$UE\Engine\Build\BatchFiles\RunUAT.bat"
 
 switch ($Command) {
   'doctor' {
@@ -153,5 +159,26 @@ switch ($Command) {
     Need-UE
     $p = Start-Process $UEEditor -PassThru -ArgumentList "`"$Proj`" $Map -game -windowed -ResX=1600 -ResY=900"
     "juego abierto: $Map (pid $($p.Id))"
+  }
+  'package' {
+    # Development por defecto: Shipping apaga los AddOnScreenDebugMessage (ayuda de controles y "REBOBINANDO").
+    Need-UE
+    $out = Join-Path $Repo 'Game\Saved\Package'
+    $log = Join-Path $Repo 'Game\Saved\Logs\tdc-package.log'
+    if (Test-Path $out) { Remove-Item -Recurse -Force $out }
+    New-Item -ItemType Directory -Force (Split-Path $log) | Out-Null
+    & $UEUAT BuildCookRun -project="$Proj" -noP4 -platform=Win64 -clientconfig=$Config `
+      -build -cook -stage -pak -iostore -prereqs -nodebuginfo -archive -archivedirectory="$out" -utf8output 2>&1 |
+      Tee-Object -FilePath $log
+    Check-Exit 'package'
+    $game = Get-ChildItem $out -Directory | Select-Object -First 1
+    if (-not $game) { throw "No hay build en $out (ver $log)" }
+    $zipPath = Join-Path $Repo "Game\Saved\$Zip.zip"
+    if (Test-Path $zipPath) { Remove-Item -Force $zipPath }
+    Compress-Archive -Path (Join-Path $game.FullName '*') -DestinationPath $zipPath -CompressionLevel Optimal
+    $mb = [math]::Round((Get-Item $zipPath).Length / 1MB, 1)
+    "build: $(Redact $game.FullName)"
+    "zip:   $(Redact $zipPath)  ($mb MB)"
+    if ($mb -ge 1024) { Write-Warning 'El zip pesa 1 GB o más: la jam pide subirlo con butler.' }
   }
 }
