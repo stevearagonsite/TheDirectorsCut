@@ -62,3 +62,37 @@ Ambient_Sun, Sky_Light, Height_Fog presentes con esos labels (night_lighting los
 == captura (tdc.ps1 shot) ==
 1ª toma: telón gris con grilla y sombras = material por defecto mientras compilan los shaders de M_Backdrop
 (shot dispara HighResShot apenas arranca). 2ª toma, con shaders ya en DDC: telón correcto -> 02-ambientacion.png.
+
+== TERCER ENVÍO (sha 6e934fa) ==
+
+== build (tdc.ps1 build) ==
+[2/9] Compile [x64] TDCCharacter.cpp  [3/9] TDCCharacterAnimInstance.cpp  [4/9] TDCExtra.cpp  [5/9] TDCGameMode.cpp
+[6/9] TDCStageTriggers.cpp ... [9/9] WriteMetadata TheDirectorsCutEditor.target
+Result: Succeeded  (sin errores ni warnings de C++ del proyecto)
+
+== fix_director_look.py, 1ª corrida (commandlet) ==
+LogPython: [TDC] M_Director asignado a 1 slot(s) (sin metallic)
+LogPython: [TDC] BS_Director_Locomotion con 4 muestras
+Success - 0 error(s), 0 warning(s)
+(pero SK_Director.uasset no quedó modificado en disco: save_asset lo saltea porque el paquete no está dirty)
+
+== fix_director_look.py, 2ª corrida (con sk.modify() + only_if_is_dirty=False) ==
+LogPython: [TDC] M_Director asignado a 1 slot(s) (sin metallic)
+LogPython: [TDC] BS_Director_Locomotion con 4 muestras
+Success - 0 error(s), 0 warning(s)   -> SK_Director.uasset modificado
+
+== build_dressing.py (commandlet, sin -InEditor) ==
+LogInterchangeEngine: Warning: [Art/Export/Dressing/SM_Spotlight.fbx : 'SM_Spotlight', StaticMesh] No smoothing group
+  information was found for this mesh 'model' in the FBX file.
+LogPython: [TDC] sin SM_FilmCamera.fbx: se omite
+LogPython: [TDC] sin SM_Crates.fbx: se omite
+LogPython: [TDC] ambientación noir aplicada y L_Slice guardado.
+Success - 0 error(s), 1 warning(s)
+Assets nuevos en /Game/Dressing: SM_Spotlight, model (material), texture_diffuse, texture_metallic, texture_normal,
+texture_roughness.
+
+== tests (tdc.ps1 test) ==
+tests: ok=4 fallidos=0 warnings=0
+
+== capturas ==
+03-noir-a.png y 03-noir-b.png (iguales: shaders ya compilados por los commandlets).

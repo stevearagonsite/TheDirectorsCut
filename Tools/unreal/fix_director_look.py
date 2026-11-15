@@ -41,7 +41,7 @@ def director_material(sk):
     if not diffuse:
         fail("no encontré la textura difusa del director en " + DEST)
     path = f"{DEST}/M_Director"
-    mat = eal.load_asset(path)
+    mat = eal.load_asset(path) if eal.does_asset_exist(path) else None
     if not mat:
         mat = tools.create_asset("M_Director", DEST, unreal.Material, unreal.MaterialFactoryNew())
     mel.delete_all_material_expressions(mat)
@@ -64,11 +64,13 @@ def director_material(sk):
     mel.recompile_material(mat)
     eal.save_asset(path)
 
+    sk.modify()
     materials = sk.get_editor_property("materials")
     for slot in materials:
         slot.set_editor_property("material_interface", mat)
     sk.set_editor_property("materials", materials)
-    eal.save_asset(sk.get_path_name())
+    # en commandlet set_editor_property no marca el paquete dirty: forzar el guardado
+    eal.save_asset(sk.get_path_name(), only_if_is_dirty=False)
     log(f"M_Director asignado a {len(materials)} slot(s) (sin metallic)")
 
 

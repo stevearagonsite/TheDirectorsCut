@@ -1,7 +1,7 @@
 ---
 id: T-0012
 titulo: Director a escala + ambientación noir (último ciclo antes del package)
-estado: enviada
+estado: ok
 tipo: mixto
 rama: t/T-0012-ambientacion
 creada: 2026-11-15
@@ -121,3 +121,40 @@ exacto: gamedesigner lo arregla enseguida. No reviertas nada por tu cuenta.
   4. Quedaron dos archivos temporales sin trackear en la PC (`Tools/unreal/_diag_dressing.py`, `_diag_out.txt`); no se
      commitean y el permiso de esta sesión no me dejó borrarlos.
   Locks LFS liberados y el juego quedó abierto (`tdc.ps1 play`).
+
+### Tercer envío (sha 6e934fa)
+- estado: ok (con observaciones de arte)
+- resumen: `tdc.ps1 build` OK (TDCCharacter, TDCCharacterAnimInstance, TDCExtra, TDCGameMode, TDCStageTriggers; sin
+  errores). `fix_director_look.py` por commandlet: `M_Director asignado a 1 slot(s) (sin metallic)` y
+  `BS_Director_Locomotion con 4 muestras` (Idle 0, Walk 160, Run 380, Sprint 600). `build_dressing.py` por commandlet (sin
+  `-InEditor`): `Success - 0 error(s), 1 warning(s)`, importó `SM_Spotlight` y lo ubicó dos veces (DR_SM_Spotlight_0 y _3);
+  `SM_FilmCamera` y `SM_Crates` omitidos (no hay FBX); post-proceso `DR_PostProcess` y niebla lejana aplicados. Tests ok=4
+  fallidos=0.
+- fixes de compatibilidad en `Tools/unreal/fix_director_look.py`:
+  1. `does_asset_exist` antes de `load_asset(M_Director)` (mismo problema que en build_dressing: el primer run logueaba
+     `LoadAsset failed` y el commandlet salía con 1).
+  2. La 1ª corrida creó M_Director y el BlendSpace pero **no guardó `SK_Director`** (en commandlet `set_editor_property` no
+     marca el paquete dirty y `save_asset` lo salteaba). Agregué `sk.modify()` + `save_asset(..., only_if_is_dirty=False)`;
+     2ª corrida: `SK_Director.uasset` modificado con M_Director en su slot.
+- errores: ninguno. Warning: `LogInterchangeEngine: ... SM_Spotlight.fbx ... No smoothing group information`.
+- assets: nuevos `Characters/Director/M_Director`, `Characters/Director/BS_Director_Locomotion`, `Dressing/SM_Spotlight` y
+  los que el import FBX de Rodin creó al lado con nombres genéricos: `Dressing/model` (material), `Dressing/texture_diffuse`,
+  `texture_metallic`, `texture_normal`, `texture_roughness`. Modificados: `SK_Director`, `L_Slice`, `M_Backdrop`,
+  `T_Backdrop_Noir` (reimport).
+- evidencia: `docs/evidence/T-0012/03-noir-a.png`, `docs/evidence/T-0012/03-noir-b.png` (las dos salieron iguales: los
+  shaders ya estaban compilados por los commandlets), extractos en `docs/evidence/T-0012/log-extractos.txt`.
+- notas / qué se ve en `03-noir-b.png`:
+  1. **Mucho más noir que 02**: el telón ocupa el fondo en azules oscuros y bruma pintada (en este encuadre se ve la parte de
+     niebla/pinceladas, no el skyline), viñeta y grano visibles, la franja del escenario abajo casi negra. Oscuro pero legible.
+  2. **Director**: silueta oscura (gorra, sobretodo) en el tercio izquierdo sobre la plataforma; se ve mate, sin el brillo
+     metalizado de antes, aunque a esta luz casi no se distingue la textura (queda muy en sombra).
+  3. **Colores de lectura**: el cilindro coral se distingue bien; la plataforma gris cálida y la esfera oscura (sobre el
+     telón se lee apenas por contraste).
+  4. **Props**: del SM_Spotlight de la izquierda solo asoman las patas del trípode, delante de la plataforma, en el borde
+     inferior izquierdo; el cabezal queda fuera de cuadro (X=-150, más allá del borde izquierdo de la cámara). El de X=6900
+     no entra en esta toma.
+  5. Sigue una **línea celeste clara** horizontal entre el telón y la franja del escenario, a la altura de la base de la
+     plataforma (parece el borde superior de la franja `DR_ForegroundStage` iluminado o el piso de fondo).
+  6. Los assets genéricos del import de Rodin (`model`, `texture_*`) en `/Game/Dressing` van a chocar con el próximo prop
+     de Rodin que se importe ahí; sugiero importar cada prop en su subcarpeta o renombrar.
+  Locks LFS liberados y el juego quedó abierto (`tdc.ps1 play`). Siguen sin trackear `Tools/unreal/_diag_*` (no se commitean).
