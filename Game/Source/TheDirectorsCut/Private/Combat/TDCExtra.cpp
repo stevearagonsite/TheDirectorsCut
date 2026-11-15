@@ -1,4 +1,5 @@
 #include "Combat/TDCExtra.h"
+#include "Core/TDCFlipbookFx.h"
 #include "Core/TDCVisuals.h"
 #include "Character/TDCCharacter.h"
 #include "Stage/TDCLightReactiveComponent.h"
@@ -100,6 +101,11 @@ void ATDCExtra::Tick(float DeltaSeconds)
 		if (StunRemaining <= 0.f)
 		{
 			ApplyColor();
+			if (StunFx.IsValid())
+			{
+				StunFx->Destroy();
+			}
+			StunFx.Reset();
 		}
 		return;
 	}
@@ -135,6 +141,11 @@ ETDCClapResult ATDCExtra::ReceiveClap(const FVector& FromLocation)
 		const float Away = FMath::Sign(GetActorLocation().X - FromLocation.X);
 		SetActorLocation(GetActorLocation() + FVector(Away * KnockbackDistance, 0.f, 0.f));
 		ApplyColor();
+		if (!StunFx.IsValid())
+		{
+			StunFx = ATDCFlipbookFx::Spawn(GetWorld(), TDC::Fx::ExtraStun, GetActorLocation() + FVector(0.f, 50.f, 110.f), 110.f,
+				false, GetRootComponent());
+		}
 		break;
 	}
 	default:
@@ -160,6 +171,11 @@ void ATDCExtra::Defeat()
 		return;
 	}
 	bDefeated = true;
+	ATDCFlipbookFx::Spawn(GetWorld(), TDC::Fx::ExtraDefeat, GetActorLocation() + FVector(0.f, 60.f, 0.f), 230.f);
+	if (StunFx.IsValid())
+	{
+		StunFx->Destroy();
+	}
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 	SetActorTickEnabled(false);

@@ -141,6 +141,60 @@ def backdrop_material():
     return mat
 
 
+# Parallax (3 capas a distinta profundidad; la cámara lateral en 3D da el parallax sola).
+# (archivo, nombre, Y, z_inferior, alto, ancho, masked, oscurecer). Cámara en Y≈+2200 mirando a -Y.
+PARALLAX = [
+    ("L0_cielo.png", "Parallax_L0", -4500.0, -2000.0, 5000.0, 17000.0, False, 0.8),
+    ("L1_skyline_lejano.png", "Parallax_L1", -3000.0, -1500.0, 3600.0, 15000.0, True, 0.75),
+    ("L2_edificios_cercanos.png", "Parallax_L2", -1600.0, -1100.0, 2600.0, 13000.0, True, 0.9),
+]
+PARALLAX_DIR = os.path.join(SRC, "Parallax")
+
+
+def parallax_material(png, name, masked, darken, tiles_u):
+    tex = import_file(png, f"T_{name}", folder=f"{DEST}/Parallax")
+    if not tex:
+        fail(f"no se importó T_{name}")
+    path = f"{DEST}/Parallax/M_{name}"
+    mat = eal.load_asset(path) if eal.does_asset_exist(path) else None
+    if not mat:
+        mat = unreal.AssetToolsHelpers.get_asset_tools().create_asset(f"M_{name}", f"{DEST}/Parallax", unreal.Material, unreal.MaterialFactoryNew())
+    mel.delete_all_material_expressions(mat)
+    mat.set_editor_property("shading_model", unreal.MaterialShadingModel.MSM_UNLIT)
+    mat.set_editor_property("blend_mode", unreal.BlendMode.BLEND_MASKED if masked else unreal.BlendMode.BLEND_OPAQUE)
+    mat.set_editor_property("two_sided", True)
+    uv = mel.create_material_expression(mat, unreal.MaterialExpressionTextureCoordinate, -700, 0)
+    uv.set_editor_property("u_tiling", tiles_u)
+    sample = mel.create_material_expression(mat, unreal.MaterialExpressionTextureSample, -450, 0)
+    sample.set_editor_property("texture", tex)
+    mel.connect_material_expressions(uv, "", sample, "UVs")
+    mul = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -200, 0)
+    mul.set_editor_property("const_b", darken)
+    mel.connect_material_expressions(sample, "RGB", mul, "A")
+    mel.connect_material_property(mul, "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+    if masked:
+        mel.connect_material_property(sample, "A", unreal.MaterialProperty.MP_OPACITY_MASK)
+    mel.recompile_material(mat)
+    eal.save_asset(path)
+    return mat
+
+
+def build_parallax(cube):
+    """Si están las 3 capas en Art/Export/Dressing/Parallax/, arma el parallax y devuelve True."""
+    if not all(os.path.isfile(os.path.join(PARALLAX_DIR, f)) for f, *_ in PARALLAX):
+        log("sin capas de parallax completas: telón único")
+        return False
+    for f, name, y, z0, h, w, masked, darken in PARALLAX:
+        png = os.path.join(PARALLAX_DIR, f)
+        tiles = max(1.0, w / (h * 2.357))  # mantiene la proporción 21:9 de la imagen
+        mat = parallax_material(png, name, masked, darken, tiles)
+        actor, comp = spawn_mesh(f"DR_{name}", cube, (4000.0, y, z0 + h / 2.0), rot(), vec(w / 100.0, 0.02, h / 100.0))
+        comp.set_material(0, mat)
+        comp.set_cast_shadow(False)
+    log("parallax de 3 capas armado")
+    return True
+
+
 def import_prop(name):
     fbx = os.path.join(SRC, name + ".fbx")
     if not os.path.isfile(fbx):
@@ -201,6 +255,17 @@ def night_lighting():
             fog.set_editor_property("fog_inscattering_luminance", unreal.LinearColor(0.03, 0.04, 0.08, 1.0))
 
 
+def dynamic_lighting_only():
+    """Sin iluminación precalculada: el build no tiene lightmaps y mostraba "LIGHTING NEEDS TO BE REBUILT" en pantalla.
+    Todas las luces pasan a Movable y el mundo fuerza no usar luz precalculada."""
+    for actor in eas.get_all_level_actors():
+        for comp in actor.get_components_by_class(unreal.LightComponentBase):
+            comp.set_mobility(unreal.ComponentMobility.MOVABLE)
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    world.get_world_settings().set_editor_property("force_no_precomputed_lighting", True)
+    log("luz 100% dinámica (force_no_precomputed_lighting, luces Movable).")
+
+
 def post_process():
     """Look de cine negro: exposición más baja (el auto-exposure aclaraba todo), viñeta, grano y menos saturación."""
     ppv = eas.spawn_actor_from_class(unreal.PostProcessVolume, vec(0.0, 0.0, 0.0), rot())
@@ -229,8 +294,8 @@ def build():
     les.load_level(MAP_PATH)
     clear_dressing()
 
-    mat = backdrop_material()
     cube = unreal.load_asset(CUBE)
+    mat = None if build_parallax(cube) else backdrop_material()
     if mat:
         actor, comp = spawn_mesh("DR_Backdrop", cube, BACKDROP_CENTER, rot(),
                                  vec(BACKDROP_WIDTH / 100.0, 0.02, BACKDROP_HEIGHT / 100.0))
@@ -258,6 +323,7 @@ def build():
 
     night_lighting()
     post_process()
+    dynamic_lighting_only()
 
     if not les.save_current_level():
         fail(f"No se pudo guardar {MAP_PATH} (¿read-only por LFS? git lfs lock Game/Content/Maps/L_Slice.umap)")
