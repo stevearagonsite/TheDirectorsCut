@@ -1,0 +1,259 @@
+{
+ "frames": [
+  {
+   "filename": "claquetazo-impact 0",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 80
+   },
+   "duration": 33
+  },
+  {
+   "filename": "claquetazo-impact 1",
+   "frame": {
+    "x": 128,
+    "y": 0,
+    "w": 128,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 80
+   },
+   "duration": 33
+  },
+  {
+   "filename": "claquetazo-impact 2",
+   "frame": {
+    "x": 256,
+    "y": 0,
+    "w": 128,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 80
+   },
+   "duration": 33
+  },
+  {
+   "filename": "claquetazo-impact 3",
+   "frame": {
+    "x": 0,
+    "y": 80,
+    "w": 128,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 80
+   },
+   "duration": 33
+  },
+  {
+   "filename": "claquetazo-impact 4",
+   "frame": {
+    "x": 128,
+    "y": 80,
+    "w": 128,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 80
+   },
+   "duration": 33
+  },
+  {
+   "filename": "claquetazo-impact 5",
+   "frame": {
+    "x": 256,
+    "y": 80,
+    "w": 128,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 80
+   },
+   "duration": 33
+  },
+  {
+   "filename": "claquetazo-impact 6",
+   "frame": {
+    "x": 0,
+    "y": 160,
+    "w": 128,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 80
+   },
+   "duration": 33
+  },
+  {
+   "filename": "claquetazo-impact 7",
+   "frame": {
+    "x": 128,
+    "y": 160,
+    "w": 128,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 80
+   },
+   "duration": 33
+  },
+  {
+   "filename": "claquetazo-impact 8",
+   "frame": {
+    "x": 256,
+    "y": 160,
+    "w": 128,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 80
+   },
+   "duration": 33
+  },
+  {
+   "filename": "claquetazo-impact 9",
+   "frame": {
+    "x": 0,
+    "y": 240,
+    "w": 128,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 80
+   },
+   "duration": 33
+  }
+ ],
+ "meta": {
+  "app": "https://github.com/patch-gg/pixelfx",
+  "version": "1",
+  "image": "claquetazo-impact.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 384,
+   "h": 320
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "claquetazo-impact",
+    "from": 0,
+    "to": 9,
+    "direction": "forward"
+   }
+  ],
+  "pixelfx": {
+   "id": "tdc/claquetazo-impact",
+   "name": "Claquetazo impact",
+   "fps": 30,
+   "loop": false,
+   "frames": 10,
+   "frameSize": [
+    128,
+    80
+   ],
+   "pivot": [
+    52,
+    64
+   ],
+   "columns": 3
+  }
+ }
+}

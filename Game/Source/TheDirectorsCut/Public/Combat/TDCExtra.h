@@ -93,4 +93,5 @@ private:
 	float Direction = 1.f;
 	float StunRemaining = 0.f;
 	bool bDefeated = false;
+	TWeakObjectPtr<AActor> StunFx;
 };

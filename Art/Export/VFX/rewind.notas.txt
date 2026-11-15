@@ -1,0 +1,11 @@
+rewind
+id pixelfx: tdc/rewind  (fuente: /Users/stevenaragonurrea/Workspace/tools/pixelfx/src/fx/tdc/rewind.js)
+base: remix de pickups/xp-orb en cian con el tiempo invertido (el cometa avanza con la cola adelante) + motas en espiral antihoraria + dos arcos con punta de flecha girando antihorario (carrete rebobinando)
+opciones: opciones por defecto (palette cian neón #03141c..#ffffff, motes 12, seed 2). Sin --opts.
+comando: node tools/render.mjs tdc/rewind --sheet
+fps: 30  |  loop: sí  |  duración: 1.80 s
+frames: 54  |  frame: 96x72 px  |  columnas: 7  |  filas: 8  (grilla 7x8, 2 celdas vacías al final)
+pivot (px en el frame): 48,60  =  UV (0.500, 0.833)
+Centro del efecto: local (0,-22) = px (48,38) = UV (0.50,0.53). Pivot del JSON = px (48,60). Hay un brillo tenue de piso (heredado de xp-orb) en y=0.
+Niagara: Sub UV = 7x8, reproducir frames 0..53 a 30 fps en loop. Textura: Filter Nearest, Compression UserInterface2D (RGBA), sin mips. El glow viene horneado como alfa: material translúcido (o aditivo sobre fondos oscuros).
+Calidad 3.5/5. El 'hacia atrás' se lee por las flechas antihorarias más que por el cometa.

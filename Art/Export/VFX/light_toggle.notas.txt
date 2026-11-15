@@ -1,0 +1,11 @@
+light_toggle
+id pixelfx: tdc/light-toggle  (fuente: /Users/stevenaragonurrea/Workspace/tools/pixelfx/src/fx/tdc/light-toggle.js)
+base: remix de pickups/collect-burst en amarillo cálido (x1.15) + 8 rayos propios que salen con el destello y se retraen + charco de luz cálida
+opciones: opciones por defecto (palette amarillo cálido #2a1a06..#ffffff, rays 8, raysFor 0.4, speed 1.15, seed 3). Sin --opts.
+comando: node tools/render.mjs tdc/light-toggle --sheet
+fps: 30  |  loop: no (one-shot, último frame vacío)  |  duración: 1.20 s
+frames: 37  |  frame: 112x112 px  |  columnas: 7  |  filas: 6  (grilla 7x6, 5 celdas vacías al final)
+pivot (px en el frame): 56,86  =  UV (0.500, 0.768)
+Centro del destello: local (0,-30) = px (56,56) = UV (0.50,0.50). Pivot del JSON = px (56,86).
+Niagara: Sub UV = 7x6, reproducir frames 0..36 a 30 fps. Textura: Filter Nearest, Compression UserInterface2D (RGBA), sin mips. El glow viene horneado como alfa: material translúcido (o aditivo sobre fondos oscuros).
+Calidad 3.5/5. Se lee como 'se prende', pero tiene algo de 'pickup'. Primer intento con holy/sunburst descartado (el fundido por dither dejaba una grilla de puntos).

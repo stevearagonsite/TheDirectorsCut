@@ -2,6 +2,7 @@
 #include "Stage/TDCStageLight.h"
 #include "Stage/TDCStageSubsystem.h"
 #include "Combat/TDCExtra.h"
+#include "Core/TDCFlipbookFx.h"
 #include "Engine/OverlapResult.h"
 #include "CollisionShape.h"
 #include "TheDirectorsCut.h"
@@ -50,6 +51,7 @@ void UTDCDirectorComponent::ToggleNearestLight()
 	if (ATDCStageLight* Light = FindNearestLight())
 	{
 		Light->Toggle();
+		ATDCFlipbookFx::Spawn(GetWorld(), TDC::Fx::LightToggle, Light->GetActorLocation() + FVector(0.f, 60.f, 0.f), 220.f);
 		UE_LOG(LogTDC, Log, TEXT("Luces: %s -> %s"), *Light->GetName(), Light->IsOn() ? TEXT("ON") : TEXT("OFF"));
 	}
 }
@@ -61,6 +63,11 @@ void UTDCDirectorComponent::BeginRewind()
 		return;
 	}
 	bRewinding = true;
+	if (AActor* Owner = GetOwner())
+	{
+		RewindFx = ATDCFlipbookFx::Spawn(GetWorld(), TDC::Fx::Rewind, Owner->GetActorLocation() + FVector(0.f, 60.f, 130.f),
+			150.f, false, Owner->GetRootComponent());
+	}
 	if (UTDCStageSubsystem* Stage = GetWorld()->GetSubsystem<UTDCStageSubsystem>())
 	{
 		Stage->SetTimeMode(ETDCTimeMode::Rewind);
@@ -78,6 +85,11 @@ void UTDCDirectorComponent::EndRewind()
 		return;
 	}
 	bRewinding = false;
+	if (RewindFx.IsValid())
+	{
+		RewindFx->Destroy();
+	}
+	RewindFx.Reset();
 	if (UTDCStageSubsystem* Stage = GetWorld()->GetSubsystem<UTDCStageSubsystem>())
 	{
 		Stage->SetTimeMode(ETDCTimeMode::Play);
@@ -113,6 +125,9 @@ bool UTDCDirectorComponent::Clap()
 		FCollisionObjectQueryParams(FCollisionObjectQueryParams::AllDynamicObjects),
 		FCollisionShape::MakeSphere(ClapRadius), Params);
 
+	// Impacto del golpe (VFX hacia la cámara, espejado si mira a -X).
+	ATDCFlipbookFx::Spawn(World, TDC::Fx::ClapImpact, Center + FVector(0.f, 60.f, 10.f), 170.f, Facing < 0.f);
+
 	FString Feedback = TEXT("¡Claquetazo!");
 	TSet<AActor*> Hit;
 	for (const FOverlapResult& Overlap : Overlaps)
@@ -127,7 +142,10 @@ bool UTDCDirectorComponent::Clap()
 		{
 		case ETDCClapResult::Defeated: Feedback = TEXT("¡Corten! Extra fuera de la toma"); break;
 		case ETDCClapResult::Stunned:  Feedback = TEXT("¡Claquetazo! (aturdido)"); break;
-		default:                       Feedback = TEXT("Rebota: es un extra de guion. Dirigí la escena."); break;
+		default:
+			Feedback = TEXT("Rebota: es un extra de guion. Dirigí la escena.");
+			ATDCFlipbookFx::Spawn(World, TDC::Fx::ScriptedBounce, Extra->GetActorLocation() + FVector(-Facing * 30.f, 70.f, 20.f), 200.f, Facing < 0.f);
+			break;
 		}
 	}
 	if (GEngine)

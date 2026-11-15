@@ -1,0 +1,1051 @@
+{
+ "frames": [
+  {
+   "filename": "extra-defeat 0",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 1",
+   "frame": {
+    "x": 112,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 2",
+   "frame": {
+    "x": 224,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 3",
+   "frame": {
+    "x": 336,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 4",
+   "frame": {
+    "x": 448,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 5",
+   "frame": {
+    "x": 560,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 6",
+   "frame": {
+    "x": 672,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 7",
+   "frame": {
+    "x": 0,
+    "y": 108,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 8",
+   "frame": {
+    "x": 112,
+    "y": 108,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 9",
+   "frame": {
+    "x": 224,
+    "y": 108,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 10",
+   "frame": {
+    "x": 336,
+    "y": 108,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 11",
+   "frame": {
+    "x": 448,
+    "y": 108,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 12",
+   "frame": {
+    "x": 560,
+    "y": 108,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 13",
+   "frame": {
+    "x": 672,
+    "y": 108,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 14",
+   "frame": {
+    "x": 0,
+    "y": 216,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 15",
+   "frame": {
+    "x": 112,
+    "y": 216,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 16",
+   "frame": {
+    "x": 224,
+    "y": 216,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 17",
+   "frame": {
+    "x": 336,
+    "y": 216,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 18",
+   "frame": {
+    "x": 448,
+    "y": 216,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 19",
+   "frame": {
+    "x": 560,
+    "y": 216,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 20",
+   "frame": {
+    "x": 672,
+    "y": 216,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 21",
+   "frame": {
+    "x": 0,
+    "y": 324,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 22",
+   "frame": {
+    "x": 112,
+    "y": 324,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 23",
+   "frame": {
+    "x": 224,
+    "y": 324,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 24",
+   "frame": {
+    "x": 336,
+    "y": 324,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 25",
+   "frame": {
+    "x": 448,
+    "y": 324,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 26",
+   "frame": {
+    "x": 560,
+    "y": 324,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 27",
+   "frame": {
+    "x": 672,
+    "y": 324,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 28",
+   "frame": {
+    "x": 0,
+    "y": 432,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 29",
+   "frame": {
+    "x": 112,
+    "y": 432,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 30",
+   "frame": {
+    "x": 224,
+    "y": 432,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 31",
+   "frame": {
+    "x": 336,
+    "y": 432,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 32",
+   "frame": {
+    "x": 448,
+    "y": 432,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 33",
+   "frame": {
+    "x": 560,
+    "y": 432,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 34",
+   "frame": {
+    "x": 672,
+    "y": 432,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 35",
+   "frame": {
+    "x": 0,
+    "y": 540,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 36",
+   "frame": {
+    "x": 112,
+    "y": 540,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 37",
+   "frame": {
+    "x": 224,
+    "y": 540,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 38",
+   "frame": {
+    "x": 336,
+    "y": 540,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 39",
+   "frame": {
+    "x": 448,
+    "y": 540,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 40",
+   "frame": {
+    "x": 560,
+    "y": 540,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 41",
+   "frame": {
+    "x": 672,
+    "y": 540,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 42",
+   "frame": {
+    "x": 0,
+    "y": 648,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 43",
+   "frame": {
+    "x": 112,
+    "y": 648,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 44",
+   "frame": {
+    "x": 224,
+    "y": 648,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  },
+  {
+   "filename": "extra-defeat 45",
+   "frame": {
+    "x": 336,
+    "y": 648,
+    "w": 112,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 108
+   },
+   "duration": 33
+  }
+ ],
+ "meta": {
+  "app": "https://github.com/patch-gg/pixelfx",
+  "version": "1",
+  "image": "extra-defeat.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 784,
+   "h": 756
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "extra-defeat",
+    "from": 0,
+    "to": 45,
+    "direction": "forward"
+   }
+  ],
+  "pixelfx": {
+   "id": "tdc/extra-defeat",
+   "name": "Extra defeat",
+   "fps": 30,
+   "loop": false,
+   "frames": 46,
+   "frameSize": [
+    112,
+    108
+   ],
+   "pivot": [
+    56,
+    80
+   ],
+   "columns": 7
+  }
+ }
+}

@@ -76,5 +76,6 @@ public:
 
 private:
 	bool bRewinding = false;
+	TWeakObjectPtr<AActor> RewindFx;
 	double LastClapTime = -1000.0;
 };
