@@ -1,0 +1,53 @@
+# ---------- Unreal Engine (proyecto en Game/) ----------
+Game/Binaries/
+Game/Build/
+Game/DerivedDataCache/
+Game/Intermediate/
+Game/Saved/
+Game/Plugins/*/Binaries/
+Game/Plugins/*/Intermediate/
+Game/.vs/
+Game/.vscode/
+Game/.idea/
+Game/*.sln
+Game/*.VC.db
+Game/*.opensdf
+Game/*.sdf
+Game/*.suo
+Game/*.xcodeproj
+Game/*.xcworkspace
+*.pdb
+*.ipch
+
+# ---------- Blender ----------
+*.blend1
+*.blend2
+*.blend@
+Art/**/textures_cache/
+
+# ---------- SO / editores ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.idea/
+.vscode/
+
+# ---------- Secretos y datos privados (nunca al repo público) ----------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+/secrets/
+/private/
+Game/Config/*Secret*.ini
+Game/Config/Default*Credentials*.ini
+
+# ---------- Claude Code local ----------
+.claude/settings.local.json
+Tools/scripts/tdc.local.ps1
+*.local.json
