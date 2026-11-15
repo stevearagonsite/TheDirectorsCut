@@ -7,9 +7,21 @@
 - [ ] Build Win64 empaquetado (`tdc.ps1 package`, T-0006), probado en la PC: abre, carga L_Slice y se juega de punta a punta.
 - [ ] Zip `stevearagonsite_TheDirectorsCut.zip` de menos de 1 GB. Si pesa más, se sube con butler.
 - [ ] Video de gameplay de 30–60 s, con gameplay en los primeros 5 s (ver guion abajo).
-- [ ] Página de itch.io con el texto de abajo, capturas y lista de herramientas.
+- [ ] Página de itch.io con el texto de abajo, el key art, capturas y lista de herramientas.
 - [ ] Datos del equipo: nombre y email de Epic de cada miembro. Los carga Steve.
 - [ ] Link al dev log: [`docs/devlog.md`](../devlog.md), en T-0006. Es para el premio Glass Box.
+
+## Key art para itch.io
+
+En [`docs/jam/arte/`](arte/):
+
+| Archivo | Uso en itch.io | Tamaño |
+|---|---|---|
+| `cover_630x500.png` | Cover image | 630×500 |
+| `banner_960x300.png` | Banner del encabezado (Edit theme → Banner) | 960×300 |
+| `keyart_1920x1080.png` | Primera captura de la galería / portada del video | 1920×1080 |
+
+Hechos con Gemini, sobre la hoja de modelo del director; el título lo agrega `work/title.py` (Futura Condensed ExtraBold).
 
 ## Texto para itch.io (en inglés)
 
