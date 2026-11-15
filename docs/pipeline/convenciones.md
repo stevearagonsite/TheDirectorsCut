@@ -26,7 +26,7 @@ Prefijo + nombre en PascalCase en inglés: `BP_` Blueprint, `SM_` static mesh, `
 ## C++
 
 - Prefijo de clases `TDC` (`ATDCCharacter`, `UTDCDirectableComponent`).
-- Un sistema por carpeta en `Source/TheDirectorsCut/` (`Director/`, `Character/`, `Set/`).
+- Un sistema por carpeta en `Source/TheDirectorsCut/{Public,Private}/`: `Core/`, `Character/`, `Director/`, `Stage/` (tests en `Private/Tests/`).
 - Tests de automatización con prefijo `TDC.` para poder filtrarlos.
 
 ## Blender → Unreal

@@ -1,11 +1,20 @@
 # The Director's Cut — Visión de producto
 
-> Estado: **borrador v0.1** (2026-11-15). Lo marcado con 🔶 es una interpretación a validar.
+**Versión:** 0.3 · **Actualizado:** 2026-11-15 · [Features](#feature-index) · [Decisiones](decisiones.md) · [Cambios](#cambios)
+
+> Lo marcado con 🔶 o `[ASSUMPTION]` es una interpretación a validar.
 
 ## Una línea
 
-Un metroidvania 2.5D donde sos el director de la película: no peleás contra el mundo, lo **dirigís**.
-Prendés y apagás luces, rebobinás y adelantás la toma, cortás escenas y cambiás la escenografía para avanzar.
+Un metroidvania 2.5D donde sos un director atrapado en su propia película inconclusa: no solo peleás contra el mundo, lo **dirigís**.
+Manipulás la luz, rebobinás la toma, cortás escenas y cambiás la escenografía para terminar el rodaje y salir.
+
+| | |
+|---|---|
+| Género y cámara | Metroidvania 2.5D: personajes y escenarios 3D, cámara lateral, movimiento en un plano con capas de profundidad decorativas |
+| Motor | Unreal Engine **5.6** (C++ para sistemas, Blueprints para contenido y tuning). Arte 3D en Blender |
+| Plataforma e input | PC, teclado y gamepad `[ASSUMPTION]` |
+| Alcance actual | Prototipo: vertical slice greybox |
 
 ## Pilar: DIRECCIÓN
 
@@ -13,50 +22,82 @@ Toda decisión de diseño se mide contra una pregunta: **¿esto hace que el juga
 
 - El jugador resuelve problemas **cambiando la puesta en escena**, no (solo) con reflejos.
 - Cada poder es una herramienta real de un director de cine y tiene una **lectura visual de cine** (claqueta, foco, moviola, tramoya).
-- El mundo es un **set de filmación**: los niveles son escenas, las zonas son sets, el progreso es el rodaje.
+- El mundo es un **estudio de cine**: los niveles son escenas, las zonas son sets de distintas películas, el progreso es el rodaje.
 
 Sub-pilares 🔶: *Legibilidad* (siempre se entiende qué cambió al dirigir) · *Combinación* (los poderes se encadenan) · *Fantasía de autor* (el jugador siente que la película es suya).
 
-## Formato
+## Protagonista
 
-- **2.5D**: personajes y escenarios 3D, cámara lateral, movimiento restringido a un plano horizontal (con capas de profundidad decorativas).
-- **Metroidvania**: mundo interconectado, backtracking, progreso gateado por poderes.
-- Motor: **Unreal Engine 5** (C++ para sistemas + Blueprints para contenido/tuning). Arte 3D en **Blender**.
+**El director**, atrapado dentro de su propia película inconclusa. Corre, salta y usa las herramientas del oficio. Su objetivo es terminar el rodaje para salir. ([D-001](decisiones.md))
 
-## Poderes del director (verbos)
+## Loop
 
-| Poder | Fantasía | Mecánica base 🔶 | Gating metroidvania 🔶 |
-|---|---|---|---|
-| **Luces** (Reflector) | "¡Luces!" | Prender/apagar fuentes de luz del set. Ciertos objetos solo existen o solo son tangibles en luz o en sombra. | Plataformas de luz, enemigos que solo se mueven a oscuras |
-| **Tiempo** (Moviola) | "Rebobinar la toma" | Rebobinar/adelantar el tiempo de objetos "en toma" (no del jugador). | Puentes caídos que se rebobinan, puertas que se adelantan hasta abrirse |
-| **Corte** (Tijera / Claqueta) | "¡Corten!" | Marcar una toma y **cortar** a ella: salto instantáneo entre dos encuadres / eliminar un fragmento de escena. | Atravesar huecos, saltar segmentos peligrosos |
-| **Escenografía** (Tramoya) | "Cambio de set" | Intercambiar piezas del set entre variantes (ej. día/noche, ruinas/intacto). | Rutas alternativas en la misma sala |
+```
+explorar un set → dirigir la escena (puzzle / enemigo de guion) → abrir paso o vencer jefe
+→ nuevo poder, slot o fragmento → volver a sets anteriores con más herramientas
+```
 
-Orden de obtención propuesto 🔶: Luces → Tiempo → Escenografía → Corte (el corte rompe el movimiento, conviene al final).
+- **Segundos:** moverse, saltar, claquetazo, usar un poder (gasta Rollo).
+- **Minutos:** resolver una sala; elegir el equipamiento en una zona de descanso.
+- **Horas:** completar el set de un género; jefes; backtracking.
+
+## Poderes: tres departamentos
+
+En las zonas de descanso se equipa 1 poder por departamento. Todos gastan Rollo. ([D-005](decisiones.md) a [D-008](decisiones.md))
+
+| Departamento | Poderes |
+|---|---|
+| **Edición** | Corte: Salto de toma y Tijera · Tiempo |
+| **Escenografía** | Cambio de set: mismo nivel en otra variante (cambian las trampas, no los enemigos) |
+| **Dirección de fotografía** | Luz |
+
+## Feature index
+
+| Feature | Status | Alcance | Resumen | Docs |
+|---|---|---|---|---|
+| Movimiento 2.5D | in progress | Prototipo | Correr y saltar en el plano XZ, cámara lateral, reaparecer tras caer | [design](features/movimiento/design.md) |
+| Dirección de fotografía (luz) | in progress | Prototipo | Prender/apagar reflectores; piezas que existen solo con luz o solo a oscuras | [design](features/fotografia/design.md) |
+| Tiempo | in progress | Prototipo | Mantener para rebobinar lo que está "en toma" | [design](features/tiempo/design.md) |
+| Combate | idea | Post-prototipo | Claquetazo y vulnerabilidad por enemigo (D-002, D-003) | — |
+| Rollo | idea | Post-prototipo | Barra compartida que gastan los poderes; latas la alargan (D-004) | — |
+| Equipamiento y progresión | idea | Post-prototipo | 1 poder por departamento en descanso; jefes dan slots, fragmentos dan skill tree (D-007, D-008) | — |
+| Corte | idea | Post-prototipo | Salto de toma (mueve al jugador) y Tijera (corta un fragmento del mundo) (D-006) | — |
+| Escenografía | idea | Post-prototipo | Variante del mismo nivel con otras trampas; utilidades como escudo | — |
+| Zonas por género | idea | Post-prototipo | Un set por género dentro del estudio; la primera es cine negro (D-009, D-010) | — |
+
+## Dirección de arte
+
+Un género de cine por zona dentro de un mismo estudio; el backlot (andamios, tramoya, focos) es el hub. El género se expresa con iluminación, post-proceso (LUT) y pocos props héroe sobre un kit base compartido. ([D-009](decisiones.md))
+
+En greybox, los colores de lectura son: gris = fija, amarillo = solo con luz, violeta = solo a oscuras, celeste = en toma (rebobinable), verde = salida.
 
 ## Prototipo (vertical slice gris)
 
-Objetivo: probar que **dirigir se siente bien** antes de producir arte.
+Objetivo: probar que **dirigir se siente bien** antes de producir arte. Tarea: `docs/tasks/T-0002-slice-greybox.md`.
 
-- 1 sala greybox (set de filmación) jugable de punta a punta en 2–3 minutos.
-- Personaje 3D placeholder: correr, saltar, movimiento en plano 2.5D, cámara lateral.
-- Poderes: **Luces** y **Tiempo** (los dos que más contrastan). Un puzzle que exija combinarlos.
+- 1 sala greybox jugable de punta a punta en 2–3 minutos.
+- [Movimiento 2.5D](features/movimiento/design.md), [luz](features/fotografia/design.md) y [Tiempo](features/tiempo/design.md), con un puzzle que exija combinar luz y Tiempo. Son de departamentos distintos, así que se pueden equipar juntos.
 - 1 asset hecho en Blender exportado a Unreal (prueba del pipeline Mac ⇄ Windows ⇄ Blender ⇄ Unreal).
-- Criterio de éxito: un jugador nuevo entiende y resuelve el puzzle sin explicación.
+- **Hecho cuando:** un jugador nuevo resuelve la sala sin explicación en menos de 3 minutos.
 
-## Fuera de alcance del prototipo
-
-Combate, narrativa, arte final, audio, guardado, mapa, menús.
+Fuera de alcance: combate, Rollo, equipamiento, narrativa, arte final, audio, guardado, mapa y menús.
 
 ## Preguntas abiertas
 
-1. ¿Quién es el protagonista? ¿El director dentro de su película, un actor que dirige, la cámara misma?
-2. ¿Hay combate? ¿Los poderes son también la forma de enfrentar enemigos?
-3. ¿Los poderes tienen costo (película, rollo, presupuesto)?
-4. Tono visual: ¿cine negro, cine mudo, ciencia ficción de los 50, varios géneros por zona?
-5. ¿"Corte" mueve al jugador, mueve el mundo, o ambas?
+1. ¿Qué es el **ítem roto** cuyos fragmentos dan puntos de skill tree?
+2. ¿Cómo se diferencia **Tijera** de **Escenografía**, si las dos alteran el set?
+3. ¿Cuál es el **orden de obtención** de los poderes? Solo está implícito que Fotografía va primero (D-010).
+4. ¿Latas (Rollo) y fragmentos (skill tree) son dos coleccionables o uno?
+5. ¿Qué **géneros** tiene cada zona?
+6. **Riesgo:** ¿la luz y el Tiempo se entienden sin explicación? Se averigua con el playtest de T-0002.
 
 ## Privacidad del repo
 
 El repo es **público**. Nada de claves, tokens ni credenciales (lo audita gitleaks en cada commit y en CI).
 Spoilers, guion y documentos de negocio sensibles van en `private/` (ignorado por git) o fuera del repo.
+
+## Cambios
+
+- **0.3 (2026-11-15):** índice de features; notas de [movimiento](features/movimiento/design.md), [fotografía](features/fotografia/design.md) y [tiempo](features/tiempo/design.md) escritas contra el código; las decisiones pasan a [decisiones.md](decisiones.md).
+- **0.2 (2026-11-15):** protagonista, combate, Rollo, tres departamentos, equipamiento en descanso y tono por género (D-001 a D-010).
+- **0.1 (2026-11-15):** primer borrador.
