@@ -8,6 +8,9 @@
 #include "Animation/BlendSpace1D.h"
 #include "Animation/AnimSingleNodeInstance.h"
 #include "Stage/TDCStageLight.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
+#include "UnrealClient.h"
 #include "Engine/SkeletalMesh.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/Engine.h"
@@ -155,8 +158,36 @@ void ATDCCharacter::LoadCharacterAssets()
 void ATDCCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	if (bAutoRun)
+	{
+		TickAutoRun(DeltaSeconds);
+	}
 	UpdateAnimState();
 	UpdateLightPrompt();
+}
+
+void ATDCCharacter::TickAutoRun(float DeltaSeconds)
+{
+	AutoRunTime += DeltaSeconds;
+	// 0-1 s quieto (idle), después corre a la derecha y salta cada 2.5 s, hasta los 12 s.
+	if (AutoRunTime > 1.f && AutoRunTime < 12.f)
+	{
+		AddMovementInput(FVector::ForwardVector, 1.f);
+	}
+	if (AutoRunTime > NextAutoJump && AutoRunTime < 12.f)
+	{
+		Jump();
+		NextAutoJump += 2.5f;
+	}
+	else if (AutoRunTime > NextAutoJump - 2.3f)
+	{
+		StopJumping();
+	}
+	if (AutoRunTime > NextAutoShot && AutoShotIndex < 12)
+	{
+		FScreenshotRequest::RequestScreenshot(FString::Printf(TEXT("TDCAutoRun_%02d"), AutoShotIndex++), false, false);
+		NextAutoShot += 1.f;
+	}
 }
 
 void ATDCCharacter::UpdateLightPrompt()
@@ -287,6 +318,7 @@ void ATDCCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	RespawnLocation = GetActorLocation();
+	bAutoRun = IsPlayerControlled() && FParse::Param(FCommandLine::Get(), TEXT("TDCAutoRun"));
 	LoadCharacterAssets();
 	UpdatePlaceholderVisibility();
 

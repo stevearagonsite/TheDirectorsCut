@@ -159,6 +159,14 @@ private:
 
 	void UpdateLightPrompt();
 
+	/** Modo demo para evidencia sin jugador (-TDCAutoRun): corre a la derecha, salta cada 2.5 s y captura 1 frame/s. */
+	void TickAutoRun(float DeltaSeconds);
+	bool bAutoRun = false;
+	float AutoRunTime = 0.f;
+	float NextAutoJump = 1.5f;
+	float NextAutoShot = 0.5f;
+	int32 AutoShotIndex = 0;
+
 	void OnClap();
 
 	void LoadCharacterAssets();
