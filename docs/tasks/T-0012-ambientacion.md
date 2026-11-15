@@ -15,7 +15,15 @@ creada: 2026-11-15
 - **la cámara con look-ahead** (`TargetOffset` X=700), que ya está en `main`;
 - **ambientación noir**: backdrop pintado, props de Rodin en silueta y luz de noche, con `build_dressing.py` de gamedesigner.
 
-## Pasos
+## Segundo envío (dressing): hacé SOLO esto
+El primer envío dejó al director a escala (ver Reporte). Ahora `build_dressing.py` está en la rama. Pasos:
+`tdc.ps1 stop` → `git lfs lock Game/Content/Maps/L_Slice.umap` (más los assets nuevos que el script vaya a pisar, si ya
+existen) → `tdc.ps1 python -Script Tools\unreal\build_dressing.py` (con `-InEditor` si el commandlet no alcanza) →
+captura `tdc.ps1 shot -Map /Game/Maps/L_Slice -Task T-0012 -Name 02-ambientacion` → commit de `Game/Content/**` + evidencia +
+un párrafo "Segundo envío" en el Reporte → `git lfs unlock` → push → `[TDC-REPORT]` → `tdc.ps1 play`.
+No hace falta recompilar ni reimportar al director. Si `build_dressing.py` falla, reportá el error exacto (lo arregla la Mac).
+
+## Pasos (primer envío, ya hechos)
 0. `.\Tools\scripts\tdc.ps1 stop` (cierra el juego de este proyecto si quedó abierto).
 1. Locks de LFS antes de tocar binarios (los scripts fallan si no pueden guardar):
    `git lfs lock Game/Content/Maps/L_Slice.umap`, `git lfs lock Game/Content/Materials/M_TDCColor.uasset` y
