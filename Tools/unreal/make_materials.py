@@ -165,8 +165,108 @@ def build():
     unreal.log(f"[TDC] {PATH} creado y guardado.")
 
 
+LIGHT_PATH = f"{FOLDER}/M_TDCLightPiece"
+
+
+def scalar_param(mat, name, value, x, y):
+    node = mel.create_material_expression(mat, unreal.MaterialExpressionScalarParameter, x, y)
+    node.set_editor_property("parameter_name", name)
+    node.set_editor_property("default_value", value)
+    return node
+
+
+def build_light_piece():
+    """M_TDCLightPiece (T-0026): piezas que dependen de la luz, hechas "de luz". Translúcido unlit:
+    Emissive = Color * gelatina * (Glow + borde Fresnel * EdgeGlow) * titileo; Opacity = Opacity * (1 + borde).
+    El C++ baja Opacity/Glow cuando la pieza está ausente: queda un fantasma tenue sin colisión."""
+    require_writable(LIGHT_PATH, ".uasset")
+    if eal.does_asset_exist(LIGHT_PATH):
+        mat = eal.load_asset(LIGHT_PATH)
+        mel.delete_all_material_expressions(mat)
+    else:
+        mat = unreal.AssetToolsHelpers.get_asset_tools().create_asset("M_TDCLightPiece", FOLDER, unreal.Material,
+                                                                       unreal.MaterialFactoryNew())
+    mat.set_editor_property("shading_model", unreal.MaterialShadingModel.MSM_UNLIT)
+    mat.set_editor_property("blend_mode", unreal.BlendMode.BLEND_TRANSLUCENT)
+
+    color = vector_param(mat, "Color", (1.0, 0.8, 0.15, 1.0), 0)
+    glow = scalar_param(mat, "Glow", 1.4, -500, 100)
+    edge_glow = scalar_param(mat, "EdgeGlow", 2.5, -700, 350)
+    opacity = scalar_param(mat, "Opacity", 0.45, -500, 600)
+    pulse = scalar_param(mat, "Pulse", 0.08, -900, 800)
+
+    fres = mel.create_material_expression(mat, unreal.MaterialExpressionFresnel, -900, 300)
+    fres.set_editor_property("exponent", 2.0)
+    fres.set_editor_property("base_reflect_fraction", 0.0)
+
+    # gelatina world-aligned (si existe): da textura de difusor al volumen de luz
+    gel_path = f"{FOLDER}/Textures/T_Gel_Panel"
+    panel = None
+    if eal.does_asset_exist(gel_path):
+        tile = scalar_param(mat, "TileSize", 200.0, -1100, -450)
+        uv = world_aligned_uv(mat, tile)
+        tex = mel.create_material_expression(mat, unreal.MaterialExpressionTextureSampleParameter2D, -600, -300)
+        tex.set_editor_property("parameter_name", "Pattern")
+        tex.set_editor_property("texture", eal.load_asset(gel_path))
+        mel.connect_material_expressions(uv, "", tex, "UVs")
+        one = constant(mat, 1.0, -200)
+        panel = mel.create_material_expression(mat, unreal.MaterialExpressionLinearInterpolate, -400, -250)
+        mel.connect_material_expressions(one, "", panel, "A")
+        mel.connect_material_expressions(tex, "R", panel, "B")
+        mel.connect_material_expressions(constant(mat, 0.5, -120), "", panel, "Alpha")
+
+    # titileo de lámpara: 1 + Pulse * sin(Time * 3)
+    time = mel.create_material_expression(mat, unreal.MaterialExpressionTime, -1100, 800)
+    speed = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -950, 800)
+    speed.set_editor_property("const_b", 3.0)
+    mel.connect_material_expressions(time, "", speed, "A")
+    sine = mel.create_material_expression(mat, unreal.MaterialExpressionSine, -800, 800)
+    mel.connect_material_expressions(speed, "", sine, "")
+    amp = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -650, 800)
+    mel.connect_material_expressions(sine, "", amp, "A")
+    mel.connect_material_expressions(pulse, "", amp, "B")
+    flicker = mel.create_material_expression(mat, unreal.MaterialExpressionAdd, -500, 800)
+    flicker.set_editor_property("const_a", 1.0)
+    mel.connect_material_expressions(amp, "", flicker, "B")
+
+    edge = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -500, 300)
+    mel.connect_material_expressions(fres, "", edge, "A")
+    mel.connect_material_expressions(edge_glow, "", edge, "B")
+    energy = mel.create_material_expression(mat, unreal.MaterialExpressionAdd, -300, 200)
+    mel.connect_material_expressions(glow, "", energy, "A")
+    mel.connect_material_expressions(edge, "", energy, "B")
+    lit = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -150, 50)
+    mel.connect_material_expressions(color, "", lit, "A")
+    mel.connect_material_expressions(energy, "", lit, "B")
+    if panel:
+        lit2 = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, 0, 0)
+        mel.connect_material_expressions(lit, "", lit2, "A")
+        mel.connect_material_expressions(panel, "", lit2, "B")
+        lit = lit2
+    final = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, 150, 100)
+    mel.connect_material_expressions(lit, "", final, "A")
+    mel.connect_material_expressions(flicker, "", final, "B")
+    mel.connect_material_property(final, "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+
+    rim = mel.create_material_expression(mat, unreal.MaterialExpressionAdd, -300, 550)
+    rim.set_editor_property("const_a", 1.0)
+    mel.connect_material_expressions(fres, "", rim, "B")
+    op = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -150, 600)
+    mel.connect_material_expressions(opacity, "", op, "A")
+    mel.connect_material_expressions(rim, "", op, "B")
+    sat = mel.create_material_expression(mat, unreal.MaterialExpressionSaturate, 0, 600)
+    mel.connect_material_expressions(op, "", sat, "")
+    mel.connect_material_property(sat, "", unreal.MaterialProperty.MP_OPACITY)
+
+    mel.recompile_material(mat)
+    if not eal.save_asset(LIGHT_PATH, only_if_is_dirty=False):
+        fail(f"No se pudo guardar {LIGHT_PATH} (git lfs lock Game/Content/Materials/M_TDCLightPiece.uasset)")
+    unreal.log(f"[TDC] {LIGHT_PATH} creado y guardado.")
+
+
 try:
     build()
+    build_light_piece()
 finally:
     # Lanzado con -ExecutePythonScript (tdc.ps1 python -InEditor): cerrar el editor al terminar, también si falló.
     if "-executepythonscript" in unreal.SystemLibrary.get_command_line().lower():

@@ -18,6 +18,17 @@ UMaterialInstanceDynamic* TDC::CreateReadColorMID(UPrimitiveComponent* Component
 	return Base ? Component->CreateDynamicMaterialInstance(ElementIndex, Base) : Component->CreateDynamicMaterialInstance(ElementIndex);
 }
 
+UMaterialInstanceDynamic* TDC::CreateMIDFrom(UPrimitiveComponent* Component, const TCHAR* MaterialPath, int32 ElementIndex)
+{
+	if (!Component)
+	{
+		return nullptr;
+	}
+	UMaterialInterface* Base = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr,
+		MaterialPath, nullptr, LOAD_NoWarn | LOAD_Quiet));
+	return Base ? Component->CreateDynamicMaterialInstance(ElementIndex, Base) : nullptr;
+}
+
 void TDC::ApplyReadPattern(UMaterialInstanceDynamic* Material, const TCHAR* TextureName, float Strength, float TileSize)
 {
 	if (!Material)

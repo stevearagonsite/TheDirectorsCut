@@ -54,14 +54,9 @@ void ATDCSetPiece::OnConstruction(const FTransform& Transform)
 
 	LightReactive->Presence = Presence;
 
-	if (!Material && Mesh->GetMaterial(0))
+	if (Mesh->GetMaterial(0))
 	{
-		Material = TDC::CreateReadColorMID(Mesh);
-	}
-	if (Material)
-	{
-		Material->SetVectorParameterValue(TEXT("Color"), ReadColor());
-		ApplyPattern();
+		SetupMaterial();
 	}
 }
 
@@ -79,14 +74,11 @@ void ATDCSetPiece::BeginPlay()
 	Mesh->SetSimulatePhysics(bStartsSimulating);
 
 	// En el build empaquetado el construction script no corre para las piezas del nivel: el color se aplica acá también.
-	if (!Material)
+	SetupMaterial();
+	if (bLightMaterial)
 	{
-		Material = TDC::CreateReadColorMID(Mesh);
-	}
-	if (Material)
-	{
-		Material->SetVectorParameterValue(TEXT("Color"), ReadColor());
-		ApplyPattern();
+		// Antes de Super::BeginPlay: el componente evalúa la luz en su BeginPlay y avisa por OnPresenceChanged.
+		LightReactive->OnPresenceChanged.AddUniqueDynamic(this, &ATDCSetPiece::HandlePresenceChanged);
 	}
 
 	if (UTDCStageSubsystem* Stage = GetWorld()->GetSubsystem<UTDCStageSubsystem>())
@@ -131,4 +123,52 @@ void ATDCSetPiece::ApplyPattern()
 		: (Presence != ETDCLightPresence::Always ? TEXT("T_Gel_Panel") : TEXT("T_Stage_Floor"));
 	const float Strength = Presence == ETDCLightPresence::Always && !bRecordTime ? 0.9f : 0.75f;
 	TDC::ApplyReadPattern(Material, Tex, Strength);
+}
+
+bool ATDCSetPiece::WantsLightMaterial() const
+{
+	return Presence != ETDCLightPresence::Always && !bRecordTime && ColorOverride.A <= 0.f;
+}
+
+void ATDCSetPiece::SetupMaterial()
+{
+	if (!Material && WantsLightMaterial())
+	{
+		Material = TDC::CreateMIDFrom(Mesh, TEXT("/Game/Materials/M_TDCLightPiece.M_TDCLightPiece"));
+		bLightMaterial = Material != nullptr;
+	}
+	if (!Material)
+	{
+		Material = TDC::CreateReadColorMID(Mesh);
+	}
+	if (!Material)
+	{
+		return;
+	}
+	Material->SetVectorParameterValue(TEXT("Color"), ReadColor());
+	if (bLightMaterial)
+	{
+		// Hecha de luz: translúcida, brilla y no tapa la luz del set. Ausente = fantasma tenue (sin colisión).
+		LightReactive->bHideWhenAbsent = false;
+		Mesh->SetCastShadow(false);
+		HandlePresenceChanged(LightReactive->IsPresent());
+	}
+	else
+	{
+		ApplyPattern();
+	}
+}
+
+void ATDCSetPiece::HandlePresenceChanged(bool bNowPresent)
+{
+	if (!Material || !bLightMaterial)
+	{
+		return;
+	}
+	// La de oscuridad brilla menos: es "sombra sólida", no luz.
+	const float FullGlow = Presence == ETDCLightPresence::OnlyInLight ? 1.4f : 0.6f;
+	Material->SetScalarParameterValue(TEXT("Opacity"), bNowPresent ? 0.5f : 0.06f);
+	Material->SetScalarParameterValue(TEXT("Glow"), bNowPresent ? FullGlow : 0.25f);
+	Material->SetScalarParameterValue(TEXT("EdgeGlow"), bNowPresent ? 2.5f : 1.0f);
+	Material->SetScalarParameterValue(TEXT("Pulse"), bNowPresent ? 0.08f : 0.f);
 }

@@ -60,7 +60,7 @@ void UTDCLightReactiveComponent::ApplyPresence(bool bNewPresent)
 	bPresent = bNewPresent;
 
 	AActor* OwnerActor = GetOwner();
-	OwnerActor->SetActorHiddenInGame(!bPresent);
+	OwnerActor->SetActorHiddenInGame(bHideWhenAbsent && !bPresent);
 	OwnerActor->SetActorEnableCollision(bPresent);
 	OnPresenceChanged.Broadcast(bPresent);
 }

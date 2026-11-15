@@ -18,6 +18,10 @@ namespace TDC
 	 */
 	THEDIRECTORSCUT_API UMaterialInstanceDynamic* CreateReadColorMID(UPrimitiveComponent* Component, int32 ElementIndex = 0);
 
+	/** MID de un material por ruta ("/Game/X/M.M"); nullptr si el material no existe (sin fallback). */
+	THEDIRECTORSCUT_API UMaterialInstanceDynamic* CreateMIDFrom(UPrimitiveComponent* Component, const TCHAR* MaterialPath,
+		int32 ElementIndex = 0);
+
 	/** Sonido /Game/Audio/<Name> (import_audio.py) en una posición; sin asset no hace nada. */
 	THEDIRECTORSCUT_API void PlaySfx(const UObject* WorldContext, const TCHAR* Name, const FVector& Location, float Volume = 1.f);
 
