@@ -12,7 +12,7 @@ Manipulás la luz, rebobinás la toma, cortás escenas y cambiás la escenograf�
 | | |
 |---|---|
 | Género y cámara | Metroidvania 2.5D: personajes y escenarios 3D, cámara lateral, movimiento en un plano con capas de profundidad decorativas |
-| Motor | Unreal Engine **5.6** (C++ para sistemas, Blueprints para contenido y tuning). Arte 3D en Blender |
+| Motor | Unreal Engine **5.8** (C++ para sistemas, Blueprints para contenido y tuning). Arte 3D en Blender |
 | Plataforma e input | PC, teclado y gamepad `[ASSUMPTION]` |
 | Alcance actual | Prototipo: vertical slice greybox |
 

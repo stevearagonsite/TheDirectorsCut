@@ -10,6 +10,7 @@ Game/.vs/
 Game/.vscode/
 Game/.idea/
 Game/*.sln
+Game/*.slnx
 Game/*.VC.db
 Game/*.opensdf
 Game/*.sdf

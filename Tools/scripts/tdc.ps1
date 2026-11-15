@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Comandos del estudio Windows para The Director's Cut.
 

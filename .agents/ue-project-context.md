@@ -1,9 +1,9 @@
 # UE Project Context
 
-*Engine: **UE 5.6** (las skills `ue-*` apuntan a 5.8: verificar cada API contra 5.6) · Last updated: 2026-11-15*
+*Engine: **UE 5.8** (la misma versión a la que apuntan las skills `ue-*`, D-013) · Last updated: 2026-11-15*
 
 ## Engine & Project
-**Engine version:** 5.6, launcher build (`EngineAssociation: "5.6"` en `Game/TheDirectorsCut.uproject`). Instalado solo en Windows (`C:\Program Files\Epic Games\UE_5.6`); la Mac no tiene Unreal.
+**Engine version:** 5.8, launcher build (`EngineAssociation: "5.8"` en `Game/TheDirectorsCut.uproject`, lo ajusta T-0001). Instalado solo en Windows (`C:\Program Files\Epic Games\UE_5.8`), con Visual Studio y el .NET Framework 4.8 SDK; la Mac no tiene Unreal.
 **Project name:** The Director's Cut · **Type:** game · **Genre:** metroidvania 2.5D
 **Description:** Metroidvania 2.5D donde el jugador es un director que dirige la escena (luz, tiempo, corte, escenografía). Diseño: `docs/product/vision.md`.
 **Target platforms:** no declarado en `.uproject` (`TargetPlatforms` vacío). Win64 de hecho (`docs/pipeline/comandos-windows.md`). Resto [unknown].

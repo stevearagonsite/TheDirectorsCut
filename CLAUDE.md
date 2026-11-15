@@ -1,6 +1,6 @@
 # The Director's Cut
 
-Metroidvania 2.5D en Unreal Engine 5.6 cuyo pilar es la **Dirección**: el jugador es un director atrapado en su película, con
+Metroidvania 2.5D en Unreal Engine 5.8 cuyo pilar es la **Dirección**: el jugador es un director atrapado en su película, con
 poderes en tres departamentos (Edición, Escenografía, Dirección de fotografía). Visión y features: `docs/product/vision.md`;
 decisiones: `docs/product/decisiones.md`.
 
@@ -13,8 +13,8 @@ Este repo lo trabajan dos Claude Code en paralelo, comunicados por VirtualKvm (`
 - **Si estás en Windows** sos el **estudio**: Unreal, Blender, compilación, assets, pruebas y evidencia.
   Usá la skill **`estudio-windows`** y revisá el inbox de VirtualKvm al empezar.
 
-Skills de dominio (de terceros, ver `.claude/skills/THIRD_PARTY.md`): `ue-*` para C++/Unreal (apuntan a UE 5.8; contrastar con
-la versión real del proyecto, 5.6; contexto en `.agents/ue-project-context.md`) y `text-to-blender` + `blender-*` para Blender (requieren Blender MCP en Windows).
+Skills de dominio (de terceros, ver `.claude/skills/THIRD_PARTY.md`): `ue-*` para C++/Unreal (UE 5.8, la versión del proyecto; contexto
+en `.agents/ue-project-context.md`) y `text-to-blender` + `blender-*` para Blender (requieren Blender MCP en Windows).
 UI: `game-ui-ux` (layout, escalado, foco con gamepad) + `ue-ui-umg-slate` (UMG, Common UI y Slate en C++).
 Diseño de juego: `game-docs` mantiene `docs/product/` (índice de features en `vision.md`, notas en `features/<slug>/`); después de
 cambiar diseño o código correr `python3 .claude/skills/game-docs/scripts/check_docs.py docs/product --gdd vision.md`.
