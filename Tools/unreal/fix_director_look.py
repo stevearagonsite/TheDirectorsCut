@@ -66,8 +66,10 @@ def director_material(sk):
 
     sk.modify()
     materials = sk.get_editor_property("materials")
-    for slot in materials:
+    for i in range(len(materials)):  # en 5.8 el for devuelve copias: reasignar por índice
+        slot = materials[i]
         slot.set_editor_property("material_interface", mat)
+        materials[i] = slot
     sk.set_editor_property("materials", materials)
     # en commandlet set_editor_property no marca el paquete dirty: forzar el guardado
     eal.save_asset(sk.get_path_name(), only_if_is_dirty=False)
