@@ -56,7 +56,7 @@ public:
 	 * Si no existe, queda el greybox. PuppetScale compensa la escala 0.01 del root en las animaciones de Rodin.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|Extra")
-	float PuppetScale = 100.f;
+	float PuppetScale = 1.f; // T-0019: con los FBX de Rodin en cm, 1 = tamaño humano (100 los dejaba gigantes)
 
 	/** Recibe un claquetazo desde una posición. Devuelve el resultado para el feedback del director. */
 	UFUNCTION(BlueprintCallable, Category = "TDC|Extra")

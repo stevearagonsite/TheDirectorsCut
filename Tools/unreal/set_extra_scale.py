@@ -27,7 +27,8 @@ def main():
     les = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
     eas = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
     les.load_level(MAP_PATH)
-    extra_class = unreal.load_class(None, "/Script/TheDirectorsCut.TDCExtra")
+    # unreal.load_class devuelve un unreal.Class (no un tipo de Python): isinstance necesita la clase expuesta.
+    extra_class = unreal.TDCExtra
     count = 0
     for actor in eas.get_all_level_actors():
         if isinstance(actor, extra_class):
