@@ -75,7 +75,7 @@ luz/oscuridad, película = en toma), sin perder el color de lectura. Genera `Gam
 - errores:
   - `Tools/unreal/apply_toon.py` falló en la primera corrida:
     `[TDC] ERROR: no hay ninguna textura de personaje: correr import_director/import_extras antes` (`apply_toon.py:216`).
-    Causa: `eal.does_asset_exist(folder)` devuelve False para carpetas. Cambiado a `does_directory_exist` (línea 211).
+    Causa: `eal.does_asset_exist(folder)` devuelve False para carpetas. Cambiado a `does_directory_exist` (ahora línea 214).
   - Segunda corrida: decía "MI_Toon asignado" pero no asignaba nada (SK_Director quedó byte a byte igual, con `model_001`;
     los extras con el slot en `None`, que es como ya estaban en HEAD). En UE 5.8 `for slot in slots` devuelve copias del
     struct `SkeletalMaterial`; ahora se reasigna por índice (`slots[i] = slot`). Verificado leyendo los slots después de guardar.
