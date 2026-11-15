@@ -20,6 +20,7 @@ https://github.com/quodsoler/unreal-engine-skills — apuntan a UE 5.8.
 - `ue-sequencer-cinematics`
 - `ue-materials-rendering`
 - `ue-data-assets-tables`
+- `ue-niagara-effects` (VFX con Niagara, sumada 2026-11-15)
 - `ue-ui-umg-slate`
 
 ## RobLe3/cc-blender-skill @ a2634b5 (MIT)
@@ -101,3 +102,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## patch-gg/pixelfx @ 5294518 (MIT)
+https://github.com/patch-gg/pixelfx — VFX pixel art por código (244 efectos) exportables a sprite sheets para flipbooks
+de Niagara. Solo se copia `skills/pixelfx/SKILL.md`; la librería se usa desde un checkout fuera del repo
+(`~/Workspace/tools/pixelfx`, Node ≥ 18). Revisada: `tools/serve.mjs` levanta un server HTTP local (galería) y
+`tools/lib/fxlib.mjs` llama a ffmpeg con spawnSync para previews; sin otras llamadas de red.
+
+- `pixelfx`
