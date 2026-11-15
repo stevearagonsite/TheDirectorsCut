@@ -3,6 +3,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Animation/AnimSequence.h"
+#include "Engine/SkeletalMesh.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/LocalPlayer.h"
@@ -21,6 +23,7 @@
 ATDCCharacter::ATDCCharacter()
 {
 	GetCapsuleComponent()->InitCapsuleSize(40.f, 90.f);
+	PrimaryActorTick.bCanEverTick = true;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -85,6 +88,102 @@ ATDCCharacter::ATDCCharacter()
 	Director = CreateDefaultSubobject<UTDCDirectorComponent>(TEXT("Director"));
 }
 
+namespace
+{
+	template <typename T>
+	T* LoadQuiet(const FSoftObjectPath& Path)
+	{
+		// Sin warnings si el asset todavía no existe: el juego sigue con el greybox.
+		return Path.IsValid() ? Cast<T>(StaticLoadObject(T::StaticClass(), nullptr, *Path.ToString(), nullptr,
+			LOAD_NoWarn | LOAD_Quiet)) : nullptr;
+	}
+}
+
+void ATDCCharacter::LoadCharacterAssets()
+{
+	USkeletalMeshComponent* MeshComp = GetMesh();
+	if (!MeshComp)
+	{
+		return;
+	}
+	// Si un Blueprint ya asignó mesh/AnimBP, se respeta.
+	if (!MeshComp->GetSkeletalMeshAsset())
+	{
+		if (USkeletalMesh* LoadedMesh = LoadQuiet<USkeletalMesh>(CharacterMeshPath))
+		{
+			MeshComp->SetSkeletalMesh(LoadedMesh);
+			MeshComp->SetRelativeRotation(FRotator(0.f, MeshYaw, 0.f));
+		}
+	}
+	if (!MeshComp->GetSkeletalMeshAsset() || MeshComp->GetAnimClass())
+	{
+		return;
+	}
+	IdleAnim = LoadQuiet<UAnimSequence>(IdleAnimPath);
+	RunAnim = LoadQuiet<UAnimSequence>(RunAnimPath);
+	JumpAnim = LoadQuiet<UAnimSequence>(JumpAnimPath);
+	if (IdleAnim || RunAnim || JumpAnim)
+	{
+		MeshComp->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+		UpdateAnimState();
+	}
+}
+
+void ATDCCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	UpdateAnimState();
+}
+
+void ATDCCharacter::UpdateAnimState()
+{
+	USkeletalMeshComponent* MeshComp = GetMesh();
+	if (!MeshComp || MeshComp->GetAnimationMode() != EAnimationMode::AnimationSingleNode)
+	{
+		return;
+	}
+	const FVector Velocity = GetVelocity();
+	const float Speed = FVector(Velocity.X, Velocity.Y, 0.f).Size();
+	const bool bInAir = GetCharacterMovement() && GetCharacterMovement()->IsFalling();
+
+	EAnimState NewState = EAnimState::Idle;
+	if (bInAir && JumpAnim)
+	{
+		NewState = EAnimState::Jump;
+	}
+	else if (Speed > RunSpeedThreshold && RunAnim)
+	{
+		NewState = EAnimState::Run;
+	}
+
+	if (NewState == EAnimState::Run && RunAnim)
+	{
+		const float MaxSpeed = GetCharacterMovement() ? FMath::Max(1.f, GetCharacterMovement()->MaxWalkSpeed) : 600.f;
+		MeshComp->SetPlayRate(RunPlayRate * FMath::Clamp(Speed / MaxSpeed, 0.3f, 1.2f));
+	}
+	if (NewState == AnimState)
+	{
+		return;
+	}
+	AnimState = NewState;
+	switch (NewState)
+	{
+	case EAnimState::Jump:
+		MeshComp->PlayAnimation(JumpAnim, /*bLooping*/ false);
+		break;
+	case EAnimState::Run:
+		MeshComp->PlayAnimation(RunAnim, /*bLooping*/ true);
+		break;
+	default:
+		if (IdleAnim)
+		{
+			MeshComp->PlayAnimation(IdleAnim, /*bLooping*/ true);
+		}
+		MeshComp->SetPlayRate(1.f);
+		break;
+	}
+}
+
 bool ATDCCharacter::HasCharacterMesh() const
 {
 	return GetMesh() && GetMesh()->GetSkeletalMeshAsset() != nullptr;
@@ -108,6 +207,7 @@ void ATDCCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	RespawnLocation = GetActorLocation();
+	LoadCharacterAssets();
 	UpdatePlaceholderVisibility();
 
 	if (UMaterialInstanceDynamic* Mat = HasCharacterMesh() ? nullptr : Body->CreateDynamicMaterialInstance(0))
