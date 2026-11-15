@@ -19,7 +19,10 @@ struct FTDCFlipbook
 	float Aspect;        // ancho / alto de un frame
 };
 
-namespace TDC::Fx
+// Forma clásica (no `TDC::Fx`): más segura con UHT.
+namespace TDC
+{
+namespace Fx
 {
 	inline const FTDCFlipbook ClapImpact     { TEXT("claquetazo_impact"), 3, 4, 10, 30.f, false, 128.f / 80.f };
 	inline const FTDCFlipbook ExtraDefeat    { TEXT("extra_defeat"),      7, 7, 46, 30.f, false, 112.f / 108.f };
@@ -27,6 +30,7 @@ namespace TDC::Fx
 	inline const FTDCFlipbook ScriptedBounce { TEXT("scripted_bounce"),   5, 5, 25, 30.f, false, 128.f / 112.f };
 	inline const FTDCFlipbook LightToggle    { TEXT("light_toggle"),      7, 6, 37, 30.f, false, 1.f };
 	inline const FTDCFlipbook Rewind         { TEXT("rewind"),            7, 8, 54, 30.f, true,  96.f / 72.f };
+}
 }
 
 /**
