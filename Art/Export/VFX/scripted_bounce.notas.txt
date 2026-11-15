@@ -1,0 +1,11 @@
+scripted_bounce
+id pixelfx: tdc/scripted-bounce  (fuente: /Users/stevenaragonurrea/Workspace/tools/pixelfx/src/fx/tdc/scripted-bounce.js)
+base: remix de impacts/parry en blanco/negro (estrella de 4 puntas, anillo que se rompe, chispas grises que rebotan, x1.25) + X negra con borde blanco estampada sobre el contacto
+opciones: opciones por defecto (palette grises #0b0a10..#ffffff, ink #0b0a10, height 30, arm 9, speed 1.25, seed 11). Sin --opts.
+comando: node tools/render.mjs tdc/scripted-bounce --sheet
+fps: 30  |  loop: no (one-shot, último frame vacío)  |  duración: 0.80 s
+frames: 25  |  frame: 128x112 px  |  columnas: 5  |  filas: 5  (grilla 5x5, 0 celdas vacías al final)
+pivot (px en el frame): 64,96  =  UV (0.500, 0.857)
+Punto de contacto: local (0,-30) = px (64,66) = UV (0.50,0.59). Pivot del JSON = piso (px 64,96).
+Niagara: Sub UV = 5x5, reproducir frames 0..24 a 30 fps. Textura: Filter Nearest, Compression UserInterface2D (RGBA), sin mips. El glow viene horneado como alfa: material translúcido (o aditivo sobre fondos oscuros).
+Calidad 4/5. Algunas chispas sueltas salen del lienzo de 128 px y se recortan en el borde (aviso de check.mjs); no se nota en movimiento.

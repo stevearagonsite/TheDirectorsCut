@@ -1,0 +1,11 @@
+claquetazo_impact
+id pixelfx: tdc/claquetazo-impact  (fuente: /Users/stevenaragonurrea/Workspace/tools/pixelfx/src/fx/tdc/claquetazo-impact.js)
+base: remix de impacts/blunt-hit (blob crema + cuñas de golpe, x1.8) + impacts/hit-spark (flare en cruz + chispas, x1.4)
+opciones: opciones por defecto del archivo (palette crema, sparks crema, warm #ffe6c4, dust #6c6670, height 20, bluntSpeed 1.8, sparkSpeed 1.4, seed 9). Sin --opts.
+comando: node tools/render.mjs tdc/claquetazo-impact --sheet
+fps: 30  |  loop: no (one-shot, último frame vacío)  |  duración: 0.30 s
+frames: 10  |  frame: 128x80 px  |  columnas: 3  |  filas: 4  (grilla 3x4, 2 celdas vacías al final)
+pivot (px en el frame): 52,64  =  UV (0.406, 0.800)
+Punto de impacto: local (0,-20) = px (52,44) del frame = UV (0.41,0.55). El pivot del JSON es el piso (las chispas rebotan ahí). Direccional: el rayo largo apunta a la derecha; para golpes a la izquierda espejar U.
+Niagara: Sub UV = 3x4, reproducir frames 0..9 a 30 fps. Textura: Filter Nearest, Compression UserInterface2D (RGBA), sin mips. El glow viene horneado como alfa: material translúcido (o aditivo sobre fondos oscuros).
+Calidad 4/5. Golpe seco y legible; el anillo de polvo de los frames 4-8 es algo blando.
