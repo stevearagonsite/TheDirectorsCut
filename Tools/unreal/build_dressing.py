@@ -31,10 +31,12 @@ SET_PIECE = unreal.load_class(None, "/Script/TheDirectorsCut.TDCSetPiece")
 CUBE = "/Engine/BasicShapes/Cube.Cube"
 
 # Telón: cubre el nivel (X -1500..9000) con la proporción de la imagen (3168x1344 = 2.357).
-BACKDROP_WIDTH = 15000.0
-BACKDROP_HEIGHT = BACKDROP_WIDTH / 2.357
-# Más ancho que el nivel y con el borde inferior bajo el fondo del pozo (z=-900): no se ven bordes.
-BACKDROP_CENTER = (3750.0, -3000.0, -900.0 + BACKDROP_HEIGHT / 2.0)
+# La cámara (a ~4000 cm del telón, FOV 60) ve una franja de ~2600 cm de alto: el telón tiene que caber en esa franja
+# para que se vea el skyline y no solo la bruma de abajo. Para cubrir el ancho del nivel, la imagen se repite 2 veces.
+BACKDROP_TILES_U = 2.0
+BACKDROP_HEIGHT = 3400.0
+BACKDROP_WIDTH = BACKDROP_HEIGHT * 2.357 * BACKDROP_TILES_U
+BACKDROP_CENTER = (3750.0, -1800.0, -700.0 + BACKDROP_HEIGHT / 2.0)
 
 # Props en primer plano: (archivo sin extensión, X, Y, yaw, alto deseado en cm).
 # Repartidos para que siempre haya uno o dos en cuadro (la cámara mira ~2500 cm centrados 700 por delante del director).
@@ -109,6 +111,9 @@ def backdrop_material():
     mat.set_editor_property("two_sided", True)
     sample = mel.create_material_expression(mat, unreal.MaterialExpressionTextureSample, -400, 0)
     sample.set_editor_property("texture", tex)
+    tiled = mel.create_material_expression(mat, unreal.MaterialExpressionTextureCoordinate, -600, 0)
+    tiled.set_editor_property("u_tiling", BACKDROP_TILES_U)
+    mel.connect_material_expressions(tiled, "", sample, "UVs")
     mul = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -150, 0)
     mul.set_editor_property("const_b", 0.85)  # un poco más oscuro que la imagen para que el nivel destaque
     mel.connect_material_expressions(sample, "RGB", mul, "A")
