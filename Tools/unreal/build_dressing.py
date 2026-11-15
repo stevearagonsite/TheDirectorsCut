@@ -37,12 +37,14 @@ BACKDROP_HEIGHT = BACKDROP_WIDTH / 2.357
 BACKDROP_CENTER = (3750.0, -3000.0, -900.0 + BACKDROP_HEIGHT / 2.0)
 
 # Props en primer plano: (archivo sin extensión, X, Y, yaw, alto deseado en cm).
+# Repartidos para que siempre haya uno o dos en cuadro (la cámara mira ~2500 cm centrados 700 por delante del director).
 PROPS = [
-    ("SM_Spotlight", -150.0, 650.0, 30.0, 220.0),
-    ("SM_FilmCamera", 2600.0, 750.0, -20.0, 190.0),
-    ("SM_Crates", 4400.0, 650.0, 10.0, 160.0),
-    ("SM_Spotlight", 6900.0, 700.0, -35.0, 220.0),
-    ("SM_Crates", 7900.0, 600.0, 0.0, 160.0),
+    ("SM_Spotlight", 700.0, 650.0, 30.0, 220.0),
+    ("SM_Crates", 1900.0, 700.0, 10.0, 150.0),
+    ("SM_FilmCamera", 3300.0, 700.0, -25.0, 190.0),
+    ("SM_Spotlight", 4600.0, 650.0, -30.0, 220.0),
+    ("SM_Crates", 5700.0, 700.0, -5.0, 150.0),
+    ("SM_FilmCamera", 7000.0, 700.0, 20.0, 190.0),
 ]
 FOREGROUND_Y = (450.0, 950.0)   # franja de escenario en primer plano
 FOREGROUND_TOP_Z = -40.0
@@ -74,10 +76,10 @@ def rot(pitch=0.0, yaw=0.0, roll=0.0):
     return r
 
 
-def import_file(path, name, options=None):
+def import_file(path, name, options=None, folder=None):
     task = unreal.AssetImportTask()
     task.filename = path
-    task.destination_path = DEST
+    task.destination_path = folder or DEST
     task.destination_name = name
     task.replace_existing = True
     task.automated = True
@@ -85,7 +87,8 @@ def import_file(path, name, options=None):
     if options:
         task.options = options
     unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
-    return eal.load_asset(f"{DEST}/{name}")
+    target = f"{folder or DEST}/{name}"
+    return eal.load_asset(target) if eal.does_asset_exist(target) else None
 
 
 def backdrop_material():
@@ -109,7 +112,25 @@ def backdrop_material():
     mul = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -150, 0)
     mul.set_editor_property("const_b", 0.85)  # un poco más oscuro que la imagen para que el nivel destaque
     mel.connect_material_expressions(sample, "RGB", mul, "A")
-    mel.connect_material_property(mul, "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+    # Gradiente vertical: el tercio inferior (bruma clara) se oscurece hacia abajo para que no haga una línea celeste
+    # a la altura del piso. V=0 arriba, V=1 abajo: factor = 1 - 0.8 * V^3.
+    uv = mel.create_material_expression(mat, unreal.MaterialExpressionTextureCoordinate, -700, 250)
+    mask = mel.create_material_expression(mat, unreal.MaterialExpressionComponentMask, -550, 250)
+    mask.set_editor_property("r", False)
+    mask.set_editor_property("g", True)
+    mel.connect_material_expressions(uv, "", mask, "")
+    pw = mel.create_material_expression(mat, unreal.MaterialExpressionPower, -400, 250)
+    pw.set_editor_property("const_exponent", 3.0)
+    mel.connect_material_expressions(mask, "", pw, "Base")
+    scl = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -250, 250)
+    scl.set_editor_property("const_b", 0.8)
+    mel.connect_material_expressions(pw, "", scl, "A")
+    inv = mel.create_material_expression(mat, unreal.MaterialExpressionOneMinus, -100, 250)
+    mel.connect_material_expressions(scl, "", inv, "")
+    dark = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, 50, 0)
+    mel.connect_material_expressions(mul, "", dark, "A")
+    mel.connect_material_expressions(inv, "", dark, "B")
+    mel.connect_material_property(dark, "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
     mel.recompile_material(mat)
     eal.save_asset(path)
     return mat
@@ -130,7 +151,8 @@ def import_prop(name):
     ui.automated_import_should_detect_type = False
     ui.static_mesh_import_data.combine_meshes = True
     ui.static_mesh_import_data.set_editor_property("auto_generate_collision", False)
-    sm = import_file(fbx, name, ui)
+    # Una subcarpeta por prop: Rodin nombra texturas y materiales igual en todos (texture_diffuse, model...).
+    sm = import_file(fbx, name, ui, folder=f"{DEST}/{name}")
     if not sm:
         fail(f"no se importó {name}")
     return sm
