@@ -255,6 +255,17 @@ def night_lighting():
             fog.set_editor_property("fog_inscattering_luminance", unreal.LinearColor(0.03, 0.04, 0.08, 1.0))
 
 
+def dynamic_lighting_only():
+    """Sin iluminación precalculada: el build no tiene lightmaps y mostraba "LIGHTING NEEDS TO BE REBUILT" en pantalla.
+    Todas las luces pasan a Movable y el mundo fuerza no usar luz precalculada."""
+    for actor in eas.get_all_level_actors():
+        for comp in actor.get_components_by_class(unreal.LightComponentBase):
+            comp.set_mobility(unreal.ComponentMobility.MOVABLE)
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
+    world.get_world_settings().set_editor_property("force_no_precomputed_lighting", True)
+    log("luz 100% dinámica (force_no_precomputed_lighting, luces Movable).")
+
+
 def post_process():
     """Look de cine negro: exposición más baja (el auto-exposure aclaraba todo), viñeta, grano y menos saturación."""
     ppv = eas.spawn_actor_from_class(unreal.PostProcessVolume, vec(0.0, 0.0, 0.0), rot())
@@ -312,6 +323,7 @@ def build():
 
     night_lighting()
     post_process()
+    dynamic_lighting_only()
 
     if not les.save_current_level():
         fail(f"No se pudo guardar {MAP_PATH} (¿read-only por LFS? git lfs lock Game/Content/Maps/L_Slice.umap)")

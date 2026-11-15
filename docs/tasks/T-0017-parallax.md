@@ -32,7 +32,8 @@ Pedidos de Steve: fondo con parallax en varias capas y VFX en las mecánicas (T-
    Tiene que crear los 6 `T_*` y `M_TDCFlipbook` sin errores.
 5. `.\Tools\scripts\tdc.ps1 shot -Map /Game/Maps/L_Slice -Task T-0017 -Name 01-parallax-a` y después `-Name 01-parallax-b`.
    Compará con `docs/evidence/T-0015/01-final.png`: ¿se ven las 3 capas, sin halos, sin huecos ni bordes del plano en cuadro?
-   ¿el director y los colores de lectura se siguen leyendo? Si se ve peor, reportá `parcial` y **no empaquetes**.
+   ¿el director y los colores de lectura se siguen leyendo? ¿Ya **no** aparece "LIGHTING NEEDS TO BE REBUILT" (build_dressing
+   ahora fuerza luz 100% dinámica)? Si se ve peor, reportá `parcial` y **no empaquetes**.
 6. `.\Tools\scripts\tdc.ps1 package -Zip stevearagonsite_TheDirectorsCut_mejora`.
 7. `.\Tools\scripts\tdc.ps1 smoke -Task T-0017 -Name 02-package -Wait 60 -Zip stevearagonsite_TheDirectorsCut_mejora`
    (mismos chequeos que T-0015: corre a los 60 s, log sin `Fatal` ni assets faltantes).
@@ -43,6 +44,7 @@ Pedidos de Steve: fondo con parallax en varias capas y VFX en las mecánicas (T-
 - [ ] Compila con T-0018; `import_vfx.py` crea los 6 sheets y `M_TDCFlipbook`.
 - [ ] `01-parallax-b.png` muestra las 3 capas y se ve igual o mejor que T-0015.
 - [ ] `..._mejora.zip` de menos de 1 GB; el exe corre a los 60 s, sin `Fatal` ni assets faltantes.
+- [ ] En `02-package.png` no aparece "LIGHTING NEEDS TO BE REBUILT".
 - [ ] El zip de T-0015 quedó intacto.
 
 ## Permite
