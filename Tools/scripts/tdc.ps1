@@ -112,10 +112,13 @@ switch ($Command) {
     $path = Join-Path $Repo $Script
     if ($InEditor) {
       # Editor completo sin ventana: el script tiene que cerrar el editor al terminar (build_slice.py lo hace).
-      & $UECmd "$Proj" -ExecutePythonScript="$path" -unattended -nosplash -nopause; Check-Exit 'python'
+      & $UECmd "$Proj" -ExecutePythonScript="$path" -unattended -nosplash -nopause 2>&1 | Tee-Object -Variable out
     } else {
-      & $UECmd "$Proj" -run=pythonscript -script="$path" -unattended -nosplash; Check-Exit 'python'
+      & $UECmd "$Proj" -run=pythonscript -script="$path" -unattended -nosplash 2>&1 | Tee-Object -Variable out
     }
+    Check-Exit 'python'
+    # Los scripts de Tools/unreal loguean "[TDC] ERROR" y el editor puede salir con 0 igual: cortar acá.
+    if ($out -match '\[TDC\] ERROR') { throw 'el script reportó [TDC] ERROR (ver arriba)' }
   }
   'blender' {
     Need-Blender

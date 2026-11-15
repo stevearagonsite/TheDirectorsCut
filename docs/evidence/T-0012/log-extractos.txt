@@ -1,0 +1,98 @@
+T-0012 - extractos de log (rutas relativas al repo)
+
+== build (tdc.ps1 build) ==
+[1/9] Compile [x64] Module.TheDirectorsCut.gen.cpp ... [9/9] WriteMetadata TheDirectorsCutEditor.target
+Result: Succeeded  (sin errores ni warnings de C++ del proyecto)
+
+== import_director.py ==
+LogPython: [TDC] borrado el contenido previo de /Game/Characters/Director
+LogPython: [TDC] importado: 1 objetos
+LogPython: [TDC] altura importada: 180.0 cm        (dentro de ±10 cm: no reescala)
+LogPython: [TDC] anim SK_Director_Anim_Armature_Armature_Armature_Idle -> AS_Director_Idle (8.33 s)
+LogPython: [TDC] anim SK_Director_Anim_Armature_Armature_Armature_Jogging -> AS_Director_Run (1.17 s)
+LogPython: [TDC] anim SK_Director_Anim_Armature_Armature_Armature_Jumping -> AS_Director_Jump (1.03 s)
+LogPython: [TDC] anim SK_Director_Anim_Armature_Armature_Armature_Two_Cycle_Sprint -> AS_Director_Sprint (1.07 s)
+LogPython: [TDC] anim SK_Director_Anim_Armature_Armature_Armature_Walking -> AS_Director_Walk (2.57 s)
+LogPython: [TDC] anim AS_Director_Clap -> AS_Director_Clap (2.20 s)
+LogPython: [TDC] SM_Clapperboard importado (alto 27.2 cm)
+LogPython: [TDC] Director importado en /Game/Characters/Director
+Success - 0 error(s), 15 warning(s)
+Warnings (benignos):
+  LogLinker: Warning: [AssetLog] Game/Content/Characters/Director/<asset>.uasset: Error opening file.
+    (model_001, M_clapdk, M_claplt, texture_*, SK_Director_PhysicsAsset: el script los borró antes de reimportar)
+  FBXImport: Warning: No smoothing group information was found in this FBX scene.
+  FBXImport: Warning: SM_Clapperboard has degenerate tangent bases / nearly zero bi-normals.
+
+== make_materials.py ==
+LogPython: [TDC] /Game/Materials/M_TDCColor creado y guardado.
+Success - 0 error(s), 0 warning(s)
+
+== build_slice.py (commandlet, sin -InEditor) ==
+LogPython: [TDC] L_Slice construido y guardado.
+Success - 0 error(s), 0 warning(s)
+
+== build_dressing.py ==
+No existe Tools/unreal/build_dressing.py en el sha 853919e: paso salteado (la ambientación viene en un segundo envío).
+
+== tests (tdc.ps1 test) ==
+tests: ok=4 fallidos=0 warnings=0
+
+== SEGUNDO ENVÍO (sha 0949cdf) ==
+
+== build_dressing.py, 1ª corrida (commandlet, sin -InEditor) ==
+LogInterchangeEngine: Display: Interchange import completed [Art/Export/Dressing/T_Backdrop_Noir.png]
+LogEditorAssetSubsystem: Error: LoadAsset failed: The AssetData '/Game/Dressing/M_Backdrop.M_Backdrop' could not be found in the Asset Registry.
+LogPythonScriptCommandlet: Display: Python script executed successfully
+Failure - 1 error(s), 0 warning(s)   -> tdc.ps1: "python terminó con código 1"
+(El script sí completó: guardó L_Slice y creó M_Backdrop/T_Backdrop_Noir. El error es eal.load_asset de un asset que
+ todavía no existe; fix en build_dressing.py: does_asset_exist antes de load_asset.)
+
+== build_dressing.py, 2ª corrida (con el fix) ==
+LogInterchangeEngine: Display: Interchange import completed [Art/Export/Dressing/T_Backdrop_Noir.png]
+LogPythonScriptCommandlet: Display: Python script executed successfully
+Success - 0 error(s), 0 warning(s)
+Props: Art/Export/Dressing/ solo tiene T_Backdrop_Noir.png; ningún SM_*.fbx -> los 5 props se omiten (comportamiento del script).
+
+== verificación del mapa (script de diagnóstico, no commiteado) ==
+DR_Backdrop  StaticMeshActor  loc=(3750,-3000,1500)  scale=(110,0.02,46.67)  mat=/Game/Dressing/M_Backdrop
+DR_ForegroundStage  TDCSetPiece  loc=(3750,700,-90)
+M_Backdrop: shading=MSM_UNLIT, 2 expresiones, Emissive <- Multiply ; T_Backdrop_Noir 3168 px de ancho
+Ambient_Sun, Sky_Light, Height_Fog presentes con esos labels (night_lighting los encuentra).
+
+== captura (tdc.ps1 shot) ==
+1ª toma: telón gris con grilla y sombras = material por defecto mientras compilan los shaders de M_Backdrop
+(shot dispara HighResShot apenas arranca). 2ª toma, con shaders ya en DDC: telón correcto -> 02-ambientacion.png.
+
+== TERCER ENVÍO (sha 6e934fa) ==
+
+== build (tdc.ps1 build) ==
+[2/9] Compile [x64] TDCCharacter.cpp  [3/9] TDCCharacterAnimInstance.cpp  [4/9] TDCExtra.cpp  [5/9] TDCGameMode.cpp
+[6/9] TDCStageTriggers.cpp ... [9/9] WriteMetadata TheDirectorsCutEditor.target
+Result: Succeeded  (sin errores ni warnings de C++ del proyecto)
+
+== fix_director_look.py, 1ª corrida (commandlet) ==
+LogPython: [TDC] M_Director asignado a 1 slot(s) (sin metallic)
+LogPython: [TDC] BS_Director_Locomotion con 4 muestras
+Success - 0 error(s), 0 warning(s)
+(pero SK_Director.uasset no quedó modificado en disco: save_asset lo saltea porque el paquete no está dirty)
+
+== fix_director_look.py, 2ª corrida (con sk.modify() + only_if_is_dirty=False) ==
+LogPython: [TDC] M_Director asignado a 1 slot(s) (sin metallic)
+LogPython: [TDC] BS_Director_Locomotion con 4 muestras
+Success - 0 error(s), 0 warning(s)   -> SK_Director.uasset modificado
+
+== build_dressing.py (commandlet, sin -InEditor) ==
+LogInterchangeEngine: Warning: [Art/Export/Dressing/SM_Spotlight.fbx : 'SM_Spotlight', StaticMesh] No smoothing group
+  information was found for this mesh 'model' in the FBX file.
+LogPython: [TDC] sin SM_FilmCamera.fbx: se omite
+LogPython: [TDC] sin SM_Crates.fbx: se omite
+LogPython: [TDC] ambientación noir aplicada y L_Slice guardado.
+Success - 0 error(s), 1 warning(s)
+Assets nuevos en /Game/Dressing: SM_Spotlight, model (material), texture_diffuse, texture_metallic, texture_normal,
+texture_roughness.
+
+== tests (tdc.ps1 test) ==
+tests: ok=4 fallidos=0 warnings=0
+
+== capturas ==
+03-noir-a.png y 03-noir-b.png (iguales: shaders ya compilados por los commandlets).

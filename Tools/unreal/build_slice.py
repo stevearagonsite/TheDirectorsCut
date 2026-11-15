@@ -5,7 +5,9 @@ Correr en el editor de Unreal (Windows):
   - Output Log > Python:  py "<repo>/Tools/unreal/build_slice.py"
   - o por línea de comandos:  UnrealEditor.exe "<repo>/Game/TheDirectorsCut.uproject" -ExecutePythonScript="<repo>/Tools/unreal/build_slice.py"
 
-Es idempotente: si el mapa existe, borra sus actores y lo vuelve a armar. El layout se edita ACÁ (lo mantiene la Mac);
+Antes de regenerarlo en Windows: `git lfs lock Game/Content/Maps/L_Slice.umap` (si no, el mapa queda read-only y
+el script corta con "[TDC] ERROR"). Es idempotente: si el mapa existe, borra sus actores y lo vuelve a armar.
+El layout se edita ACÁ (lo mantiene la Mac);
 los retoques visuales finos se hacen en el editor sobre otro mapa o en una tarea aparte.
 
 Plano de juego: X = horizontal (derecha +), Z = vertical. Y = profundidad (cámara en +Y mirando a -Y).
@@ -23,12 +25,28 @@ Extras (claquetazo, F): rojo = común (lo derriba), naranja = resistente (lo atu
 negro con franja = de guion (inmune: en Beat 2 es una sombra que solo existe a oscuras -> prender L2 la saca de la toma).
 """
 
+import os
+
 import unreal
 
 MAP_PATH = "/Game/Maps/L_Slice"
 
 eas = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
 les = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
+
+
+def fail(message):
+    """Error claro en el log; tdc.ps1 python busca "[TDC] ERROR" y corta con código distinto de 0."""
+    unreal.log_error(f"[TDC] ERROR: {message}")
+    raise RuntimeError(message)
+
+
+def require_writable(asset_path, ext):
+    """Los .umap/.uasset son lockables de LFS: sin `git lfs lock` quedan read-only y el guardado falla en silencio."""
+    rel = asset_path.replace("/Game/", "", 1) + ext
+    disk = os.path.join(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_content_dir()), rel)
+    if os.path.exists(disk) and not os.access(disk, os.W_OK):
+        fail(f"Game/Content/{rel} es read-only (lockable de LFS sin lock). Antes: git lfs lock Game/Content/{rel}")
 
 SET_PIECE = unreal.load_class(None, "/Script/TheDirectorsCut.TDCSetPiece")
 STAGE_LIGHT = unreal.load_class(None, "/Script/TheDirectorsCut.TDCStageLight")
@@ -102,6 +120,7 @@ def open_clean_map():
 
 
 def build():
+    require_writable(MAP_PATH, ".umap")
     open_clean_map()
 
     # --- Ambiente: luz tenue para que los reflectores se lean ---
@@ -163,17 +182,18 @@ def build():
     box("Exit_Ledge", 7200.0, 7600.0, 0.0, 380.0, f, safe=True)
     box("Exit_Marker", 7450.0, 7520.0, 380.0, 520.0, f, depth=70.0, color=(0.2, 0.9, 0.3, 1.0))
 
-    world = unreal.EditorLevelLibrary.get_editor_world()
+    world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
     settings = world.get_world_settings()
     settings.set_editor_property("kill_z", -1500.0)
 
     if not les.save_current_level():
-        raise RuntimeError("[TDC] No se pudo guardar L_Slice (¿read-only por LFS? hacer git lfs lock Game/Content/Maps/L_Slice.umap)")
+        fail(f"No se pudo guardar {MAP_PATH} (¿read-only por LFS? git lfs lock Game/Content/Maps/L_Slice.umap)")
     unreal.log("[TDC] L_Slice construido y guardado.")
 
 
-build()
-
-# Lanzado con -ExecutePythonScript (tdc.ps1 python -InEditor): cerrar el editor al terminar.
-if "-executepythonscript" in unreal.SystemLibrary.get_command_line().lower():
-    unreal.SystemLibrary.quit_editor()
+try:
+    build()
+finally:
+    # Lanzado con -ExecutePythonScript (tdc.ps1 python -InEditor): cerrar el editor al terminar, también si falló.
+    if "-executepythonscript" in unreal.SystemLibrary.get_command_line().lower():
+        unreal.SystemLibrary.quit_editor()
