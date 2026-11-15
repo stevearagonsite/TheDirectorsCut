@@ -216,7 +216,8 @@ switch ($Command) {
     $exe = Join-Path $dir 'TheDirectorsCut.exe'
     if (-not (Test-Path $exe)) { throw 'El zip no tiene TheDirectorsCut.exe en la raíz' }
     $before = Get-Date
-    Start-Process $exe -ArgumentList "-windowed -ResX=1280 -ResY=720 -log -ExecCmds=`"HighResShot 1280x720`"" | Out-Null
+    # "Screenshot showui" y no HighResShot: HighResShot no incluye los AddOnScreenDebugMessage (el HUD de controles).
+    Start-Process $exe -ArgumentList "-windowed -ResX=1280 -ResY=720 -log -ExecCmds=`"Screenshot showui`"" | Out-Null
     Start-Sleep -Seconds $Wait
     $running = @(Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -and $_.ExecutablePath -like "$dir\*" })
     "seguía corriendo a los $Wait s: $(if ($running.Count) { 'sí' } else { 'NO (¿crash?)' })"
