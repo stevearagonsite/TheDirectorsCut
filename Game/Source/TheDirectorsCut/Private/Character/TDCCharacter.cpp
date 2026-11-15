@@ -50,6 +50,8 @@ ATDCCharacter::ATDCCharacter()
 	CameraBoom->SetRelativeRotation(FRotator(-5.f, -90.f, 0.f));
 	CameraBoom->TargetArmLength = 2200.f; // D-012: encuadre amplio para anticipar el tramo que viene
 	CameraBoom->SocketOffset = FVector(0.f, 0.f, 120.f);
+	// Look-ahead (D-012): el nivel avanza hacia +X, así que el director queda en el tercio izquierdo y se ve lo que viene.
+	CameraBoom->TargetOffset = FVector(700.f, 0.f, 0.f);
 	CameraBoom->bDoCollisionTest = false;
 	CameraBoom->bEnableCameraLag = true;
 	CameraBoom->CameraLagSpeed = 6.f;
@@ -119,6 +121,7 @@ void ATDCCharacter::LoadCharacterAssets()
 		{
 			MeshComp->SetSkeletalMesh(LoadedMesh);
 			MeshComp->SetRelativeRotation(FRotator(0.f, MeshYaw, 0.f));
+			MeshComp->SetRelativeScale3D(FVector(AnimatedMeshScale));
 		}
 	}
 	if (!MeshComp->GetSkeletalMeshAsset() || MeshComp->GetAnimClass())

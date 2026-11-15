@@ -167,7 +167,8 @@ def build():
     settings = world.get_world_settings()
     settings.set_editor_property("kill_z", -1500.0)
 
-    les.save_current_level()
+    if not les.save_current_level():
+        raise RuntimeError("[TDC] No se pudo guardar L_Slice (¿read-only por LFS? hacer git lfs lock Game/Content/Maps/L_Slice.umap)")
     unreal.log("[TDC] L_Slice construido y guardado.")
 
 
