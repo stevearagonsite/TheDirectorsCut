@@ -3,9 +3,12 @@
 Preferí `Tools/scripts/tdc.ps1`, que los envuelve. Esta página es la referencia cruda por si el script falla.
 Las rutas de cada máquina van en `Tools/scripts/tdc.local.ps1` (ignorado por git; copiar de `tdc.local.example.ps1`).
 
+Requisitos para compilar: UE 5.8, Visual Studio con C++ y el componente **.NET Framework 4.8 SDK**
+(`Microsoft.Net.Component.4.8.SDK`; sin él UBT falla con `Could not find NetFxSDK install dir`).
+
 | Variable | Ejemplo |
 |---|---|
-| `$UE` | `C:\Program Files\Epic Games\UE_5.6` |
+| `$UE` | `C:\Program Files\Epic Games\UE_5.8` |
 | `$Blender` | `C:\Program Files\Blender Foundation\Blender 4.5\blender.exe` |
 | `$Repo` | `D:\Games\TheDirectorsCut` |
 | `$Proj` | `$Repo\Game\TheDirectorsCut.uproject` |
