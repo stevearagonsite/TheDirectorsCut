@@ -320,7 +320,7 @@ def night_lighting():
             comp.set_intensity(0.8)
             comp.set_light_color(unreal.LinearColor(0.55, 0.65, 1.0, 1.0))
         elif label == "Sky_Light":
-            actor.get_component_by_class(unreal.SkyLightComponent).set_intensity(0.3)
+            actor.get_component_by_class(unreal.SkyLightComponent).set_intensity(0.55)
         elif label == "Pit_Floor":
             # El fondo del pozo se veía lila al bajar la cámara: oscuro, como el escenario.
             actor.set_editor_property("color_override", unreal.LinearColor(0.03, 0.03, 0.04, 1.0))
@@ -353,7 +353,7 @@ def post_process():
     # Adaptación casi instantánea: el build arrancaba oscuro (frame 0) mientras el auto-exposure se adaptaba.
     for name, value in (("auto_exposure_speed_up", 20.0),
                         ("auto_exposure_speed_down", 20.0),
-                        ("auto_exposure_bias", -0.3),
+                        ("auto_exposure_bias", 0.0),
                         ("vignette_intensity", 0.45),
                         ("film_grain_intensity", 0.25),
                         ("color_saturation", unreal.Vector4(0.8, 0.8, 0.85, 1.0)),
