@@ -1,6 +1,6 @@
 ---
 id: T-0026
-titulo: Package de mejora 3: cel shading de personajes + audio + texturas del set (sobre T-0019)
+titulo: Package de mejora 4: toon sin quemar + piezas "de luz" (sobre mejora 3)
 estado: enviada
 tipo: mixto
 rama: t/T-0026-luz-tenue
