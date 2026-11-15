@@ -71,6 +71,26 @@ Lo que fija la hoja de modelo:
 
 Las vistas sueltas tienen el mismo alto de personaje, pero no comparten escala exacta en píxeles. Al montarlas como planos de referencia en Blender, hay que escalar cada una para que la figura mida 180 cm.
 
+## Pipeline de assets 3D: buscar, evaluar y recién ahí generar (D-015)
+
+Cada asset 3D sigue este orden:
+
+1. **Buscar.** Primero en los modelos propios de Steve en Sketchfab, después en modelos abiertos (CC0, o CC-BY con crédito).
+2. **Evaluar** con la checklist de taste. Si cumple al menos 5 de 6, se usa.
+3. **Generar** con Rodin, solo si nada cumple. La imagen de referencia se hace con Gemini, usando la hoja de modelo del protagonista como estilo.
+4. **Registrar** en el manifest: fuente, autor, licencia y link. Los CC-BY van a los créditos de la entrega.
+
+### Checklist de taste
+
+| # | Criterio | Cumple si… |
+|---|---|---|
+| 1 | Estilo | Es 3D estilizado de facetas simples, con colores planos y poca textura. No es fotorrealista ni brillante/metálico. |
+| 2 | Época y tema | Encaja en un estudio de cine de los 40–50 o en el género de la zona (cine negro en la primera). |
+| 3 | Paleta | Usa neutros y apagados, sin amarillo, violeta ni cian saturados: esos colores son de las mecánicas. |
+| 4 | Silueta | Se lee a escala de juego (cámara a ~22 m): formas grandes, sin depender del detalle fino. |
+| 5 | Técnico | Hasta ~10k tris por prop (personajes 10–20k), escala real, pivote en la base y sin rig salvo los personajes. |
+| 6 | Coherencia | Puesto al lado del Director y del telón, parece del mismo juego. |
+
 ## Lenguaje de color de juego
 
 Los conceptos usan los mismos colores que el greybox del prototipo. Ese lenguaje se mantiene en el arte final:
@@ -96,5 +116,6 @@ El resto del set evita esos tres colores saturados, para que nunca se confunda d
 
 ## Historia
 
+- 2026-11-15: pipeline de assets 3D con checklist de taste (D-015).
 - 2026-11-15: conceptos 1 (personaje) y 2 (nivel y cámara) incorporados; video de concepto (concepto 3).
 - 2026-11-15: hoja de modelo del protagonista y de la claqueta, generadas con Gemini.
