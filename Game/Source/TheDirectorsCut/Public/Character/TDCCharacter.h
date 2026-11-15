@@ -90,11 +90,11 @@ protected:
 	FSoftObjectPath JumpAnimPath = FSoftObjectPath(TEXT("/Game/Characters/Director/AS_Director_Jump.AS_Director_Jump"));
 
 	/**
-	 * Escala del mesh cargado por ruta. Las animaciones exportadas desde Blender traen escala 0.01 en la pista del root
-	 * ("Armature"); 100 la compensa. Fix de fondo post-jam: re-export con FBX Units Scale y volver a 1.
+	 * Escala del mesh cargado por ruta. Con los FBX re-exportados en cm (T-0012) vale 1. Si un FBX trae escala 0.01 en la pista del root
+	 * ("Armature"), 100 la compensa.
 	 */
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
-	float AnimatedMeshScale = 100.f;
+	float AnimatedMeshScale = 1.f;
 
 	/** Rotación del mesh respecto de la cápsula (el FBX mira a -Y; el personaje avanza en +X). */
 	UPROPERTY(EditDefaultsOnly, Category = "TDC|Character")
