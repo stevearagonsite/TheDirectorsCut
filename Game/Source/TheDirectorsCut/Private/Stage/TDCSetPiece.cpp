@@ -9,6 +9,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/CollisionProfile.h"
+#include "Core/TDCFlipbookFx.h"
+#include "TimerManager.h"
 
 ATDCSetPiece::ATDCSetPiece()
 {
@@ -84,6 +86,10 @@ void ATDCSetPiece::BeginPlay()
 	if (UTDCStageSubsystem* Stage = GetWorld()->GetSubsystem<UTDCStageSubsystem>())
 	{
 		LightingHandle = Stage->OnLightingChanged.AddUObject(this, &ATDCSetPiece::OnLightingChanged);
+		if (bRecordTime)
+		{
+			TimeModeHandle = Stage->OnTimeModeChanged.AddUObject(this, &ATDCSetPiece::OnTimeModeChanged);
+		}
 	}
 
 	Super::BeginPlay();
@@ -94,6 +100,7 @@ void ATDCSetPiece::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	if (UTDCStageSubsystem* Stage = GetWorld()->GetSubsystem<UTDCStageSubsystem>())
 	{
 		Stage->OnLightingChanged.Remove(LightingHandle);
+		Stage->OnTimeModeChanged.Remove(TimeModeHandle);
 	}
 	Super::EndPlay(EndPlayReason);
 }
@@ -172,4 +179,59 @@ void ATDCSetPiece::HandlePresenceChanged(bool bNowPresent)
 	Material->SetScalarParameterValue(TEXT("Glow"), bNowPresent ? FullGlow : 0.25f);
 	Material->SetScalarParameterValue(TEXT("EdgeGlow"), bNowPresent ? 2.5f : 1.0f);
 	Material->SetScalarParameterValue(TEXT("Pulse"), bNowPresent ? 0.08f : 0.f);
+}
+
+void ATDCSetPiece::OnTimeModeChanged(ETDCTimeMode NewMode)
+{
+	// Solo las piezas que se movieron (más que el frame de partida) muestran que el tiempo las tocó.
+	const bool bAffected = Timeline && Timeline->GetRecordedSeconds() * Timeline->SamplesPerSecond > 1.5f;
+	bTakeRewinding = NewMode == ETDCTimeMode::Rewind && bAffected;
+	if (bTakeRewinding)
+	{
+		SetTakeGlow(1.f);
+		if (!TakeFx.IsValid())
+		{
+			const FBox Box = GetComponentsBoundingBox(true);
+			const float Width = FMath::Max(Box.GetSize().X * 1.2f, 150.f);
+			TakeFx = ATDCFlipbookFx::Spawn(GetWorld(), TDC::Fx::Rewind, Box.GetCenter() + FVector(0.f, Box.GetExtent().Y + 20.f, 0.f),
+				Width, false, Mesh);
+		}
+	}
+	else if (TakeFx.IsValid())
+	{
+		TakeFx->Destroy();
+		TakeFx.Reset();
+	}
+	if (TakeGlow > 0.f && !GetWorldTimerManager().IsTimerActive(TakeGlowTimer))
+	{
+		GetWorldTimerManager().SetTimer(TakeGlowTimer, this, &ATDCSetPiece::TickTakeGlow, 0.05f, true);
+	}
+}
+
+void ATDCSetPiece::TickTakeGlow()
+{
+	if (bTakeRewinding)
+	{
+		// Pulso de proyector mientras rebobina.
+		SetTakeGlow(0.75f + 0.25f * FMath::Sin(GetWorld()->GetTimeSeconds() * 12.f));
+		return;
+	}
+	// Después: resplandor cian que se apaga en ~2.5 s, con parpadeo de película al principio.
+	TakeGlow = FMath::Max(0.f, TakeGlow - 0.02f);
+	const float Flicker = TakeGlow > 0.5f && FMath::FRand() < 0.25f ? 0.4f : 1.f;
+	SetTakeGlow(TakeGlow, Flicker);
+	if (TakeGlow <= 0.f)
+	{
+		GetWorldTimerManager().ClearTimer(TakeGlowTimer);
+	}
+}
+
+void ATDCSetPiece::SetTakeGlow(float Amount, float Visual)
+{
+	TakeGlow = FMath::Clamp(Amount, 0.f, 1.f);
+	if (Material)
+	{
+		const FLinearColor Cyan(0.25f, 0.85f, 1.f);
+		Material->SetVectorParameterValue(TEXT("Emissive"), Cyan * (3.f * TakeGlow * Visual));
+	}
 }
