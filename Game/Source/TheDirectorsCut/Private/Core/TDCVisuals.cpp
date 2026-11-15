@@ -3,6 +3,9 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInterface.h"
 #include "Engine/Texture2D.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
+#include "Components/AudioComponent.h"
 
 UMaterialInstanceDynamic* TDC::CreateReadColorMID(UPrimitiveComponent* Component, int32 ElementIndex)
 {
@@ -29,4 +32,34 @@ void TDC::ApplyReadPattern(UMaterialInstanceDynamic* Material, const TCHAR* Text
 		Material->SetScalarParameterValue(TEXT("PatternStrength"), Strength);
 		Material->SetScalarParameterValue(TEXT("TileSize"), TileSize);
 	}
+}
+
+namespace
+{
+	USoundBase* LoadSfx(const TCHAR* Name)
+	{
+		const FString Path = FString::Printf(TEXT("/Game/Audio/%s.%s"), Name, Name);
+		return Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), nullptr, *Path, nullptr, LOAD_NoWarn | LOAD_Quiet));
+	}
+}
+
+void TDC::PlaySfx(const UObject* WorldContext, const TCHAR* Name, const FVector& Location, float Volume)
+{
+	if (USoundBase* Sound = LoadSfx(Name))
+	{
+		UGameplayStatics::PlaySoundAtLocation(WorldContext, Sound, Location, Volume);
+	}
+}
+
+UAudioComponent* TDC::PlaySfx2D(const UObject* WorldContext, const TCHAR* Name, float Volume)
+{
+	USoundBase* Sound = LoadSfx(Name);
+	return Sound ? UGameplayStatics::SpawnSound2D(WorldContext, Sound, Volume) : nullptr;
+}
+
+UAudioComponent* TDC::PlaySfxAttached(const TCHAR* Name, USceneComponent* AttachTo, float Volume)
+{
+	USoundBase* Sound = LoadSfx(Name);
+	return (Sound && AttachTo) ? UGameplayStatics::SpawnSoundAttached(Sound, AttachTo, NAME_None, FVector::ZeroVector,
+		EAttachLocation::KeepRelativeOffset, false, Volume) : nullptr;
 }

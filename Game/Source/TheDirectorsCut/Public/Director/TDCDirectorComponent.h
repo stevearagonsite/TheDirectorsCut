@@ -77,5 +77,6 @@ public:
 private:
 	bool bRewinding = false;
 	TWeakObjectPtr<AActor> RewindFx;
+	TWeakObjectPtr<class UAudioComponent> RewindAudio;
 	double LastClapTime = -1000.0;
 };

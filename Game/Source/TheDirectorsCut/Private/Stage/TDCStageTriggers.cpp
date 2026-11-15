@@ -1,5 +1,6 @@
 #include "Stage/TDCStageTriggers.h"
 #include "Engine/Engine.h"
+#include "Core/TDCVisuals.h"
 #include "Stage/TDCSetPiece.h"
 #include "Character/TDCCharacter.h"
 #include "Components/BoxComponent.h"
@@ -31,6 +32,7 @@ void ATDCFallTrigger::OnOverlap(UPrimitiveComponent*, AActor* OtherActor, UPrimi
 			Piece->Release();
 		}
 	}
+	TDC::PlaySfx(this, TEXT("sfx_bridge_fall"), GetActorLocation(), 0.9f);
 	// Legibilidad: el puente cae a propósito; hay que decir cómo se dirige la escena.
 	if (GEngine)
 	{

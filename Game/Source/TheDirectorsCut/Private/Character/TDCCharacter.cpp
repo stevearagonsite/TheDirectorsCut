@@ -357,6 +357,11 @@ void ATDCCharacter::BeginPlay()
 	Super::BeginPlay();
 	RespawnLocation = GetActorLocation();
 	bAutoRun = IsPlayerControlled() && FParse::Param(FCommandLine::Get(), TEXT("TDCAutoRun"));
+	if (IsPlayerControlled())
+	{
+		TDC::PlaySfx2D(this, TEXT("vo_accion"), 0.9f);           // "¡Acción!" al arrancar la toma
+		TDC::PlaySfx2D(this, TEXT("amb_lluvia_ciudad"), 0.25f);  // ambiente (loop desde import_audio.py)
+	}
 	LoadCharacterAssets();
 	UpdatePlaceholderVisibility();
 
@@ -463,9 +468,16 @@ void ATDCCharacter::Move(const FInputActionValue& Value)
 	AddMovementInput(FVector::ForwardVector, Value.Get<float>());
 }
 
+void ATDCCharacter::OnJumped_Implementation()
+{
+	Super::OnJumped_Implementation();
+	TDC::PlaySfx(this, TEXT("sfx_jump"), GetActorLocation(), 0.6f);
+}
+
 void ATDCCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
+	TDC::PlaySfx(this, TEXT("sfx_land"), GetActorLocation(), 0.6f);
 	if (const AActor* Floor = Hit.GetActor())
 	{
 		if (Floor->ActorHasTag(TEXT("TDC.Safe")))
