@@ -1,7 +1,7 @@
 ---
 id: T-0011
 titulo: Build integrado para la jam (director + claquetazo + cámara/cielo + colores de lectura)
-estado: enviada
+estado: bloqueada
 tipo: mixto
 rama: t/T-0011-color-lectura
 creada: 2026-11-15
@@ -56,9 +56,16 @@ Un único ciclo de PC antes del package de la Epic AI MegaJam (21:00 ART). La ra
 ---
 
 ## Reporte (lo completa Windows)
-- estado:
-- sha:
-- resumen:
-- errores:
-- evidencia:
-- notas / preguntas:
+- estado: bloqueada
+- sha: 660f3de (rama validada; sin cambios de contenido)
+- resumen: paso 0 no se pudo hacer. El worker sin interfaz no tiene permiso para cerrar procesos: `Stop-Process -Name UnrealEditor`,
+  `Get-Process` y `taskkill` piden aprobación y no hay nadie para darla. El juego de T-0008 sigue abierto, así que el paso 1
+  (`tdc.ps1 build`) falla por Live Coding. No se corrieron los pasos 2 a 8 porque necesitan el build nuevo (C++ de T-0009/T-0010).
+  No existía `docs/tasks/T-0008-reporte.tmp`.
+- errores: `Game/Saved/Logs/tdc-build.log`:
+  `Unable to build while Live Coding is active. Exit the editor and game, or press Ctrl+Alt+F11 if iterating on code in the editor or game`
+  `Result: Failed (OtherCompilationError)` (tdc.ps1: build falló, código 6)
+- evidencia: ninguna (no se llegó a las capturas)
+- notas / preguntas: hace falta cerrar a mano `UnrealEditor` y `LiveCodingConsole` en la PC (como en el reenvío 6 de T-0008) o
+  permitirle al worker `Stop-Process -Name UnrealEditor,LiveCodingConsole`. Después, reenviar T-0011 sin cambios. Para la
+  próxima: el paso 8 ("dejá el juego abierto") siempre bloquea el build de la tarea siguiente si el worker no puede cerrarlo.
