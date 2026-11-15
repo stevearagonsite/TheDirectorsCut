@@ -60,6 +60,19 @@ def link(a, b, pin_b="", pin_a=""):
     mel.connect_material_expressions(a, pin_a, b, pin_b)
 
 
+EYE_INVERSE = getattr(unreal, "MaterialExpressionEyeAdaptationInverse", None)
+
+
+def exposure_independent(mat, node):
+    """Unlit + auto-exposure en una escena oscura = personaje quemado (la cámara sube la exposición y el emissive
+    se satura). EyeAdaptationInverse compensa la exposición: en pantalla queda el color del material tal cual."""
+    if not EYE_INVERSE:
+        return node
+    inv = expr(mat, EYE_INVERSE, 300, 100)
+    link(node, inv, "LightValue")
+    return inv
+
+
 def build_master(default_tex):
     if eal.does_asset_exist(MASTER):
         mat = eal.load_asset(MASTER)
@@ -101,7 +114,7 @@ def build_master(default_tex):
     link(bands_m1, norm, "B")
     sat = expr(mat, unreal.MaterialExpressionSaturate, -420, 150)
     link(norm, sat)
-    shadow = vector(mat, "ShadowColor", (0.42, 0.48, 0.68), -550, 300)
+    shadow = vector(mat, "ShadowColor", (0.32, 0.36, 0.52), -550, 300)
     white = expr(mat, unreal.MaterialExpressionConstant3Vector, -550, 400, constant=unreal.LinearColor(1, 1, 1, 1))
     light = expr(mat, unreal.MaterialExpressionLinearInterpolate, -300, 250)
     link(shadow, light, "A")
@@ -111,7 +124,7 @@ def build_master(default_tex):
     shaded = expr(mat, unreal.MaterialExpressionMultiply, -150, -100)
     link(albedo, shaded, "A")
     link(light, shaded, "B")
-    bright = scalar(mat, "Brightness", 1.15, -150, 50)
+    bright = scalar(mat, "Brightness", 0.95 if EYE_INVERSE else 0.35, -150, 50)
     lit = expr(mat, unreal.MaterialExpressionMultiply, 0, -50)
     link(shaded, lit, "A")
     link(bright, lit, "B")
@@ -120,7 +133,7 @@ def build_master(default_tex):
     fres = expr(mat, unreal.MaterialExpressionFresnel, -400, 500, base_reflect_fraction=0.0)
     rim_pow = scalar(mat, "RimPower", 3.0, -600, 550)
     link(rim_pow, fres, "ExponentIn")
-    rim_str = scalar(mat, "RimStrength", 0.8, -400, 650)
+    rim_str = scalar(mat, "RimStrength", 0.35 if EYE_INVERSE else 0.15, -400, 650)
     rim_col = vector(mat, "RimColor", (0.65, 0.78, 1.0), -400, 750)
     rim_a = expr(mat, unreal.MaterialExpressionMultiply, -200, 550)
     link(fres, rim_a, "A")
@@ -132,7 +145,7 @@ def build_master(default_tex):
     out = expr(mat, unreal.MaterialExpressionAdd, 150, 100)
     link(lit, out, "A")
     link(rim, out, "B")
-    mel.connect_material_property(out, "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+    mel.connect_material_property(exposure_independent(mat, out), "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
 
     mel.recompile_material(mat)
     if not eal.save_asset(MASTER, only_if_is_dirty=False):

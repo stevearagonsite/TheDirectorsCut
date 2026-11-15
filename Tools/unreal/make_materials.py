@@ -246,6 +246,11 @@ def build_light_piece():
     final = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, 150, 100)
     mel.connect_material_expressions(lit, "", final, "A")
     mel.connect_material_expressions(flicker, "", final, "B")
+    eye_inverse = getattr(unreal, "MaterialExpressionEyeAdaptationInverse", None)
+    if eye_inverse:  # brillo estable aunque la auto-exposure suba en la escena oscura (si no, se quema)
+        inv = mel.create_material_expression(mat, eye_inverse, 300, 100)
+        mel.connect_material_expressions(final, "", inv, "LightValue")
+        final = inv
     mel.connect_material_property(final, "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
 
     rim = mel.create_material_expression(mat, unreal.MaterialExpressionAdd, -300, 550)
