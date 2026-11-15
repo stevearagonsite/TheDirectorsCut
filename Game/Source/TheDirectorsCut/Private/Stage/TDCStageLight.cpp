@@ -93,5 +93,7 @@ void ATDCStageLight::ApplyVisuals()
 	if (BulbMaterial)
 	{
 		BulbMaterial->SetVectorParameterValue(TEXT("Color"), bOn ? FLinearColor(1.f, 0.9f, 0.3f) : FLinearColor(0.08f, 0.08f, 0.08f));
+		// El bulbo brilla cuando el reflector está prendido (parámetro Emissive de M_TDCColor).
+		BulbMaterial->SetVectorParameterValue(TEXT("Emissive"), bOn ? FLinearColor(4.f, 3.4f, 1.2f) : FLinearColor::Black);
 	}
 }
