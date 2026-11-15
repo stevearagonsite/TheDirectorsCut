@@ -19,7 +19,7 @@ Un único ciclo de PC antes del package de la Epic AI MegaJam (21:00 ART). La ra
 
 ## Pasos
 0. Si sigue abierto el juego de T-0008, cerralo antes de compilar (Steve ya lo vio; Live Coding bloquea el build):
-   `Stop-Process -Name UnrealEditor -ErrorAction SilentlyContinue`. Si existe `docs/tasks/T-0008-reporte.tmp`, borralo; no se commitea.
+   `.\Tools\scripts\tdc.ps1 stop` (cierra solo el editor/juego de este proyecto y su LiveCodingConsole). Si existe `docs/tasks/T-0008-reporte.tmp`, borralo; no se commitea.
 1. `.\Tools\scripts\tdc.ps1 build`. Si hay errores de C++, **pará** y reportá `estado: fallo` con `archivo:línea` y el mensaje
    de los primeros errores reales.
 2. `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\make_materials.py`: crea `M_TDCColor`.
@@ -41,7 +41,7 @@ Un único ciclo de PC antes del package de la Epic AI MegaJam (21:00 ART). La ra
 - [ ] El juego quedó abierto en la PC.
 
 ## Permite
-- Cerrar el proceso `UnrealEditor` del juego de T-0008.
+- Cerrar el editor/juego de este proyecto con `tdc.ps1 stop` (no el sandbox TDCPreview).
 - Editar `Tools/unreal/*.py` y `Tools/scripts/tdc.ps1`, solo para compatibilidad.
 
 ## No hacer
