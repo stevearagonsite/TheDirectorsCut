@@ -36,3 +36,29 @@ No existe Tools/unreal/build_dressing.py en el sha 853919e: paso salteado (la am
 
 == tests (tdc.ps1 test) ==
 tests: ok=4 fallidos=0 warnings=0
+
+== SEGUNDO ENVÍO (sha 0949cdf) ==
+
+== build_dressing.py, 1ª corrida (commandlet, sin -InEditor) ==
+LogInterchangeEngine: Display: Interchange import completed [Art/Export/Dressing/T_Backdrop_Noir.png]
+LogEditorAssetSubsystem: Error: LoadAsset failed: The AssetData '/Game/Dressing/M_Backdrop.M_Backdrop' could not be found in the Asset Registry.
+LogPythonScriptCommandlet: Display: Python script executed successfully
+Failure - 1 error(s), 0 warning(s)   -> tdc.ps1: "python terminó con código 1"
+(El script sí completó: guardó L_Slice y creó M_Backdrop/T_Backdrop_Noir. El error es eal.load_asset de un asset que
+ todavía no existe; fix en build_dressing.py: does_asset_exist antes de load_asset.)
+
+== build_dressing.py, 2ª corrida (con el fix) ==
+LogInterchangeEngine: Display: Interchange import completed [Art/Export/Dressing/T_Backdrop_Noir.png]
+LogPythonScriptCommandlet: Display: Python script executed successfully
+Success - 0 error(s), 0 warning(s)
+Props: Art/Export/Dressing/ solo tiene T_Backdrop_Noir.png; ningún SM_*.fbx -> los 5 props se omiten (comportamiento del script).
+
+== verificación del mapa (script de diagnóstico, no commiteado) ==
+DR_Backdrop  StaticMeshActor  loc=(3750,-3000,1500)  scale=(110,0.02,46.67)  mat=/Game/Dressing/M_Backdrop
+DR_ForegroundStage  TDCSetPiece  loc=(3750,700,-90)
+M_Backdrop: shading=MSM_UNLIT, 2 expresiones, Emissive <- Multiply ; T_Backdrop_Noir 3168 px de ancho
+Ambient_Sun, Sky_Light, Height_Fog presentes con esos labels (night_lighting los encuentra).
+
+== captura (tdc.ps1 shot) ==
+1ª toma: telón gris con grilla y sombras = material por defecto mientras compilan los shaders de M_Backdrop
+(shot dispara HighResShot apenas arranca). 2ª toma, con shaders ya en DDC: telón correcto -> 02-ambientacion.png.

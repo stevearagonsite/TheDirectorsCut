@@ -1,7 +1,7 @@
 ---
 id: T-0012
 titulo: Director a escala + ambientación noir (último ciclo antes del package)
-estado: parcial
+estado: ok
 tipo: mixto
 rama: t/T-0012-ambientacion
 creada: 2026-11-15
@@ -79,3 +79,28 @@ No hace falta recompilar ni reimportar al director. Si `build_dressing.py` falla
   derecho (más de un piso, pero el segundo apenas asoma). Cielo y fondo son el cielo azul por defecto: sin backdrop, sin props
   de Rodin y sin luz de noche (falta el segundo envío con `build_dressing.py`). El director queda en el tercio izquierdo, con
   espacio hacia adelante (look-ahead). Locks LFS liberados y el juego quedó abierto (`tdc.ps1 play`).
+
+### Segundo envío (sha 0949cdf)
+- estado: ok (con observaciones de arte para la Mac)
+- resumen: `build_dressing.py` corrió por commandlet (sin `-InEditor`). La 1ª corrida aplicó todo y guardó `L_Slice`, pero
+  salió con código 1 por `LogEditorAssetSubsystem: Error: LoadAsset failed ... /Game/Dressing/M_Backdrop` (el script hace
+  `eal.load_asset` de un asset que todavía no existe). Fix de compatibilidad en `Tools/unreal/build_dressing.py`:
+  `does_asset_exist` antes de `load_asset`. 2ª corrida: `Success - 0 error(s), 0 warning(s)`. Assets nuevos:
+  `Game/Content/Dressing/T_Backdrop_Noir.uasset` y `M_Backdrop.uasset` (unlit, Emissive ← textura × 0.85, verificado).
+  En el mapa: `DR_Backdrop` en (3750, -3000, 1500) con `M_Backdrop`, y `DR_ForegroundStage` en Y=700. **Props: ninguno**:
+  `Art/Export/Dressing/` solo tiene `T_Backdrop_Noir.png`, no hay `SM_*.fbx` (el script los omite).
+- errores: ninguno en la corrida final.
+- evidencia: `docs/evidence/T-0012/02-ambientacion.png`, extractos agregados a `docs/evidence/T-0012/log-extractos.txt`.
+- notas / preguntas: qué se ve en `02-ambientacion.png`: detrás del nivel, el telón pintado (skyline de rascacielos con
+  ventanas encendidas y niebla, en azules) ocupando casi todo el cuadro; el director a escala sobre la plataforma blanca,
+  el cilindro coral y la esfera; abajo, la franja oscura del escenario en primer plano. Observaciones:
+  1. **No se lee como noche**: el conjunto queda claro y lavado (telón celeste, plataformas blancas). Sospecho de la
+     exposición automática compensando la luz baja; para noche haría falta fijar exposición (PostProcess con
+     `AutoExposure` manual/bias negativo) o bajar más el multiplicador del telón.
+  2. Se ven los bordes del telón: el izquierdo (franja de cielo claro a la izquierda) y el inferior (banda clara entre el
+     telón y la franja del escenario, a la altura del piso). Habría que agrandarlo/bajarlo o tapar con el escenario.
+  3. `tdc.ps1 shot` captura apenas arranca: con materiales nuevos la 1ª toma salió con el material por defecto (shaders
+     compilando). Repetí la toma. Sugerencia: un warm-up/delay antes de `HighResShot`.
+  4. Quedaron dos archivos temporales sin trackear en la PC (`Tools/unreal/_diag_dressing.py`, `_diag_out.txt`); no se
+     commitean y el permiso de esta sesión no me dejó borrarlos.
+  Locks LFS liberados y el juego quedó abierto (`tdc.ps1 play`).

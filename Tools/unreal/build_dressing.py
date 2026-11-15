@@ -96,7 +96,8 @@ def backdrop_material():
     if not tex:
         fail("no se importó T_Backdrop_Noir")
     path = f"{DEST}/M_Backdrop"
-    mat = eal.load_asset(path)
+    # does_asset_exist antes de load_asset: si no, el primer run loguea "LoadAsset failed" y el commandlet sale con 1.
+    mat = eal.load_asset(path) if eal.does_asset_exist(path) else None
     if not mat:
         mat = unreal.AssetToolsHelpers.get_asset_tools().create_asset("M_Backdrop", DEST, unreal.Material, unreal.MaterialFactoryNew())
     mel.delete_all_material_expressions(mat)
