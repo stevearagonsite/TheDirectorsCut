@@ -47,6 +47,30 @@ Recorre una calle de cine negro y entra a un set de ciencia ficción de los 50 (
 
 `[ASSUMPTION]` El personaje del video (bufanda roja, boina) se parece más al del concepto 2. Para el protagonista rige el concepto 1 (D-011).
 
+## Hoja de modelo del protagonista
+
+Referencias ortográficas para modelar en Blender (T-0005). Las generé con Gemini a partir del concepto 1; los prompts y el modelo están en [model-sheet/manifest.json](model-sheet/manifest.json). **Son referencia, no assets del juego.**
+
+| Vista | Archivo |
+|---|---|
+| Hoja completa (frente, perfil y espalda sobre el set) | [director-turnaround-v1.png](model-sheet/director-turnaround-v1.png) |
+| Frente, fondo liso | [director-front-v1.png](model-sheet/director-front-v1.png) |
+| Perfil izquierdo, fondo liso | [director-side-v1.png](model-sheet/director-side-v1.png) |
+| Espalda, fondo liso | [director-back-v1.png](model-sheet/director-back-v1.png) |
+| Claqueta (frente, perfil y planta) | [clapperboard-v1.png](model-sheet/clapperboard-v1.png) |
+
+![Vistas del protagonista](model-sheet/director-front-v1.png)
+
+Lo que fija la hoja de modelo:
+- La gabardina llega a la rodilla, abierta, con bolsillos con solapa y abertura atrás. Es más larga que la "corta" del primer brief; manda la hoja.
+- El chaleco es oliva con botones y bolsillos, sobre una camisa clara.
+- La bufanda es gris azulada: da una vuelta al cuello y cae atrás en dos colas.
+- Pelo castaño que asoma bajo la gorra. Cara con cejas marcadas, ojos simples y nariz facetada.
+- Las botas son marrones, con cordones.
+- Pose: entre A y T (brazos a unos 30–40°). Para el blockout, usar la A-pose de la spec de T-0005.
+
+Las vistas sueltas tienen el mismo alto de personaje, pero no comparten escala exacta en píxeles. Al montarlas como planos de referencia en Blender, hay que escalar cada una para que la figura mida 180 cm.
+
 ## Lenguaje de color de juego
 
 Los conceptos usan los mismos colores que el greybox del prototipo. Ese lenguaje se mantiene en el arte final:
@@ -73,3 +97,4 @@ El resto del set evita esos tres colores saturados, para que nunca se confunda d
 ## Historia
 
 - 2026-11-15: conceptos 1 (personaje) y 2 (nivel y cámara) incorporados; video de concepto (concepto 3).
+- 2026-11-15: hoja de modelo del protagonista y de la claqueta, generadas con Gemini.
