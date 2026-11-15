@@ -20,6 +20,7 @@ https://github.com/quodsoler/unreal-engine-skills — apuntan a UE 5.8.
 - `ue-sequencer-cinematics`
 - `ue-materials-rendering`
 - `ue-data-assets-tables`
+- `ue-ui-umg-slate`
 
 ## RobLe3/cc-blender-skill @ a2634b5 (MIT)
 https://github.com/RobLe3/cc-blender-skill — requieren Blender MCP en Windows (ver T-0003).
@@ -49,6 +50,7 @@ Excluidas: Godot, Unity, Ebitengine, web, y las `unreal-*` que se solapan con la
 - `prototype-fast`
 - `game-docs`
 - `unreal-packaging`
+- `game-ui-ux` (de `skills/disciplines/`; pensada para Godot/Unity, acá se combina con `ue-ui-umg-slate`)
 
 ## Licencias
 
