@@ -12,6 +12,9 @@ Este repo lo trabajan dos Claude Code en paralelo, comunicados por VirtualKvm (`
 - **Si estás en Windows** sos el **estudio**: Unreal, Blender, compilación, assets, pruebas y evidencia.
   Usá la skill **`estudio-windows`** y revisá el inbox de VirtualKvm al empezar.
 
+Skills de dominio (de terceros, ver `.claude/skills/THIRD_PARTY.md`): `ue-*` para C++/Unreal (apuntan a UE 5.8; contrastar con
+la versión real del proyecto) y `text-to-blender` + `blender-*` para Blender (requieren Blender MCP en Windows).
+
 Protocolo (mensajes, ramas, autorización): `docs/pipeline/protocolo-mac-windows.md`.
 Comandos de Windows: `docs/pipeline/comandos-windows.md` · `Tools/scripts/tdc.ps1`. Convenciones: `docs/pipeline/convenciones.md`.
 
