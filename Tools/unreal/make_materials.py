@@ -62,13 +62,96 @@ def constant(mat, value, y):
     return node
 
 
+TEX_SRC = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")), "Art", "Export", "Textures")
+TEX_DEST = f"{FOLDER}/Textures"
+PATTERNS = ("T_Stage_Floor", "T_Stage_Edge", "T_Gel_Panel", "T_Take_Holo")
+
+
+def import_patterns():
+    """Texturas tileables del set (T-0021) -> /Game/Materials/Textures/T_*. Devuelve la de tablones (default)."""
+    first = None
+    for name in PATTERNS:
+        png = os.path.join(TEX_SRC, name + ".png")
+        if not os.path.isfile(png):
+            continue
+        require_writable(f"{TEX_DEST}/{name}", ".uasset")
+        task = unreal.AssetImportTask()
+        task.filename = png
+        task.destination_path = TEX_DEST
+        task.destination_name = name
+        task.replace_existing = True
+        task.automated = True
+        task.save = True
+        unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+        path = f"{TEX_DEST}/{name}"
+        tex = eal.load_asset(path) if eal.does_asset_exist(path) else None
+        if tex and first is None:
+            first = tex
+    return first
+
+
+def world_aligned_uv(mat, tile):
+    """UV por posición de mundo (no se estira con cubos escalados): caras frontales usan XZ, techos XY."""
+    wp = mel.create_material_expression(mat, unreal.MaterialExpressionWorldPosition, -1500, -300)
+    xz = mel.create_material_expression(mat, unreal.MaterialExpressionComponentMask, -1300, -350)
+    for ch, on in (("r", True), ("g", False), ("b", True), ("a", False)):
+        xz.set_editor_property(ch, on)
+    mel.connect_material_expressions(wp, "", xz, "")
+    xy = mel.create_material_expression(mat, unreal.MaterialExpressionComponentMask, -1300, -250)
+    for ch, on in (("r", True), ("g", True), ("b", False), ("a", False)):
+        xy.set_editor_property(ch, on)
+    mel.connect_material_expressions(wp, "", xy, "")
+    nrm = mel.create_material_expression(mat, unreal.MaterialExpressionVertexNormalWS, -1500, -150)
+    nz = mel.create_material_expression(mat, unreal.MaterialExpressionComponentMask, -1300, -150)
+    for ch, on in (("r", False), ("g", False), ("b", True), ("a", False)):
+        nz.set_editor_property(ch, on)
+    mel.connect_material_expressions(nrm, "", nz, "")
+    absz = mel.create_material_expression(mat, unreal.MaterialExpressionAbs, -1150, -150)
+    mel.connect_material_expressions(nz, "", absz, "")
+    up = mel.create_material_expression(mat, unreal.MaterialExpressionRound, -1050, -150)
+    mel.connect_material_expressions(absz, "", up, "")
+    pick = mel.create_material_expression(mat, unreal.MaterialExpressionLinearInterpolate, -950, -300)
+    mel.connect_material_expressions(xz, "", pick, "A")
+    mel.connect_material_expressions(xy, "", pick, "B")
+    mel.connect_material_expressions(up, "", pick, "Alpha")
+    uv = mel.create_material_expression(mat, unreal.MaterialExpressionDivide, -800, -300)
+    mel.connect_material_expressions(pick, "", uv, "A")
+    mel.connect_material_expressions(tile, "", uv, "B")
+    return uv
+
+
 def build():
     require_writable(PATH, ".uasset")
+    default_pattern = import_patterns()
     mat = get_or_create_material()
     mat.set_editor_property("shading_model", unreal.MaterialShadingModel.MSM_DEFAULT_LIT)
 
     color = vector_param(mat, "Color", (0.35, 0.35, 0.38, 1.0), 0)
-    mel.connect_material_property(color, "", unreal.MaterialProperty.MP_BASE_COLOR)
+    if default_pattern:
+        # BaseColor = Color * lerp(1, Pattern, PatternStrength). PatternStrength 0 = color liso (personaje, extras, bulbo).
+        tile = mel.create_material_expression(mat, unreal.MaterialExpressionScalarParameter, -1100, -450)
+        tile.set_editor_property("parameter_name", "TileSize")
+        tile.set_editor_property("default_value", 200.0)
+        uv = world_aligned_uv(mat, tile)
+        pattern = mel.create_material_expression(mat, unreal.MaterialExpressionTextureSampleParameter2D, -600, -300)
+        pattern.set_editor_property("parameter_name", "Pattern")
+        pattern.set_editor_property("texture", default_pattern)
+        mel.connect_material_expressions(uv, "", pattern, "UVs")
+        strength = mel.create_material_expression(mat, unreal.MaterialExpressionScalarParameter, -600, -100)
+        strength.set_editor_property("parameter_name", "PatternStrength")
+        strength.set_editor_property("default_value", 0.0)
+        white = mel.create_material_expression(mat, unreal.MaterialExpressionConstant, -600, -180)
+        white.set_editor_property("r", 1.0)
+        mix = mel.create_material_expression(mat, unreal.MaterialExpressionLinearInterpolate, -400, -200)
+        mel.connect_material_expressions(white, "", mix, "A")
+        mel.connect_material_expressions(pattern, "RGB", mix, "B")
+        mel.connect_material_expressions(strength, "", mix, "Alpha")
+        tinted = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -250, 0)
+        mel.connect_material_expressions(color, "", tinted, "A")
+        mel.connect_material_expressions(mix, "", tinted, "B")
+        mel.connect_material_property(tinted, "", unreal.MaterialProperty.MP_BASE_COLOR)
+    else:
+        mel.connect_material_property(color, "", unreal.MaterialProperty.MP_BASE_COLOR)
 
     emissive = vector_param(mat, "Emissive", (0.0, 0.0, 0.0, 1.0), 250)
     mel.connect_material_property(emissive, "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)

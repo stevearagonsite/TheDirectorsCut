@@ -15,4 +15,8 @@ namespace TDC
 	 * no se aplica). Si M_TDCColor no existe, usa el material actual del componente. Carga silenciosa.
 	 */
 	THEDIRECTORSCUT_API UMaterialInstanceDynamic* CreateReadColorMID(UPrimitiveComponent* Component, int32 ElementIndex = 0);
+
+	/** Patrón de set (T-0021) sobre M_TDCColor: /Game/Materials/Textures/T_<Name>. Sin textura, no hace nada. */
+	THEDIRECTORSCUT_API void ApplyReadPattern(UMaterialInstanceDynamic* Material, const TCHAR* TextureName, float Strength,
+		float TileSize = 200.f);
 }

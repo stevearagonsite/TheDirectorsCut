@@ -61,6 +61,7 @@ void ATDCSetPiece::OnConstruction(const FTransform& Transform)
 	if (Material)
 	{
 		Material->SetVectorParameterValue(TEXT("Color"), ReadColor());
+		ApplyPattern();
 	}
 }
 
@@ -85,6 +86,7 @@ void ATDCSetPiece::BeginPlay()
 	if (Material)
 	{
 		Material->SetVectorParameterValue(TEXT("Color"), ReadColor());
+		ApplyPattern();
 	}
 
 	if (UTDCStageSubsystem* Stage = GetWorld()->GetSubsystem<UTDCStageSubsystem>())
@@ -116,4 +118,17 @@ void ATDCSetPiece::Release()
 {
 	Mesh->SetSimulatePhysics(true);
 	Mesh->WakeAllRigidBodies();
+}
+
+void ATDCSetPiece::ApplyPattern()
+{
+	// Tablones = fija; gelatina = existe con luz / a oscuras; película = en toma (rebobinable). El color lo sigue poniendo ReadColor.
+	if (ColorOverride.A > 0.f)
+	{
+		return; // marcadores (salida, escenario) quedan lisos
+	}
+	const TCHAR* Tex = bRecordTime ? TEXT("T_Take_Holo")
+		: (Presence != ETDCLightPresence::Always ? TEXT("T_Gel_Panel") : TEXT("T_Stage_Floor"));
+	const float Strength = Presence == ETDCLightPresence::Always && !bRecordTime ? 0.9f : 0.75f;
+	TDC::ApplyReadPattern(Material, Tex, Strength);
 }

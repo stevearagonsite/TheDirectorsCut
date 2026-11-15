@@ -58,6 +58,7 @@ protected:
 
 private:
 	FLinearColor ReadColor() const;
+	void ApplyPattern();
 	/** Si cambia la luz, despertar la física: lo que estaba apoyado en una pieza que desapareció tiene que caer. */
 	void OnLightingChanged();
 
