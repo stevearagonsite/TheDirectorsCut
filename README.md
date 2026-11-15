@@ -1,7 +1,7 @@
 # The Director's Cut
 
-Metroidvania 2.5D sobre un set de filmación: sos el director y avanzás **dirigiendo** la escena —
-luces, tiempo, cortes y escenografía. Unreal Engine 5 + Blender.
+Metroidvania 2.5D en un estudio de cine: sos un director atrapado en su propia película y avanzás **dirigiendo** la escena —
+luz, tiempo, cortes y escenografía. Unreal Engine 5.6 + Blender.
 
 - Visión de producto: [docs/product/vision.md](docs/product/vision.md)
 - Cómo trabajamos (Mac ⇄ Windows): [docs/pipeline/protocolo-mac-windows.md](docs/pipeline/protocolo-mac-windows.md)
