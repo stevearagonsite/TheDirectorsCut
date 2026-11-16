@@ -178,7 +178,9 @@ void ATDCCharacter::TickAutoRun(float DeltaSeconds)
 {
 	if (AutoRunTime == 0.f && CameraBoom)
 	{
-		CameraBoom->TargetArmLength = 900.f; // demo: más cerca, para que la pose se lea en las capturas
+		// demo: más cerca para que la pose se lea, pero detrás de la utilería de primer plano (y 550–900): con 900 la
+		// cámara la atravesaba y las capturas de la galería salían tapadas (auditoría visual #10).
+		CameraBoom->TargetArmLength = 1300.f;
 		CameraBoom->TargetOffset = FVector::ZeroVector; // con el brazo corto, el offset de anticipación lo dejaba fuera de cuadro
 	}
 	AutoRunTime += DeltaSeconds;
