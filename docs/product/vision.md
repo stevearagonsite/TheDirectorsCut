@@ -12,9 +12,9 @@ Manipulás la luz, rebobinás la toma, cortás escenas y cambiás la escenograf�
 | | |
 |---|---|
 | Género y cámara | Metroidvania 2.5D: personajes y escenarios 3D, cámara lateral, movimiento en un plano con capas de profundidad decorativas |
-| Motor | Unreal Engine **5.8** (C++ para sistemas, Blueprints para contenido y tuning). Arte 3D en Blender |
+| Motor | Unreal Engine **5.8** (C++ para sistemas, Blueprints para contenido y tuning). Arte 3D: buscar primero y, si no, Gemini + Rodin (D-015) |
 | Plataforma e input | PC, teclado y gamepad `[ASSUMPTION]` |
-| Alcance actual | Prototipo: vertical slice greybox |
+| Alcance actual | Vertical slice con arte noir (no se entregó a la jam, D-016); foco en calidad visual y legibilidad |
 
 ## Pilar: DIRECCIÓN
 
@@ -58,7 +58,7 @@ En las zonas de descanso se equipa 1 poder por departamento. Todos gastan Rollo.
 | Movimiento 2.5D | in progress | Prototipo | Correr y saltar en el plano XZ, cámara lateral, reaparecer tras caer | [design](features/movimiento/design.md) |
 | Dirección de fotografía (luz) | in progress | Prototipo | Prender/apagar reflectores; piezas que existen solo con luz o solo a oscuras | [design](features/fotografia/design.md) |
 | Tiempo | in progress | Prototipo | Mantener para rebobinar lo que está "en toma" | [design](features/tiempo/design.md) |
-| Combate | idea | Jam (D-014) | Claquetazo (F) y extras: común lo derriba, resistente lo aturde, de guion inmune (D-002, D-003); código en T-0009 | — |
+| Combate | in progress | Prototipo | Claquetazo (F) con hit-stop y extras animados: común lo derriba, resistente lo aturde, de guion inmune (D-002, D-003) | — |
 | Rollo | idea | Post-prototipo | Barra compartida que gastan los poderes; latas la alargan (D-004) | — |
 | Equipamiento y progresión | idea | Post-prototipo | 1 poder por departamento en descanso; jefes dan slots, fragmentos dan skill tree (D-007, D-008) | — |
 | Corte | idea | Post-prototipo | Salto de toma (mueve al jugador) y Tijera (corta un fragmento del mundo) (D-006) | — |
