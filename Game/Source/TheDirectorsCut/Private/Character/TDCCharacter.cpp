@@ -54,9 +54,11 @@ ATDCCharacter::ATDCCharacter()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->SetUsingAbsoluteRotation(true);
-	CameraBoom->SetRelativeRotation(FRotator(-5.f, -90.f, 0.f));
+	// T-0040 (auditoría visual): un poco más alta y mirando más hacia abajo. Se ve la tapa de las plataformas (tablones) y
+	// el plano de juego ocupa el centro, en vez de una franja negra abajo.
+	CameraBoom->SetRelativeRotation(FRotator(-9.f, -90.f, 0.f));
 	CameraBoom->TargetArmLength = 2200.f; // D-012: encuadre amplio para anticipar el tramo que viene
-	CameraBoom->SocketOffset = FVector(0.f, 0.f, 120.f);
+	CameraBoom->SocketOffset = FVector(0.f, 0.f, 250.f);
 	// Look-ahead (D-012): el nivel avanza hacia +X, así que el director queda en el tercio izquierdo y se ve lo que viene.
 	CameraBoom->TargetOffset = FVector(700.f, 0.f, 0.f);
 	CameraBoom->bDoCollisionTest = false;
