@@ -293,7 +293,8 @@ def build_cards(cube):
             if fb:
                 tex = import_file(png, f"T_{base}", folder=f"{DEST}/Cards")
                 if tex:
-                    tex.set_editor_property("filter", unreal.TextureFilter.TF_NEAREST)
+                    # lluvia y vapor ahora son pintados (T-0048): bilinear, sin escalones al agrandarse
+                    tex.set_editor_property("filter", unreal.TextureFilter.TF_BILINEAR)
                     tex.set_editor_property("mip_gen_settings", unreal.TextureMipGenSettings.TMGS_NO_MIPMAPS)
                 mats[key] = card_flipbook_material(tex, f"{base}_{int(darken*100)}", fb, darken) if tex else None
             else:
