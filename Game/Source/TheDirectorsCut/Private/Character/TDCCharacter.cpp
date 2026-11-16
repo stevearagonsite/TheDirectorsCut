@@ -360,7 +360,7 @@ void ATDCCharacter::BeginPlay()
 	bAutoRun = IsPlayerControlled() && FParse::Param(FCommandLine::Get(), TEXT("TDCAutoRun"));
 	if (IsPlayerControlled())
 	{
-		TDC::PlaySfx2D(this, TEXT("vo_accion"), 0.9f);           // "¡Acción!" al arrancar la toma
+		// "¡Acción!" lo dice ATDCPlayerController al empezar la toma (después del menú, T-0035).
 		TDC::PlaySfx2D(this, TEXT("amb_lluvia_ciudad"), 0.25f);  // ambiente (loop desde import_audio.py)
 	}
 	LoadCharacterAssets();

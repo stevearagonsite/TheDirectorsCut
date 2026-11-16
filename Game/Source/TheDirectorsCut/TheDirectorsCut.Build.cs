@@ -11,6 +11,9 @@ public class TheDirectorsCut : ModuleRules
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput"
 		});
 
+		// Menú inicial y pausa en Slate puro (T-0035).
+		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+
 		PublicIncludePaths.Add(ModuleDirectory + "/Public");
 	}
 }
