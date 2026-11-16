@@ -1,7 +1,7 @@
 ---
 id: T-0033
 titulo: Package de mejora 6: extras que animan (skeleton correcto en los clips)
-estado: enviada
+estado: parcial
 tipo: editor
 rama: t/T-0033-extras-skeleton
 creada: 2026-11-15
@@ -49,6 +49,48 @@ Salida de `check_anims.py`, `01-mejora6.png`, tamaño del zip y extracto del log
 ---
 
 ## Reporte (lo completa Windows)
+
+### Reenvío 2 (51d206d)
+- estado: parcial (en editor los extras se ven bien y caminan; en el **build empaquetado** solo 2 de los 3 extras ajustan la escala)
+- sha: el del commit de este reporte (ver `[TDC-REPORT]`)
+- resumen:
+  - `stop`: no había nada abierto. `build` ok (`Result: Succeeded`, sin errores ni warnings). No se reimportó nada.
+  - Editor (`shot` y `autorun`): las 3 líneas `-> escala del puppet` aparecen, ~109-110 (abajo).
+  - `autorun/TDCAutoRun_02.png` y `TDCAutoRun_04.png`: X1 **rojo, de tamaño humano** (un poco más alto que el director), sombreado plano
+    tipo toon, piernas separadas en zancada y brazos en balanceo (pose distinta entre las dos capturas). Hay motion blur, así que el
+    juicio "camina con zancada" sale de dos cuadros quietos, no de video.
+  - `package`: `BUILD SUCCESSFUL` (BuildCookRun 113 s), `Game\Saved\stevearagonsite_TheDirectorsCut_mejora6.zip` = **357.7 MB**. Otros zips intactos.
+  - `smoke -Wait 60`: seguía corriendo a los 60 s, sin `Fatal` ni `Error:` en el log. Quedó abierto con `smoke -Keep` (`04-abierto.png`).
+- errores:
+  - **Build empaquetado: falta la línea de `TDCExtra_4`** (mesh 180 cm). En las dos corridas del exe (`03-package` y `04-abierto`) el log
+    solo trae `TDCExtra_3` y `TDCExtra_5`. Como `FitPuppetScale` loguea siempre, a `TDCExtra_4` no se le llamó: o `LoadPuppet` no
+    encontró su `SK_Extra_*` en el build cocinado (carga con `LOAD_Quiet`, no deja rastro) o ese actor no llegó a 3 ticks. No lo investigué
+    más (es C++). `/Game/Characters` está en `DirectoriesToAlwaysCook` y el log del cook no menciona errores de esos assets.
+    No vi a ese extra en pantalla en el build empaquetado: puede estar como greybox o de 2 cm.
+- evidencia: `docs/evidence/T-0033/02-escala.png`, `autorun/TDCAutoRun_02.png`, `autorun/TDCAutoRun_04.png`, `03-package.png`, `04-abierto.png`
+- notas / preguntas:
+  - **`02-escala.png` no muestra a X1** (tampoco `03-package.png` ni `04-abierto.png`): `shot` dispara `HighResShot` por `-ExecCmds` al
+    arrancar, antes de que `FitPuppetScale` corra (tick 3), y el extra todavía mide ~2 cm. El criterio "X1 de tamaño humano, rojo" queda
+    cubierto por las capturas del autorun, no por `02-escala.png`. Si querés esa foto fija, `shot` necesita un retardo antes de capturar.
+  - Empaqueté porque en editor el extra se ve bien (paso 5); lo de `TDCExtra_4` apareció recién en el smoke del zip.
+  - Solo commiteé 2 de las 24 capturas del autorun.
+
+```
+# editor (shot)
+LogTDC: TDCExtra_3: pose 1.4 cm, mesh 175.0 cm -> escala del puppet 110.549
+LogTDC: TDCExtra_4: pose 1.5 cm, mesh 180.0 cm -> escala del puppet 109.094
+LogTDC: TDCExtra_5: pose 1.6 cm, mesh 190.0 cm -> escala del puppet 109.296
+# build empaquetado (smoke 03-package; 04-abierto igual, con 111.549 y 110.672)
+LogTDC: TDCExtra_3: pose 1.4 cm, mesh 175.0 cm -> escala del puppet 116.049
+LogTDC: TDCExtra_5: pose 1.5 cm, mesh 190.0 cm -> escala del puppet 114.081
+
+BuildCookRun time: 113.24 s
+BUILD SUCCESSFUL
+zip:   %USERPROFILE%\Workspace\TheDirectorsCut\Game\Saved\stevearagonsite_TheDirectorsCut_mejora6.zip  (357.7 MB)
+seguía corriendo a los 60 s: sí
+```
+
+### Envío anterior (4c95118)
 - estado: parcial (zip listo y `BUILD SUCCESSFUL`; el cel shading de los extras **no quedó verificado en imagen**)
 - sha: el del commit de este reporte (ver `[TDC-REPORT]`)
 - resumen:
