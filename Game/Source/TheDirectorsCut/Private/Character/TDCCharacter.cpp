@@ -1,4 +1,5 @@
 #include "Character/TDCCharacter.h"
+#include "UI/TDCHUD.h"
 #include "Core/TDCVisuals.h"
 #include "Director/TDCDirectorComponent.h"
 #include "Camera/CameraComponent.h"
@@ -207,33 +208,28 @@ void ATDCCharacter::TickAutoRun(float DeltaSeconds)
 
 void ATDCCharacter::ShowControls()
 {
-	// Arriba a la izquierda, siempre: los mensajes con clave se reemplazan cada frame (no se acumulan).
-	if (!GEngine || !IsPlayerControlled())
+	// Panel de controles del HUD (ATDCHUD): se pide cada frame mientras se juega.
+	if (!IsPlayerControlled())
 	{
 		return;
 	}
-	const FColor Ink(235, 235, 235);
-	GEngine->AddOnScreenDebugMessage(7010, 0.f, Ink, TEXT("CONTROLES (teclado / gamepad)"));
-	GEngine->AddOnScreenDebugMessage(7011, 0.f, Ink, TEXT("  A / D ........ moverse        (stick)"));
-	GEngine->AddOnScreenDebugMessage(7012, 0.f, Ink, TEXT("  Espacio ...... saltar         (A)"));
-	GEngine->AddOnScreenDebugMessage(7013, 0.f, Ink, TEXT("  F / clic ..... claquetazo     (B)"));
-	GEngine->AddOnScreenDebugMessage(7014, 0.f, Ink, TEXT("  E ............ prender/apagar el reflector cercano  (X)"));
-	GEngine->AddOnScreenDebugMessage(7015, 0.f, Ink, TEXT("  Q (mantener) . rebobinar lo celeste  (gatillo izq.)"));
-	GEngine->AddOnScreenDebugMessage(7016, 0.f, FColor(150, 150, 150),
-		TEXT("  Amarillo = existe con luz · Violeta = a oscuras · Celeste = se rebobina · Rojo/naranja/negro = extras"));
+	if (UTDCHudMessages* Hud = GetWorld() ? GetWorld()->GetSubsystem<UTDCHudMessages>() : nullptr)
+	{
+		Hud->RequestControls();
+	}
 }
 
 void ATDCCharacter::UpdateLightPrompt()
 {
 	// Legibilidad: si hay un reflector al alcance, decir qué tecla lo dirige.
-	if (!GEngine || !IsPlayerControlled() || !Director || !Director->HasPower(ETDCPower::Lights))
+	if (!IsPlayerControlled() || !Director || !Director->HasPower(ETDCPower::Lights))
 	{
 		return;
 	}
 	if (const ATDCStageLight* Light = Director->FindNearestLight())
 	{
-		GEngine->AddOnScreenDebugMessage(7003, 0.15f, FColor(255, 220, 90),
-			Light->IsOn() ? TEXT("[E] ¡Luces!: apagar el reflector") : TEXT("[E] ¡Luces!: prender el reflector"));
+		TDC::HudMessage(this, 7003, Light->IsOn() ? TEXT("[E]  Apagar el reflector") : TEXT("[E]  ¡Luces! Prender el reflector"),
+			FLinearColor(1.f, 0.82f, 0.25f), 0.15f, ETDCHudSlot::Prompt);
 	}
 }
 
