@@ -2,6 +2,8 @@
 #include "UI/TDCHUD.h"
 #include "Core/TDCVisuals.h"
 #include "Director/TDCDirectorComponent.h"
+#include "Debug/TDCPlaytestRunner.h"
+#include "Engine/World.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -166,6 +168,20 @@ void ATDCCharacter::LoadCharacterAssets()
 void ATDCCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	// Playtest: eje sostenido por el replay/bot, y grabación del eje del jugador cuando cambia.
+	if (ScriptedMoveAxis != 0.f)
+	{
+		AddMovementInput(FVector::ForwardVector, ScriptedMoveAxis);
+	}
+	if (PlaytestRunner.IsValid())
+	{
+		const float Axis = FMath::RoundToFloat(PlayerMoveAxis * 10.f) / 10.f;
+		if (Axis != RecordedMoveAxis)
+		{
+			RecordedMoveAxis = Axis;
+			PlaytestRunner->NotifyAction(ETDCPlayAction::Move, Axis, GetActorLocation());
+		}
+	}
 	if (bAutoRun)
 	{
 		TickAutoRun(DeltaSeconds);
@@ -364,6 +380,23 @@ void ATDCCharacter::BeginPlay()
 	Super::BeginPlay();
 	RespawnLocation = GetActorLocation();
 	bAutoRun = IsPlayerControlled() && FParse::Param(FCommandLine::Get(), TEXT("TDCAutoRun"));
+	const ETDCPlaytestMode PlaytestMode = IsPlayerControlled() ? ATDCPlaytestRunner::ModeFromCommandLine() : ETDCPlaytestMode::None;
+	if (PlaytestMode != ETDCPlaytestMode::None && GetWorld())
+	{
+		FActorSpawnParameters Params;
+		Params.Owner = this;
+		if (ATDCPlaytestRunner* Runner = GetWorld()->SpawnActor<ATDCPlaytestRunner>(Params))
+		{
+			Runner->Init(this, PlaytestMode);
+			PlaytestRunner = Runner;
+		}
+		if (PlaytestMode != ETDCPlaytestMode::Record && CameraBoom)
+		{
+			// Replay y bot: cámara cerca y centrada, para que las capturas se lean (como -TDCAutoRun).
+			CameraBoom->TargetArmLength = 900.f;
+			CameraBoom->TargetOffset = FVector::ZeroVector;
+		}
+	}
 	if (IsPlayerControlled())
 	{
 		// "¡Acción!" lo dice ATDCPlayerController al empezar la toma (después del menú, T-0035).
@@ -447,20 +480,69 @@ void ATDCCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	UEnhancedInputComponent* Input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATDCCharacter::Move);
-	Input->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-	Input->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-	Input->BindAction(LightsAction, ETriggerEvent::Started, Director.Get(), &UTDCDirectorComponent::ToggleNearestLight);
-	Input->BindAction(RewindAction, ETriggerEvent::Started, Director.Get(), &UTDCDirectorComponent::BeginRewind);
-	Input->BindAction(RewindAction, ETriggerEvent::Completed, Director.Get(), &UTDCDirectorComponent::EndRewind);
-	Input->BindAction(RewindAction, ETriggerEvent::Canceled, Director.Get(), &UTDCDirectorComponent::EndRewind);
+	Input->BindAction(MoveAction, ETriggerEvent::Completed, this, &ATDCCharacter::MoveCompleted);
+	Input->BindAction(JumpAction, ETriggerEvent::Started, this, &ATDCCharacter::OnJumpPressed);
+	Input->BindAction(JumpAction, ETriggerEvent::Completed, this, &ATDCCharacter::OnJumpReleased);
+	Input->BindAction(LightsAction, ETriggerEvent::Started, this, &ATDCCharacter::OnLightsPressed);
+	Input->BindAction(RewindAction, ETriggerEvent::Started, this, &ATDCCharacter::OnRewindPressed);
+	Input->BindAction(RewindAction, ETriggerEvent::Completed, this, &ATDCCharacter::OnRewindReleased);
+	Input->BindAction(RewindAction, ETriggerEvent::Canceled, this, &ATDCCharacter::OnRewindReleased);
 	Input->BindAction(ClapAction, ETriggerEvent::Started, this, &ATDCCharacter::OnClap);
 }
 
-void ATDCCharacter::OnClap()
+void ATDCCharacter::MoveCompleted() { PlayerMoveAxis = 0.f; }
+void ATDCCharacter::OnJumpPressed() { PerformAction(ETDCPlayAction::Jump, 1.f); }
+void ATDCCharacter::OnJumpReleased() { PerformAction(ETDCPlayAction::Jump, 0.f); }
+void ATDCCharacter::OnLightsPressed() { PerformAction(ETDCPlayAction::Lights, 1.f); }
+void ATDCCharacter::OnRewindPressed() { PerformAction(ETDCPlayAction::Rewind, 1.f); }
+void ATDCCharacter::OnRewindReleased() { PerformAction(ETDCPlayAction::Rewind, 0.f); }
+void ATDCCharacter::OnClap() { PerformAction(ETDCPlayAction::Clap, 1.f); }
+
+void ATDCCharacter::PerformAction(ETDCPlayAction Action, float Value)
+{
+	switch (Action)
+	{
+	case ETDCPlayAction::Move:
+		ScriptedMoveAxis = Value; // solo replay/bot: el jugador mueve con Move()
+		break;
+	case ETDCPlayAction::Jump:
+		if (Value > 0.5f) { Jump(); } else { StopJumping(); }
+		break;
+	case ETDCPlayAction::Lights:
+		if (Director) { Director->ToggleNearestLight(); }
+		break;
+	case ETDCPlayAction::Rewind:
+		if (Director) { if (Value > 0.5f) { Director->BeginRewind(); } else { Director->EndRewind(); } }
+		break;
+	case ETDCPlayAction::Clap:
+		Value = DoClap() ? 1.f : 0.f; // 0 = en cooldown, no hubo golpe
+		break;
+	case ETDCPlayAction::Teleport:
+		break; // PlaytestTeleport
+	}
+	if (PlaytestRunner.IsValid())
+	{
+		PlaytestRunner->NotifyAction(Action, Value, GetActorLocation());
+	}
+}
+
+void ATDCCharacter::PlaytestTeleport(const FVector& Location, float FacingX)
+{
+	GetCharacterMovement()->StopMovementImmediately();
+	SetActorLocationAndRotation(Location, FRotator(0.f, FacingX >= 0.f ? 0.f : 180.f, 0.f), false, nullptr,
+		ETeleportType::TeleportPhysics);
+	RespawnLocation = Location; // si algo lo tira, vuelve al beat actual y no al inicio
+	if (PlaytestRunner.IsValid())
+	{
+		PlaytestRunner->NotifyAction(ETDCPlayAction::Teleport, FacingX, Location);
+	}
+}
+
+bool ATDCCharacter::DoClap()
 {
 	if (!Director || !Director->Clap())
 	{
-		return;
+		return false;
 	}
 	if (GetWorld())
 	{
@@ -472,11 +554,13 @@ void ATDCCharacter::OnClap()
 		AnimState = EAnimState::None; // fuerza el cambio de estado en el próximo UpdateAnimState
 		UpdateAnimState();
 	}
+	return true;
 }
 
 void ATDCCharacter::Move(const FInputActionValue& Value)
 {
-	AddMovementInput(FVector::ForwardVector, Value.Get<float>());
+	PlayerMoveAxis = Value.Get<float>();
+	AddMovementInput(FVector::ForwardVector, PlayerMoveAxis);
 }
 
 void ATDCCharacter::OnJumped_Implementation()

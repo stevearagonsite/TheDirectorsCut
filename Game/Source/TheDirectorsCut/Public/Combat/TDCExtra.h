@@ -53,7 +53,8 @@ public:
 	/**
 	 * Modelo animado del extra (Rodin), cargado por ruta según la vulnerabilidad:
 	 * /Game/Characters/Extras/<Comun|Resistente|Sombra>/SK_Extra_<Tipo> + AS_Extra_<Tipo>_Idle/_Walk.
-	 * Si no existe, queda el greybox. PuppetScale compensa la escala 0.01 del root en las animaciones de Rodin.
+	 * Si no existe, queda el greybox. PuppetScale = escala base (los FBX de Rodin están en cm: 1 = tamaño humano).
+	 * Si el clip trae el root con escala (Rodin: 0.01), se compensa solo al medir la pose animada (ver UpdatePuppet).
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|Extra")
 	float PuppetScale = 1.f;
@@ -63,7 +64,7 @@ public:
 	float WalkBobCm = 7.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|Extra", meta = (ClampMin = "0"))
-	float WalkSwayDegrees = 5.f; // T-0019: con los FBX de Rodin en cm, 1 = tamaño humano (100 los dejaba gigantes)
+	float WalkSwayDegrees = 5.f;
 
 	/** Recibe un claquetazo desde una posición. Devuelve el resultado para el feedback del director. */
 	UFUNCTION(BlueprintCallable, Category = "TDC|Extra")
@@ -71,6 +72,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "TDC|Extra")
 	bool IsDefeated() const { return bDefeated; }
+
+	UFUNCTION(BlueprintPure, Category = "TDC|Extra")
+	bool IsStunned() const { return StunRemaining > 0.f; }
 
 	virtual void Tick(float DeltaSeconds) override;
 
@@ -122,5 +126,8 @@ private:
 	bool bPuppetWalking = false;
 	float PuppetFacing = 0.f;
 	float BobPhase = 0.f;
+	/** Frames hasta medir la pose animada y corregir la escala (-1 = ya medida). */
+	int32 PuppetScaleCheckFrames = -1;
+	void FitPuppetScale();
 	TWeakObjectPtr<AActor> StunFx;
 };

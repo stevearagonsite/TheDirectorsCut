@@ -1,0 +1,100 @@
+EXTRAS v2: propuesta de rediseño (pendiente de aprobación de Steve; no se generó nada en Rodin)
+
+Modelo: gemini-3-pro-image, 2K. Referencia: docs/product/arte/model-sheet/director-front-v1.png.
+Concepto elegido: v3 (concepto_lineup.png). v1 y v2 están en iteraciones/ (en v2 usé la v1 como referencia y salió casi igual).
+Las vistas frontales usan concepto_lineup.png como referencia, para que sean coherentes con la hoja.
+
+Idea general: los tres son "sombras" casi negras (como en el key art), sin piel ni cara, solo ojos que brillan.
+Se distinguen primero por silueta y después por el acento emisivo. Nada de amarillo, violeta ni cian.
+
+== Cómo se lee cada uno a 22 m (director a unos 80 px de 720; ver iteraciones/chequeo_22m.png) ==
+
+COMÚN (acento rojo). Alto igual al director (~80 px). Silueta: fedora de ala media y gabardina con cinturón.
+  A 22 m se lee "otro tipo de mi tamaño con sombrero": la banda roja del sombrero y los ojos son lo primero que se ve.
+  La corbata roja se pierde. Lo que importa es la banda emisiva.
+
+RESISTENTE (acento naranja). Alto ~1.15x el director y casi el doble de ancho: hombros enormes, puños de bloque y bombín chico.
+  A 22 m se lee como "bloque ancho con bombín". El brazalete naranja es la mancha de color más grande de los tres, y la
+  silueta ancha alcanza aunque se pierda el color. El rayado y la grieta del pecho no se ven a esa distancia (son detalle de cerca).
+  Ojo: en la vista frontal los brazos quedan casi pegados al torso. Si Rodin los fusiona, pedir una vista con los brazos más abiertos.
+
+SOMBRA / DE GUION (inmune, ojos rojos). Alto ~1.5x el director, flaco, ala ancha, gabardina hasta el piso con el borde deshilachado.
+  A 22 m se lee como "palo negro alto con sombrero ancho". Es el más oscuro y no tiene otro acento, así que solo se ve por la silueta
+  y dos puntos rojos. Las páginas de guion y el humo del concepto van como VFX (Niagara), no en la malla: en la vista frontal
+  el humo se reemplazó por jirones sólidos.
+
+== Para la integración (cuando se apruebe) ==
+- Material: cuerpo con tinte ~0.10-0.12 (como pide la auditoría, punto 10). Ojos, banda y brazalete emisivos, para que no los apague
+  la luz azul de la noche: en el chequeo con tinte nocturno el brillo pierde fuerza.
+- Rojo de acento: rojo cálido, no magenta (para no acercarse al violeta). Naranja: brasa quemada, lejos del amarillo de la mecánica de luz.
+- Los ojos de la sombra son el único rasgo que la distingue del fondo oscuro: conviene agrandarlos un poco o sumarles bloom.
+
+== Prompts ==
+
+--- lineup_v1.txt ---
+The attached image is the official model sheet of the hero, "the Director": a stylized low-poly 3D character with big head (about 1/3.5 of body height), compact body, clean flat-shaded facets, flat colors, little texture, soft grey studio background.
+
+Create a CHARACTER LINEUP CONCEPT SHEET in exactly this same 3D low-poly faceted style and same chibi proportions (big heads, compact bodies). Flat plain light-grey background, even studio lighting, all characters standing on the same ground line, front view, neutral A-pose, full body, nothing cropped. Thin horizontal height guide lines behind them. No text, no labels, no logos.
+
+Left to right, four characters:
+
+1. THE DIRECTOR, exactly as in the attached image (newsboy cap, grey coat, olive vest, blue-grey scarf, brown boots). He is the scale reference.
+
+2. "COMMON EXTRA" (basic film-noir henchman, 1940s). Same height as the Director. A living shadow: entire body, clothes and head are near-black charcoal with a very subtle cold blue-grey facet shading, no visible skin, no face except two glowing RED eyes under the hat brim. Silhouette: classic fedora with a medium brim, belted knee-length trench coat with the collar turned up, hands in a slightly hunched sneaking stance. Accent color: deep red, only as the fedora hatband and a thin red stripe on the tie / coat belt. Red eyes glow.
+
+3. "TOUGH EXTRA" (1940s mob bruiser). About 1.15x the Director's height but almost twice as wide: huge rounded boxy shoulders, barrel chest, big blocky fists, short thick legs, small head sunk between the shoulders, wearing a small round bowler hat / flat cap. Double-breasted pinstripe thug suit with rolled-up sleeves. Body also near-black charcoal shadow, no skin, no face, glowing eyes. Accent color: muted burnt ORANGE (like hot embers, not yellow): orange glowing eyes, orange armband / suspenders and a cracked orange glow seam across the chest. Reads as heavy and armored.
+
+4. "SHADOW / SCRIPT EXTRA" (immune phantom from the screenplay). About 1.5x the Director's height, very tall and very thin, elongated limbs and long fingers, slightly stooped. Pure near-black, darker than the others, almost a silhouette cut out of the image, with soft smoky wisps at the hem of a floor-length trench coat and at the edges of a wide-brim fedora. Only accent: two sharp glowing RED eyes. A few torn white-grey screenplay pages drift around it (small, desaturated). Ominous, untouchable.
+
+Color rules: no yellow, no violet/purple, no cyan. Accents only red and burnt orange. The three enemies must be clearly distinguishable by SILHOUETTE alone (medium fedora/trench, wide bruiser, tall thin phantom) and secondarily by accent color. Keep the low-poly faceted 3D toy-like render quality of the reference.
+
+--- lineup_v2.txt ---
+The attached image is the official model sheet of the hero, "the Director": a stylized low-poly 3D character with big head (about 1/3.5 of body height), compact body, clean flat-shaded facets, flat colors, little texture, soft grey studio background.
+
+Create a CHARACTER LINEUP CONCEPT SHEET in exactly this same 3D low-poly faceted style and same chibi proportions (big heads, compact bodies). Flat plain light-grey background, even studio lighting, all characters standing on the same ground line, front view, neutral A-pose, full body, nothing cropped. Thin horizontal height guide lines behind them. Absolutely no text, no labels, no captions, no logos.
+
+Left to right, four characters:
+
+1. THE DIRECTOR, exactly as in the attached image (newsboy cap, grey coat, olive vest, blue-grey scarf, brown boots). He is the scale reference.
+
+2. "COMMON EXTRA" (basic film-noir henchman, 1940s). Same height as the Director. A living shadow: entire body, clothes and head are near-black charcoal with a very subtle cold blue-grey facet shading, no visible skin, no face except two glowing RED eyes under the hat brim. Silhouette: classic fedora with a medium brim, belted knee-length trench coat with the collar turned up, hands in a slightly hunched sneaking stance. Accent color: bright glowing RED (emissive, clearly visible from far away), as a thick fedora hatband and a red tie; the red eyes glow strongly. Head is big like the Director's (chibi proportion).
+
+3. "TOUGH EXTRA" (1940s mob bruiser). About 1.15x the Director's height but almost twice as wide: huge rounded boxy shoulders, barrel chest, big blocky fists, short thick legs, small head sunk between the shoulders, wearing a small round bowler hat / flat cap. Double-breasted pinstripe thug suit with rolled-up sleeves. Body also near-black charcoal shadow, no skin, NO facial features at all (no nose, no mouth): a smooth dark faceted head with only two glowing eyes. Accent color: muted burnt ORANGE (like hot embers, not yellow): orange glowing eyes, orange armband / suspenders and a cracked orange glow seam across the chest. Reads as heavy and armored.
+
+4. "SHADOW / SCRIPT EXTRA" (immune phantom from the screenplay). About 1.5x the Director's height, very tall and very thin, elongated limbs and long fingers, slightly stooped, BUT still in the same stylized toy style: the head stays large and round relative to the narrow body (head about 1/4 of total height), not realistic proportions. Pure near-black, darker than the others, almost a silhouette cut out of the image, with soft smoky wisps at the hem of a floor-length trench coat and at the edges of a wide-brim fedora. Only accent: two sharp glowing RED eyes. A few torn white-grey screenplay pages drift around it (small, desaturated). Ominous, untouchable.
+
+Color rules: no yellow, no violet/purple, no cyan. Accents only red and burnt orange. The three enemies must be clearly distinguishable by SILHOUETTE alone (medium fedora/trench, wide bruiser, tall thin phantom) and secondarily by accent color. Keep the low-poly faceted 3D toy-like render quality of the reference.
+
+--- lineup_v3.txt ---
+The attached image is the official model sheet of the hero, "the Director": a stylized low-poly 3D character with big head (about 1/3.5 of body height), compact body, clean flat-shaded facets, flat colors, little texture, soft grey studio background.
+
+Create a CHARACTER LINEUP CONCEPT SHEET in exactly this same 3D low-poly faceted style and same chibi proportions (big heads, compact bodies). Flat plain light-grey background, even studio lighting, all characters standing on the same ground line, front view, neutral A-pose, full body, nothing cropped. Thin horizontal height guide lines behind them. Absolutely no text, no labels, no captions, no logos.
+
+Left to right, four characters:
+
+1. THE DIRECTOR, exactly as in the attached image (newsboy cap, grey coat, olive vest, blue-grey scarf, brown boots). He is the scale reference.
+
+2. "COMMON EXTRA" (basic film-noir henchman, 1940s). Same height as the Director. A living shadow: entire body, clothes and head are near-black charcoal with a very subtle cold blue-grey facet shading, no visible skin, no face except two glowing RED eyes under the hat brim. Silhouette: classic fedora with a medium brim, belted knee-length trench coat with the collar turned up, hands in a slightly hunched sneaking stance. Accent color: bright glowing RED (emissive, clearly visible from far away), as a thick fedora hatband and a red tie; the red eyes glow strongly. Head is big like the Director's (chibi proportion).
+
+3. "TOUGH EXTRA" (1940s mob bruiser). About 1.15x the Director's height but almost twice as wide: huge rounded boxy shoulders, barrel chest, big blocky fists, short thick legs, small head sunk between the shoulders, wearing a small round bowler hat / flat cap. Double-breasted pinstripe thug suit with rolled-up sleeves. Body also near-black charcoal shadow, no skin, NO facial features at all (no nose, no mouth): a smooth dark faceted head with only two glowing eyes. Accent color: muted burnt ORANGE (like hot embers, not yellow): orange glowing eyes, orange armband / suspenders and a cracked orange glow seam across the chest. Reads as heavy and armored.
+
+4. "SHADOW / SCRIPT EXTRA" (immune phantom from the screenplay). About 1.5x the Director's height, very tall and very thin, elongated limbs and long fingers, slightly stooped, BUT still in the same stylized toy style: the head stays large and round relative to the narrow body (head about 1/4 of total height), not realistic proportions. Pure near-black, darker than the others, almost a silhouette cut out of the image, with soft smoky wisps at the hem of a floor-length trench coat and at the edges of a wide-brim fedora. Only accent: two sharp glowing RED eyes. A few torn white-grey screenplay pages drift around it (small, desaturated). Ominous, untouchable.
+
+Color rules: no yellow, no violet/purple, no cyan. Accents only red and burnt orange. The three enemies must be clearly distinguishable by SILHOUETTE alone (medium fedora/trench, wide bruiser, tall thin phantom) and secondarily by accent color. Keep the low-poly faceted 3D toy-like render quality of the reference.
+
+IMPORTANT proportion check: ALL four characters share the same toy-like chibi head-to-body ratio family as the Director. The tall shadow extra must NOT look like a realistic adult man: give it an oversized round head under the wide fedora, a narrow stick-like body and long thin legs, like a stretched toy. The tough extra's head is small only relative to his giant shoulders, and his face is a blank dark surface with just two orange glowing eyes (no nose, no mouth, no brow). The common extra's red hatband and red tie glow brightly. Shadow bodies are near-black (about 10% brightness) so the glowing accents pop.
+
+--- front_comun.txt ---
+Reference for image-to-3D (Rodin): render ONLY ONE character, centered, full body, strict orthographic FRONT view, symmetrical neutral A-pose (arms 35 degrees away from the body, hands open and clearly separated from the torso, legs slightly apart), on a perfectly flat uniform mid-grey background (#8a8a8a), even soft lighting, no shadows on the ground, no smoke, no particles, no floating objects, no text, no guide lines, no other characters. Same stylized low-poly faceted 3D toy style, flat colors and chibi proportions as the attached lineup sheet. Character fills about 85% of the image height.
+
+The character: the COMMON EXTRA (second from the left in the attached sheet). Same height as the Director, big head. Living shadow, near-black charcoal body and clothes with subtle cold blue-grey facet shading, no skin, faceless except two glowing red eyes under the brim. Medium-brim fedora with a thick bright glowing red hatband, belted knee-length trench coat with turned-up collar, red tie, dark gloves, dark shoes.
+
+--- front_resistente.txt ---
+Reference for image-to-3D (Rodin): render ONLY ONE character, centered, full body, strict orthographic FRONT view, symmetrical neutral A-pose (arms 35 degrees away from the body, hands open and clearly separated from the torso, legs slightly apart), on a perfectly flat uniform mid-grey background (#8a8a8a), even soft lighting, no shadows on the ground, no smoke, no particles, no floating objects, no text, no guide lines, no other characters. Same stylized low-poly faceted 3D toy style, flat colors and chibi proportions as the attached lineup sheet. Character fills about 85% of the image height.
+
+The character: the TOUGH EXTRA (third from the left in the attached sheet), 1940s mob bruiser. About 1.15x the Director height but almost twice as wide: HUGE rounded boxy shoulders, barrel chest, big blocky fists, short thick legs, smaller head with a small bowler hat. Near-black charcoal double-breasted pinstripe suit, rolled-up sleeves, dark suspenders. Faceless smooth dark head with only two glowing burnt-orange eyes. Accents in muted burnt orange (embers, not yellow): glowing orange armband on the left arm and a cracked orange glow seam on the chest/tie.
+
+--- front_sombra.txt ---
+Reference for image-to-3D (Rodin): render ONLY ONE character, centered, full body, strict orthographic FRONT view, symmetrical neutral A-pose (arms 35 degrees away from the body, hands open and clearly separated from the torso, legs slightly apart), on a perfectly flat uniform mid-grey background (#8a8a8a), even soft lighting, no shadows on the ground, no smoke, no particles, no floating objects, no text, no guide lines, no other characters. Same stylized low-poly faceted 3D toy style, flat colors and chibi proportions as the attached lineup sheet. Character fills about 85% of the image height.
+
+The character: the SHADOW / SCRIPT EXTRA (rightmost in the attached sheet). About 1.5x the Director height, very tall and very thin, stretched toy proportions: oversized round head under a wide-brim fedora, narrow stick-like body, long thin arms and legs, long fingers. Pure near-black (about 10% brightness), darker than the others, floor-length trench coat with a high collar; instead of smoke, the coat hem and the sleeve ends are torn into sharp jagged tatters (solid geometry). Only accent: two sharp glowing red eyes. No paper pages, no smoke.

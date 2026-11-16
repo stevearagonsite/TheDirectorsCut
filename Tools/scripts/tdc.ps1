@@ -20,10 +20,14 @@
   .\Tools\scripts\tdc.ps1 smoke -Task T-0006 -Name 01-package     # prueba el zip: arranca el exe, captura y log
   .\Tools\scripts\tdc.ps1 smoke -Task T-0006 -Name 02-final -Keep # igual, pero deja el juego abierto
   .\Tools\scripts\tdc.ps1 autorun -Task T-0013  # demo -TDCAutoRun: 12 capturas a docs/evidence/T-0013/autorun
+  .\Tools\scripts\tdc.ps1 playtest -Task T-0032          # bot guionado: verifica los 4 beats (docs/pipeline/playtest.md)
+  .\Tools\scripts\tdc.ps1 record                         # Steve juega; si llega a la meta queda Tools/playtest/runs/best.json
+  .\Tools\scripts\tdc.ps1 replay -Task T-0032            # reproduce best.json y verifica (código != 0 si falla)
+  .\Tools\scripts\tdc.ps1 replay -Task T-0032 -Run run-20261115-210000.json
 #>
 param(
   [Parameter(Position = 0, Mandatory = $true)]
-  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot', 'play', 'stop', 'package', 'smoke', 'autorun')]
+  [ValidateSet('doctor', 'projectfiles', 'build', 'test', 'editor', 'python', 'blender', 'shot', 'play', 'stop', 'package', 'smoke', 'autorun', 'playtest', 'record', 'replay')]
   [string]$Command,
   [string]$Filter = 'TDC.',
   [string]$Script,
@@ -37,6 +41,7 @@ param(
   [ValidateSet('Development', 'Shipping')]
   [string]$Config = 'Development',
   [string]$Zip = 'stevearagonsite_TheDirectorsCut',
+  [string]$Run = 'best.json',
   [Parameter(ValueFromRemainingArguments = $true)]
   [string[]]$Rest
 )
@@ -180,6 +185,65 @@ switch ($Command) {
     New-Item -ItemType Directory -Force $dest | Out-Null
     $pngs | ForEach-Object { Copy-Item $_.FullName (Join-Path $dest $_.Name) -Force }
     "capturas: $($pngs.Count) en docs/evidence/$Task/autorun/"
+  }
+  { @('playtest', 'record', 'replay') -contains $_ } {
+    # Playtest automático (T-0032, docs/pipeline/playtest.md). Las líneas [TDC-PLAYTEST]/[TDC-REPLAY] del log son el resultado.
+    Need-UE
+    if (-not $Task -and $Command -ne 'record') { throw 'Falta -Task (ej. T-0032)' }
+    $runs = Join-Path $Repo 'Game\Saved\TDCRuns'
+    $repoRuns = Join-Path $Repo 'Tools\playtest\runs'
+    switch ($Command) {
+      'playtest' { $flag = '-TDCPlaytest' }
+      'record'   { $flag = '-TDCRecord' }
+      'replay'   {
+        $cands = @()
+        if (Test-Path $Run) { $cands += (Resolve-Path $Run).Path }
+        $cands += (Join-Path $runs $Run), (Join-Path $repoRuns $Run)
+        $file = $cands | Where-Object { Test-Path $_ } | Select-Object -First 1
+        if (-not $file) { throw "No encuentro la corrida '$Run' (Game\Saved\TDCRuns o Tools\playtest\runs). Grabar antes: tdc.ps1 record" }
+        $flag = "-TDCReplay=`"$file`""
+        "corrida: $(Redact $file)"
+      }
+    }
+    $log = Join-Path $Repo "Game\Saved\Logs\tdc-$Command.log"
+    New-Item -ItemType Directory -Force (Split-Path $log) | Out-Null
+    if (Test-Path $log) { Remove-Item -Force $log }
+    $before = Get-Date
+    $argList = "`"$Proj`" $Map -game -windowed -ResX=1280 -ResY=720 -log -abslog=`"$log`" $flag"
+    $p = Start-Process $UEEditor -PassThru -ArgumentList $argList
+    # El juego sale solo al terminar (record: 2 s después de llegar a la meta, o cuando Steve lo cierra).
+    $limit = if ($Command -eq 'record') { 1800 } else { [Math]::Max($Wait, 150) }
+    if (-not $p.WaitForExit($limit * 1000)) {
+      Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+      "timeout: el juego no terminó en $limit s (cerrado)"
+    }
+    if (-not (Test-Path $log)) { throw "No hay log del juego ($(Redact $log))" }
+    $lines = @(Select-String -Path $log -Pattern '\[TDC-(PLAYTEST|REPLAY)\]' | ForEach-Object { $_.Line -replace '^.*?\[TDC-', '[TDC-' })
+    $lines | ForEach-Object { Redact $_ }
+    $result = $lines | Where-Object { $_ -like '*RESULT*' } | Select-Object -Last 1
+
+    # Corrida que llegó a la meta -> Tools/playtest/runs/best.json (se commitea para reutilizarla).
+    $best = Join-Path $runs 'best.json'
+    if ($Command -ne 'replay' -and (Test-Path $best) -and (Get-Item $best).LastWriteTime -gt $before) {
+      $repoBest = Join-Path $repoRuns 'best.json'
+      if ($Command -eq 'record' -or -not (Test-Path $repoBest)) {
+        New-Item -ItemType Directory -Force $repoRuns | Out-Null
+        Copy-Item $best $repoBest -Force
+        'best.json copiado a Tools/playtest/runs/best.json (commitearlo)'
+      }
+    }
+    if ($Task) {
+      $dest = Join-Path $Repo "docs\evidence\$Task\$Command"
+      New-Item -ItemType Directory -Force $dest | Out-Null
+      $pngs = @(Get-ChildItem (Join-Path $Repo 'Game\Saved\Screenshots') -Recurse -Filter 'TDCPlaytest_*.png' -ErrorAction SilentlyContinue |
+        Where-Object LastWriteTime -gt $before)
+      $pngs | ForEach-Object { Copy-Item $_.FullName (Join-Path $dest $_.Name) -Force }
+      ($lines | ForEach-Object { Redact $_ }) -join "`n" | Set-Content -Path (Join-Path $dest "$Command.log") -Encoding UTF8
+      "evidencia: $($pngs.Count) capturas + $Command.log en docs/evidence/$Task/$Command/"
+    }
+    if (-not $result) { Write-Warning 'No hay línea RESULT (¿el juego se cerró antes de terminar?)'; exit 1 }
+    if ($result -notmatch 'RESULT PASS') { Write-Warning "Playtest con fallas: $result"; exit 1 }
+    "OK: $result"
   }
   'package' {
     # Development por defecto: Shipping apaga los AddOnScreenDebugMessage (ayuda de controles y "REBOBINANDO").

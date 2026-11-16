@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Debug/TDCPlaytestTypes.h"
 #include "TDCCharacter.generated.h"
 
 class USpringArmComponent;
@@ -13,6 +14,7 @@ class UBlendSpace1D;
 class UInputAction;
 class UInputMappingContext;
 class UTDCDirectorComponent;
+class ATDCPlaytestRunner;
 struct FInputActionValue;
 
 /**
@@ -32,6 +34,12 @@ public:
 	void Respawn();
 
 	UTDCDirectorComponent* GetDirector() const { return Director; }
+
+	/** Acción de juego desde el jugador, el replay o el bot de playtest (T-0032). La ejecuta y avisa al grabador. */
+	void PerformAction(ETDCPlayAction Action, float Value = 1.f);
+
+	/** Salto de beat del bot de playtest (queda grabado). FacingX: +1 mira a la derecha, -1 a la izquierda. */
+	void PlaytestTeleport(const FVector& Location, float FacingX);
 
 protected:
 	virtual void BeginPlay() override;
@@ -194,6 +202,21 @@ private:
 	int32 AutoShotIndex = 0;
 
 	void OnClap();
+	bool DoClap();
+
+	// Input del jugador: pasa por PerformAction para que -TDCRecord lo grabe.
+	void MoveCompleted();
+	void OnJumpPressed();
+	void OnJumpReleased();
+	void OnLightsPressed();
+	void OnRewindPressed();
+	void OnRewindReleased();
+
+	/** Playtest automático (-TDCRecord / -TDCReplay / -TDCPlaytest). */
+	TWeakObjectPtr<ATDCPlaytestRunner> PlaytestRunner;
+	float PlayerMoveAxis = 0.f;
+	float RecordedMoveAxis = 0.f;
+	float ScriptedMoveAxis = 0.f;
 
 	void LoadCharacterAssets();
 	void UpdateAnimState();
