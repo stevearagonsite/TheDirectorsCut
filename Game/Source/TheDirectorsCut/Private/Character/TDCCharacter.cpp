@@ -515,6 +515,10 @@ void ATDCCharacter::PerformAction(ETDCPlayAction Action, float Value)
 		if (Director) { if (Value > 0.5f) { Director->BeginRewind(); } else { Director->EndRewind(); } }
 		break;
 	case ETDCPlayAction::Clap:
+		if (PlaytestRunner.IsValid())
+		{
+			PlaytestRunner->NotifyPreClap(GetActorLocation()); // antes del golpe: después el común ya no cuenta
+		}
 		Value = DoClap() ? 1.f : 0.f; // 0 = en cooldown, no hubo golpe
 		break;
 	case ETDCPlayAction::Teleport:

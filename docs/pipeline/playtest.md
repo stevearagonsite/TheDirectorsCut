@@ -6,7 +6,7 @@ Recorre `L_Slice` sin que nadie juegue, verifica la escena y deja capturas. Lo i
 | Comando (Windows) | Modo | Qué hace |
 |---|---|---|
 | `tdc.ps1 record` | `-TDCRecord` | Steve juega. Graba los inputs (mover, saltar, E, Q apretado/soltado, F) con su tiempo y, cada 0.5 s, la posición y velocidad del director. Guarda `Game/Saved/TDCRuns/run-<fecha>.json`. Si llega a la salida, la copia a `best.json`, loguea `[TDC-REPLAY] GOAL en Xs`, cierra el juego y `tdc.ps1` la deja en `Tools/playtest/runs/best.json` para commitearla. |
-| `tdc.ps1 replay -Task T-XXXX [-Run archivo]` | `-TDCReplay[=archivo]` | Reproduce una corrida (por defecto `best.json`). En cada checkpoint, si el director se desvió más de 30 cm, lo corrige y loguea `drift`. |
+| `tdc.ps1 replay -Task T-XXXX [-Run <archivo.json>]` (string; si se omite, `best.json`) | `-TDCReplay[=archivo]` | Reproduce una corrida (por defecto `best.json`). En cada checkpoint, si el director se desvió más de 30 cm, lo corrige y loguea `drift`. |
 | `tdc.ps1 playtest -Task T-XXXX` | `-TDCPlaytest` | Bot guionado: salta entre beats teletransportando al director (cada salto queda en el log) y usa los poderes. Si no hay `best.json`, su corrida se guarda como el primero. |
 
 Los tres modos corren a paso fijo de 1/60 s (y 60 fps como máximo) para que grabación y replay coincidan.
