@@ -60,7 +60,9 @@ SET_PROPS = [
 ]
 HANGING_LIGHT_DIR = os.path.join(SRC, "StageLightHanging")
 HANGING_LIGHT_DEST = "/Game/Dressing/Props"
-FOREGROUND_Y = (450.0, 950.0)   # franja de escenario en primer plano
+# T-0056: la vereda arrancaba en y=450 y la cámara de juego (picado de 9°) la dejaba fuera de cuadro. Ahora va desde
+# el frente de los pisos (y=200, DEPTH/2) hasta el primer plano: se ve como vereda/cordón delante del plano de juego.
+FOREGROUND_Y = (210.0, 950.0)
 FOREGROUND_TOP_Z = -40.0
 
 

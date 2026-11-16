@@ -24,7 +24,9 @@ MASTER = "/Game/Materials/M_TDCToon"
 
 # nombre, carpeta, SK, tinte, textura en disco (fallback)
 # Rim por personaje (auditoría #5): el director se recorta con luz cálida y más fuerte; los extras quedan con el frío.
-RIM = {"Director": ((1.0, 0.72, 0.42), 0.7)}
+# T-0052: con 0.7 y potencia 3 el borde salía neutro y el extra rojo se leía más que el director. Más ancho (potencia
+# 2) y más fuerte, en ámbar: el director es lo más cálido del plano de juego.
+RIM = {"Director": ((1.0, 0.6, 0.28), 1.4, 2.0)}
 
 CHARACTERS = [
     ("Director", "/Game/Characters/Director", "SK_Director", (1.0, 1.0, 1.0), None),
@@ -213,7 +215,8 @@ def apply(master, name, folder, sk_name, tint, kind):
     mel.set_material_instance_texture_parameter_value(mi, "BaseTex", tex)
     mel.set_material_instance_vector_parameter_value(mi, "Tint", unreal.LinearColor(tint[0], tint[1], tint[2], 1.0))
     if name in RIM:
-        rim_color, rim_strength = RIM[name]
+        rim_color, rim_strength, rim_power = RIM[name]
+        mel.set_material_instance_scalar_parameter_value(mi, "RimPower", rim_power)
         mel.set_material_instance_vector_parameter_value(mi, "RimColor",
                                                          unreal.LinearColor(rim_color[0], rim_color[1], rim_color[2], 1.0))
         mel.set_material_instance_scalar_parameter_value(mi, "RimStrength", rim_strength)
