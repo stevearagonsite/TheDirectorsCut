@@ -23,6 +23,9 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 MASTER = "/Game/Materials/M_TDCToon"
 
 # nombre, carpeta, SK, tinte, textura en disco (fallback)
+# Rim por personaje (auditoría #5): el director se recorta con luz cálida y más fuerte; los extras quedan con el frío.
+RIM = {"Director": ((1.0, 0.72, 0.42), 0.7)}
+
 CHARACTERS = [
     ("Director", "/Game/Characters/Director", "SK_Director", (1.0, 1.0, 1.0), None),
     ("Extra_Comun", "/Game/Characters/Extras/Comun", "SK_Extra_Comun", (0.9, 0.9, 0.9), "Comun"),
@@ -209,6 +212,11 @@ def apply(master, name, folder, sk_name, tint, kind):
     mel.set_material_instance_parent(mi, master)
     mel.set_material_instance_texture_parameter_value(mi, "BaseTex", tex)
     mel.set_material_instance_vector_parameter_value(mi, "Tint", unreal.LinearColor(tint[0], tint[1], tint[2], 1.0))
+    if name in RIM:
+        rim_color, rim_strength = RIM[name]
+        mel.set_material_instance_vector_parameter_value(mi, "RimColor",
+                                                         unreal.LinearColor(rim_color[0], rim_color[1], rim_color[2], 1.0))
+        mel.set_material_instance_scalar_parameter_value(mi, "RimStrength", rim_strength)
     eal.save_asset(mi_path, only_if_is_dirty=False)
 
     sk = eal.load_asset(sk_path)
