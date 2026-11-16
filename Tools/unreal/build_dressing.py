@@ -472,13 +472,38 @@ def import_kit_piece(name):
     return sm
 
 
-def kit_trim_floors():
+def kit_front_yaw(sm):
+    """Yaw para que el frente de la cornisa mire a la cámara (+Y), medido en la malla: el frente es el lado donde la
+    parte de arriba (la moldura) sobresale más que la base. None si no se puede leer la geometría."""
+    try:
+        verts = unreal.ProceduralMeshLibrary.get_section_from_static_mesh(sm, 0, 0)[0]
+    except Exception as e:
+        unreal.log_warning(f"[TDC] no pude leer los vértices de {sm.get_name()} ({e}): queda el yaw por defecto")
+        return None
+    if not verts:
+        return None
+    zs = [v.z for v in verts]
+    zmin, zmax = min(zs), max(zs)
+    band = (zmax - zmin) * 0.25
+    top = [v.y for v in verts if v.z >= zmax - band]
+    bot = [v.y for v in verts if v.z <= zmin + band]
+    if not top or not bot:
+        return None
+    over_pos = max(top) - max(bot)  # cuánto sobresale arriba hacia +Y
+    over_neg = min(bot) - min(top)  # cuánto sobresale arriba hacia -Y
+    yaw = 0.0 if over_pos >= over_neg else 180.0
+    log(f"cornisa: voladizo +Y {over_pos:.0f} cm, -Y {over_neg:.0f} cm -> KitTrimYaw {yaw:.0f}")
+    return yaw
+
+
+def kit_trim_floors(ledge=None):
     """Pisos fijos y la salida llevan cornisa del kit en el borde frontal (ATDCSetPiece::bKitTrim)."""
     n = 0
+    measured_yaw = kit_front_yaw(ledge) if ledge else None
     for actor in eas.get_all_level_actors():
         label = actor.get_actor_label()
         if label.startswith("Floor_") or label == "Exit_Ledge":
-            yaw = os.environ.get("TDC_KIT_YAW")  # worker headless: si la cornisa sale al revés, TDC_KIT_YAW=0
+            yaw = os.environ.get("TDC_KIT_YAW") or measured_yaw  # override manual; si no, lo medido en la malla
             if yaw:
                 try:
                     actor.set_editor_property("kit_trim_yaw", float(yaw))
@@ -666,8 +691,9 @@ def build():
         spawn_mesh(f"DR_{name}_{i}", sm, (x, y, FOREGROUND_TOP_Z), rot(yaw=yaw), vec(s, s, s))
 
     import_hanging_light()
-    if import_kit_piece("SM_Ledge_Mid"):
-        kit_trim_floors()
+    ledge = import_kit_piece("SM_Ledge_Mid")
+    if ledge:
+        kit_trim_floors(ledge)
     import_kit_piece("SM_Catwalk_Mid")
     set_cache = {}
     placed = 0
