@@ -217,6 +217,10 @@ private:
 
 	/** Hasta cuándo (segundos de mundo) la animación del claquetazo tiene prioridad. */
 	double ClapAnimUntil = 0.0;
+	/** Squash & stretch del cuerpo y golpe de la claqueta en la mano (game feel): se lee aunque el clip no tenga pose. */
+	void ApplyClapPunch();
+	double ClapPunchStart = -100.0;
+	bool bClapPunchActive = false;
 
 	EAnimState AnimState = EAnimState::None;
 };

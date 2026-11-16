@@ -170,6 +170,7 @@ void ATDCCharacter::Tick(float DeltaSeconds)
 		TickAutoRun(DeltaSeconds);
 	}
 	UpdateAnimState();
+	ApplyClapPunch();
 	UpdateLightPrompt();
 	ShowControls();
 }
@@ -456,6 +457,10 @@ void ATDCCharacter::OnClap()
 	{
 		return;
 	}
+	if (GetWorld())
+	{
+		ClapPunchStart = GetWorld()->GetTimeSeconds();
+	}
 	if (ClapAnim && GetWorld())
 	{
 		ClapAnimUntil = GetWorld()->GetTimeSeconds() + ClapDuration;
@@ -498,4 +503,29 @@ void ATDCCharacter::FellOutOfWorld(const UDamageType& DamageType)
 {
 	// No destruir al protagonista: volver al último punto seguro.
 	Respawn();
+}
+
+void ATDCCharacter::ApplyClapPunch()
+{
+	USkeletalMeshComponent* MeshComp = GetMesh();
+	if (!MeshComp || !GetWorld())
+	{
+		return;
+	}
+	const float Phase = static_cast<float>(GetWorld()->GetTimeSeconds() - ClapPunchStart) / FMath::Max(ClapDuration, 0.05f);
+	const float Punch = (Phase >= 0.f && Phase < 1.f) ? FMath::Sin(Phase * PI) : 0.f;
+	if (Punch <= 0.f && !bClapPunchActive)
+	{
+		return;
+	}
+	bClapPunchActive = Punch > 0.f;
+	// Se ensancha y se agacha en el golpe (squash), y vuelve: el claquetazo se lee aunque la pose del clip sea sutil.
+	MeshComp->SetRelativeScale3D(FVector(AnimatedMeshScale) * FVector(1.f + 0.1f * Punch, 1.f + 0.1f * Punch, 1.f - 0.08f * Punch));
+	if (Clapper && Clapper->IsVisible())
+	{
+		// La claqueta "cierra": giro seco y vuelta.
+		FTransform Snap = ClapperOffset;
+		Snap.ConcatenateRotation(FRotator(0.f, 0.f, -35.f * Punch).Quaternion());
+		Clapper->SetRelativeTransform(Snap);
+	}
 }
