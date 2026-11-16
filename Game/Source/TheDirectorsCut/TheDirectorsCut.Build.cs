@@ -11,6 +11,9 @@ public class TheDirectorsCut : ModuleRules
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput"
 		});
 
+		// Json: corridas grabadas del playtest automático (Saved/TDCRuns/*.json).
+		PrivateDependencyModuleNames.AddRange(new string[] { "Json" });
+
 		PublicIncludePaths.Add(ModuleDirectory + "/Public");
 	}
 }

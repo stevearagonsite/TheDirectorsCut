@@ -40,6 +40,8 @@ Requisitos para compilar: UE 5.8, Visual Studio con C++ y el componente **.NET F
 
 Logs: `Game\Saved\Logs\TheDirectorsCut.log`. Capturas de HighResShot: `Game\Saved\Screenshots\WindowsEditor\`.
 
+Playtest automático (sin manos): `tdc.ps1 playtest -Task T-XXXX` (bot), `tdc.ps1 record` (grabar una corrida) y `tdc.ps1 replay -Task T-XXXX` (reproducir `best.json` y verificar). Detalle en [`playtest.md`](playtest.md).
+
 ## Blender
 
 ```powershell
