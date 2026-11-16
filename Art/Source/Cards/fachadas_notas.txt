@@ -1,0 +1,84 @@
+Fachadas 2D (plano medio) para The Director's Cut. Generadas 2026-11-15. Auditoría punto 9: la pared que sostiene la marquesina y los afiches.
+
+Archivos
+- mid_fachada_cine.png 1654x2048 RGBA: frente de cine art déco de 3 pisos, con puertas dobles, boletería (kiosco con lámpara) y vitrinas vacías.
+  Arriba de la entrada tiene un panel liso (el hueco de la marquesina), dos tensores de hierro con tensor de rosca que bajan
+  en diagonal a sus esquinas y cuatro ménsulas abajo. Con la marquesina encima, los tensores entran en las esquinas del cartel.
+- mid_pared_ladrillo.png 2048x864 RGBA: muro de ladrillo azul-gris oscuro de 2 pisos, con cornisa, una ventana oscura, una
+  ventana cálida con escalera de incendio (con escalera de mano), caños, una puerta de servicio y restos de papel despegado.
+  La planta baja del centro queda libre para el afiche. Los bordes izquierdo y derecho son cortes rectos con un caño bajante:
+  no tilea sin costura, pero cada card mide 17,8 m de ancho. Repetida con flip queda como edificios contiguos.
+- preview_cine.jpg / preview_pared.jpg: composición de prueba (marquesina y afiche a escala, con los valores de abajo).
+- key.py: recorte usado. Clave por exceso de verde (G - max(R,B)), erosión de 1 px, despill y recorte al bbox (máx 2048).
+  Quedan 0 píxeles verdosos visibles en las dos.
+
+Generación: gemini-3-pro-image, una sola toma por pieza (v1 aprobada). Referencia de estilo: un recorte de
+parallax/L2_edificios_cercanos.png. Fondo verde #00FF00 en vez de gris: la fachada es azul grisácea y con gris el recorte no
+separaba bien los bordes. Es el mismo método que las otras cards. Pared: se recortaron las columnas 76-3075 del original
+(3168x1344) para sacar los edificios vecinos de los costados.
+
+Escala (medida en el PNG)
+- Cine: hueco de la marquesina de 1165 px de ancho en el original, igualado a los 571 cm de ancho de la marquesina
+  (320 cm x 2048/1147), o sea 0,49 cm/px. El edificio mide 1076 cm de alto por 869 de ancho, y las puertas, unos 290 cm.
+  El centro del hueco coincide con el centro de la card en X. El borde de abajo del hueco está a 305 cm de la base.
+- Pared: 750 cm de alto (2 pisos de unos 375 cm), así que mide 1778 cm de ancho. Un afiche de 260-300 cm con base en z=20
+  queda entero en la planta baja.
+
+Entradas propuestas para cards.json (z = base de la card, igual que las demás)
+
+Problema: con la marquesina en z=40 no entra una puerta abajo. El hueco está a 305 cm de la base del edificio, así que con
+la vereda en z=-40 (FOREGROUND_TOP_Z) la marquesina tiene que ir en z=265. Propuesta A (recomendada): subir la marquesina
+225 cm. Ya no flota, porque la fachada la sostiene.
+
+  {"png": "mid_fachada_cine.png", "x": 300, "y": -430, "z": -40, "height": 1076, "masked": true, "darken": 0.7},
+  {"png": "mid_marquesina.png", "x": 300, "y": -400, "z": 265, "height": 320, "masked": true, "darken": 1.0},
+
+Propuesta B: dejar la marquesina en z=40 y bajar la fachada a z=-265. La entrada queda 2,25 m bajo el nivel de la vereda
+(tapada por el primer plano) y la boletería se pierde.
+  {"png": "mid_fachada_cine.png", "x": 300, "y": -430, "z": -265, "height": 1076, "masked": true, "darken": 0.7},
+
+Paredes detrás de los afiches (30 cm más lejos que cada afiche, base en la vereda). La del medio va espejada para no repetir
+la ventana en el mismo lado. La de 2300 se superpone 178 cm por delante con la de 3900, que está más lejos: se lee como
+edificios escalonados.
+  {"png": "mid_pared_ladrillo.png", "x": 2300, "y": -530, "z": -40, "height": 750, "masked": true, "darken": 0.65},
+  {"png": "mid_pared_ladrillo.png", "x": 3900, "y": -730, "z": -40, "height": 750, "masked": true, "darken": 0.65, "flip": true},
+  {"png": "mid_pared_ladrillo.png", "x": 6100, "y": -380, "z": -40, "height": 750, "masked": true, "darken": 0.65},
+
+darken: 0,7 en el cine y 0,65 en el ladrillo, por debajo de los afiches (0,85) y de la marquesina (1,0), para que los
+carteles se despeguen de su pared. Si el pase de luz de la auditoría (#1/#6) oscurece todo, probar 0,8 y 0,75.
+Escalera de incendio: el descanso queda a ~390 cm del centro (a la derecha, o a la izquierda con flip) y no toca el afiche.
+
+Prompts
+== mid_fachada_cine (v1) ==
+Create a BRAND-NEW image from scratch. The attached image is ONLY a reference for palette and hand-painted 1940s film-noir stage-backdrop brushwork (soft painterly strokes, deep night blue-grey buildings, dim warm windows). Do NOT copy its composition.
+
+Subject: an isolated, cut-out, straight-on orthographic front elevation of a 1940s ART DECO MOVIE THEATER facade, 3 storeys, at night, for a 2.5D side-scrolling game. Flat front view, no perspective, no street, no sidewalk, no sky.
+
+FACADE LAYOUT (bottom to top):
+- Ground floor (bottom 30% of the image): the theater entrance in the center: two pairs of glass double doors with brass-framed glass, a dim warm amber glow inside the lobby. To the left of the doors, a small art deco TICKET BOOTH (a rounded glass kiosk with a little arched window and a dim warm lamp inside, no person). Framed poster cases on both sides of the doors, EMPTY (dark glass, no images, no text). Polished dark stone base.
+- Above the entrance (from 30% to 55% of the image height, centered, about 55% of the facade width): an EMPTY MOUNTING ZONE for a separate marquee sign that will be placed later. Paint it as a recessed flat dark slate-blue wall panel, plain and smooth, with NO sign, NO marquee, NO letters, NO lights inside it. Clearly visible heavy black iron SUPPORT HARDWARE: two thick angled iron tie-rods with turnbuckles running diagonally from wall anchor plates high on the second floor down to the top corners of the empty zone, plus four bolted iron L-brackets sticking out at the bottom edge of the zone. The hardware must read clearly as what holds up a heavy sign.
+- Second and third floors: art deco stepped pilasters with vertical fluting, a central tall vertical strip of glass block, rows of tall narrow windows, only 3 or 4 windows with a dim warm amber light, the rest dark blue-black. Geometric chevron and sunburst relief ornaments in stone.
+- Top: a stepped art deco parapet / crown with a central ziggurat tower; the facade top edge is clean and well defined.
+- Left and right edges of the facade: clean vertical building edges.
+
+PALETTE: night blue-grey and slate stone (desaturated steel blue, dark navy, charcoal), muted warm amber only in the few lit windows, lobby and booth. NO saturated yellow, NO purple/violet, NO cyan, NO neon, NO red. Low contrast, slightly moody, matte painting.
+
+BACKGROUND: the facade is isolated on a completely flat uniform pure chroma-key green #00FF00 (RGB 0,255,0), filling everything around the building (above the roof crown and at the sides). No sky, no shadows, no gradient, no mist on the green. The building fills the frame from the very bottom edge almost to the top, with only a thin green margin above the crown and at the sides.
+ABSOLUTELY NO text, letters, numbers, logos, signatures or watermarks anywhere. No people.
+
+== mid_pared_ladrillo (v1) ==
+Create a BRAND-NEW image from scratch. The attached image is ONLY a reference for palette and hand-painted 1940s film-noir stage-backdrop brushwork (soft painterly strokes, deep night blue-grey buildings, dim warm windows). Do NOT copy its composition.
+
+Subject: an isolated, cut-out, straight-on orthographic front elevation of a wide 2-storey DARK BRICK WALL of an old 1940s city building at night, for a 2.5D side-scrolling game, used as the wall that posters get pasted on. Flat front view, no perspective, no street, no sidewalk, no sky.
+
+LAYOUT:
+- A wide horizontal wall that fills the image from the bottom edge to near the top, and fills the full width edge to edge (left and right edges are straight vertical cuts through the wall, so the wall can be repeated side by side).
+- Ground floor (bottom half): mostly a big, LARGE, FLAT, UNBROKEN area of dark brick wall, with some weathered patches of old peeling paper and plaster, a few rusty pipes and a small closed metal service door near one side. Keep the center and left two thirds of the ground floor clear and flat for posters.
+- Second floor (upper half): two tall sash windows, one with a dim warm amber light and a drawn blind, one dark. A black iron FIRE ESCAPE landing with railings under the lit window, with a folded ladder hanging down toward the ground floor (stopping well above the ground).
+- Top: a simple stone cornice with a thin coping along the top edge; clean, straight top edge.
+- Brick: dark, desaturated blue-grey and charcoal brick with muted dark mortar lines, slightly wet sheen from rain, subtle grime streaks. Bricks should be painterly, not photographic.
+
+PALETTE: night blue-grey, charcoal and dark slate; the only warm note is a muted amber in the lit window. NO saturated yellow, NO purple/violet, NO cyan, NO red brick orange; the brick reads dark blue-grey at night. Low contrast, moody matte painting.
+
+BACKGROUND: completely flat uniform pure chroma-key green #00FF00 (RGB 0,255,0) only in the thin margin above the cornice. No sky, no shadows, no gradient on the green.
+ABSOLUTELY NO text, letters, numbers, logos, graffiti, posters with images, signatures or watermarks. No people.
