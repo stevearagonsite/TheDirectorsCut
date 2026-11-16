@@ -1,7 +1,7 @@
 ---
 id: T-0032
 titulo: Playtest automático de los beats (-TDCPlaytest) y replay de la corrida
-estado: enviada
+estado: fallo
 tipo: test
 rama: t/T-0032-playtest
 creada: 2026-11-15
@@ -45,9 +45,27 @@ Líneas `[TDC-PLAYTEST]`, capturas por paso en `docs/evidence/T-0032/playtest/` 
 ---
 
 ## Reporte (lo completa Windows)
-- estado:
-- sha:
-- resumen:
+- estado: fallo
+- sha: 267877f (base probada; el sha del reporte va en el `[TDC-REPORT]`)
+- resumen: `tdc.ps1 build` no compila (1 error, en `TDCPlaytestRunner.cpp:309`). Según el paso 2 paré ahí: no se corrió
+  `playtest` ni `replay`, no hay capturas ni `best.json`.
 - errores:
-- evidencia:
+  ```
+  [1/4] Compile [x64] Module.TheDirectorsCut.cpp
+  Game\Source\TheDirectorsCut\Private\Debug\TDCPlaytestRunner.cpp(309,21): error C7595:
+    'UE::Core::Private::FormatStringSan::TCheckedFormatStringPrivate<FString::FmtCharType,const FString::ElementType *,
+    const FString::ElementType *,const FString::ElementType *,const FString::ElementType *,const FString::ElementType *,
+    int,int,int>::TCheckedFormatStringPrivate': call to immediate function is not a constant expression
+      FString::Printf(TEXT("%s (%s) %s=%s: presente=%d (esperado %d), colision=%d"), *When, *Check.Name,
+  FormatStringSanErrors.inl(41,1): note: X(DNeedsIntegerArg, "'%d' expects integral arg (eg. `char`, `int`, `long`, etc.)")
+  Result: Failed (OtherCompilationError)
+  ```
+- evidencia: no hay (no llegó a correr el juego). Log completo local: `Game\Saved\Logs\tdc-build.log` (no versionado).
 - notas / preguntas:
+  - Causa: en `TDCPlaytestRunner.cpp:309-310` el formato tiene 4 `%s` + 3 `%d` (7) y se le pasan 8 argumentos:
+    `*When, *Check.Name, *Check.Name, on/off, *P.Name, int, int, int`. `*Check.Name` está dos veces, así que `*P.Name`
+    cae en el primer `%d`. Arreglo sugerido: sacar el `*Check.Name` repetido (o sumar un `%s` para la pieza).
+  - Es el único error que mostró el compilador (unity build, cortó en el primero); puede haber otros detrás.
+  - No toqué C++ (`No hacer`). `tdc.ps1 stop` no encontró editor del proyecto abierto; el build empaquetado de
+    `Game\Saved\PackageTest` no se tocó.
+  - Toolchain: MSVC 14.52.37029 (UBT avisa que no es la versión preferida, 14.50.35717); UE 5.8.
