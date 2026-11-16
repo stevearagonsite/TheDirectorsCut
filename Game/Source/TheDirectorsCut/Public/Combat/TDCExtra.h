@@ -114,6 +114,9 @@ private:
 	float Direction = 1.f;
 	float StunRemaining = 0.f;
 	bool bDefeated = false;
+	/** La luz solo puede sacarlo de la toma después de que el mundo arrancó (T-0044): el orden de BeginPlay de luces y
+	 * extras en el build cocinado hacía que la sombra de guion quedara derrotada al cargar. */
+	bool bPresenceArmed = false;
 	void LoadPuppet();
 	void UpdatePuppet();
 	UPROPERTY(Transient)
