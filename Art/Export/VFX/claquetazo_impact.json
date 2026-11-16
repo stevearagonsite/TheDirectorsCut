@@ -5,64 +5,64 @@
    "frame": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "sourceSize": {
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "duration": 33
   },
   {
    "filename": "claquetazo-impact 1",
    "frame": {
-    "x": 128,
+    "x": 256,
     "y": 0,
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "sourceSize": {
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "duration": 33
   },
   {
    "filename": "claquetazo-impact 2",
    "frame": {
-    "x": 256,
+    "x": 512,
     "y": 0,
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "sourceSize": {
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "duration": 33
   },
@@ -70,65 +70,65 @@
    "filename": "claquetazo-impact 3",
    "frame": {
     "x": 0,
-    "y": 80,
-    "w": 128,
-    "h": 80
+    "y": 160,
+    "w": 256,
+    "h": 160
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "sourceSize": {
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "duration": 33
   },
   {
    "filename": "claquetazo-impact 4",
    "frame": {
-    "x": 128,
-    "y": 80,
-    "w": 128,
-    "h": 80
+    "x": 256,
+    "y": 160,
+    "w": 256,
+    "h": 160
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "sourceSize": {
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "duration": 33
   },
   {
    "filename": "claquetazo-impact 5",
    "frame": {
-    "x": 256,
-    "y": 80,
-    "w": 128,
-    "h": 80
+    "x": 512,
+    "y": 160,
+    "w": 256,
+    "h": 160
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "sourceSize": {
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "duration": 33
   },
@@ -136,65 +136,65 @@
    "filename": "claquetazo-impact 6",
    "frame": {
     "x": 0,
-    "y": 160,
-    "w": 128,
-    "h": 80
+    "y": 320,
+    "w": 256,
+    "h": 160
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "sourceSize": {
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "duration": 33
   },
   {
    "filename": "claquetazo-impact 7",
    "frame": {
-    "x": 128,
-    "y": 160,
-    "w": 128,
-    "h": 80
+    "x": 256,
+    "y": 320,
+    "w": 256,
+    "h": 160
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "sourceSize": {
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "duration": 33
   },
   {
    "filename": "claquetazo-impact 8",
    "frame": {
-    "x": 256,
-    "y": 160,
-    "w": 128,
-    "h": 80
+    "x": 512,
+    "y": 320,
+    "w": 256,
+    "h": 160
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "sourceSize": {
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "duration": 33
   },
@@ -202,33 +202,33 @@
    "filename": "claquetazo-impact 9",
    "frame": {
     "x": 0,
-    "y": 240,
-    "w": 128,
-    "h": 80
+    "y": 480,
+    "w": 256,
+    "h": 160
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "sourceSize": {
-    "w": 128,
-    "h": 80
+    "w": 256,
+    "h": 160
    },
    "duration": 33
   }
  ],
  "meta": {
-  "app": "https://github.com/patch-gg/pixelfx",
+  "app": "vfx-pintados (numpy+PIL)",
   "version": "1",
-  "image": "claquetazo-impact.png",
+  "image": "claquetazo_impact.png",
   "format": "RGBA8888",
   "size": {
-   "w": 384,
-   "h": 320
+   "w": 768,
+   "h": 640
   },
   "scale": "1",
   "frameTags": [
@@ -241,17 +241,17 @@
   ],
   "pixelfx": {
    "id": "tdc/claquetazo-impact",
-   "name": "Claquetazo impact",
+   "name": "Claquetazo impact (pintado)",
    "fps": 30,
    "loop": false,
    "frames": 10,
    "frameSize": [
-    128,
-    80
+    256,
+    160
    ],
    "pivot": [
-    52,
-    64
+    104,
+    128
    ],
    "columns": 3
   }

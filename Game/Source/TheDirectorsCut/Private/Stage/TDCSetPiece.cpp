@@ -77,7 +77,7 @@ void ATDCSetPiece::BeginPlay()
 
 	// En el build empaquetado el construction script no corre para las piezas del nivel: el color se aplica acá también.
 	SetupMaterial();
-	if (bLightMaterial)
+	if (Presence != ETDCLightPresence::Always)
 	{
 		// Antes de Super::BeginPlay: el componente evalúa la luz en su BeginPlay y avisa por OnPresenceChanged.
 		LightReactive->OnPresenceChanged.AddUniqueDynamic(this, &ATDCSetPiece::HandlePresenceChanged);
@@ -93,6 +93,9 @@ void ATDCSetPiece::BeginPlay()
 	}
 
 	Super::BeginPlay();
+	// Desde acá los cambios de presencia son del jugador (prender/apagar luces): llevan VFX.
+	bLastPresent = LightReactive->IsPresent();
+	bPresenceFxReady = true;
 }
 
 void ATDCSetPiece::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -122,6 +125,13 @@ void ATDCSetPiece::Release()
 void ATDCSetPiece::ApplyPattern()
 {
 	// Tablones = fija; gelatina = existe con luz / a oscuras; película = en toma (rebobinable). El color lo sigue poniendo ReadColor.
+	if (!PatternOverride.IsNone())
+	{
+		// Superficies de decorado con su propia textura (p. ej. el adoquín de la calle en Pit_Floor, T-0041).
+		const FString Name = PatternOverride.ToString();
+		TDC::ApplyReadPattern(Material, *Name, PatternOverrideStrength, 300.f);
+		return;
+	}
 	if (ColorOverride.A > 0.f)
 	{
 		return; // marcadores (salida, escenario) quedan lisos
@@ -169,13 +179,18 @@ void ATDCSetPiece::SetupMaterial()
 
 void ATDCSetPiece::HandlePresenceChanged(bool bNowPresent)
 {
+	if (bPresenceFxReady && bNowPresent != bLastPresent)
+	{
+		SpawnPresenceFx(bNowPresent);
+	}
+	bLastPresent = bNowPresent;
 	if (!Material || !bLightMaterial)
 	{
 		return;
 	}
 	// La de oscuridad brilla menos: es "sombra sólida", no luz.
 	const float FullGlow = Presence == ETDCLightPresence::OnlyInLight ? 1.4f : 0.6f;
-	Material->SetScalarParameterValue(TEXT("Opacity"), bNowPresent ? 0.5f : 0.06f);
+	Material->SetScalarParameterValue(TEXT("Opacity"), bNowPresent ? 0.5f : 0.2f);
 	Material->SetScalarParameterValue(TEXT("Glow"), bNowPresent ? FullGlow : 0.25f);
 	Material->SetScalarParameterValue(TEXT("EdgeGlow"), bNowPresent ? 2.5f : 1.0f);
 	Material->SetScalarParameterValue(TEXT("Pulse"), bNowPresent ? 0.08f : 0.f);
@@ -233,5 +248,34 @@ void ATDCSetPiece::SetTakeGlow(float Amount, float Visual)
 	{
 		const FLinearColor Cyan(0.25f, 0.85f, 1.f);
 		Material->SetVectorParameterValue(TEXT("Emissive"), Cyan * (3.f * TakeGlow * Visual));
+	}
+}
+
+void ATDCSetPiece::SpawnPresenceFx(bool bNowPresent)
+{
+	const bool bLight = Presence == ETDCLightPresence::OnlyInLight;
+	const FTDCFlipbook& Fx = bLight ? (bNowPresent ? TDC::Fx::LightPieceAppear : TDC::Fx::LightPieceVanish)
+		: (bNowPresent ? TDC::Fx::DarkPieceAppear : TDC::Fx::DarkPieceVanish);
+	const FBox Box = GetComponentsBoundingBox(/*bNonColliding*/ true);
+	if (!Box.IsValid)
+	{
+		return;
+	}
+	const FVector Size = Box.GetSize();
+	// Paredes (más altas que anchas): el efecto se gira 90° y recorre la pieza de abajo arriba.
+	const bool bVertical = Size.Z > Size.X;
+	const float Width = FMath::Max(bVertical ? Size.Z : Size.X, 100.f) * 1.21f;
+	FVector Location = Box.GetCenter() + FVector(0.f, Box.GetExtent().Y + 15.f, 0.f);
+	if (!bVertical)
+	{
+		// En el sprite la pieza está 10 px (de 136) por debajo del centro del frame: subir el quad para alinearla.
+		Location.Z += Width * 10.f / 136.f;
+	}
+	if (ATDCFlipbookFx* Spawned = ATDCFlipbookFx::Spawn(GetWorld(), Fx, Location, Width))
+	{
+		if (bVertical)
+		{
+			Spawned->SetActorRotation(FRotator(90.f, 0.f, 0.f));
+		}
 	}
 }

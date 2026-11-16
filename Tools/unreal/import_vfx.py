@@ -38,6 +38,10 @@ def require_writable(asset_path):
         fail(f"Game/Content/{rel} es read-only (LFS sin lock). Antes: git lfs lock Game/Content/{rel}")
 
 
+# Hojas pintadas (no pixel art, T-0048): filtro bilinear; con Nearest se veían escalonadas al agrandarse.
+PAINTED = {"claquetazo_impact"}
+
+
 def import_sheet(png):
     name = "T_" + os.path.splitext(os.path.basename(png))[0]
     require_writable(f"{DEST}/{name}")
@@ -53,7 +57,8 @@ def import_sheet(png):
     tex = eal.load_asset(path) if eal.does_asset_exist(path) else None
     if not tex:
         fail(f"no se importó {name}")
-    tex.set_editor_property("filter", unreal.TextureFilter.TF_NEAREST)
+    painted = os.path.splitext(os.path.basename(png))[0] in PAINTED
+    tex.set_editor_property("filter", unreal.TextureFilter.TF_BILINEAR if painted else unreal.TextureFilter.TF_NEAREST)
     tex.set_editor_property("mip_gen_settings", unreal.TextureMipGenSettings.TMGS_NO_MIPMAPS)
     tex.set_editor_property("compression_settings", unreal.TextureCompressionSettings.TC_EDITOR_ICON)
     tex.set_editor_property("lod_group", unreal.TextureGroup.TEXTUREGROUP_UI)
