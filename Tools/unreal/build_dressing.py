@@ -439,8 +439,15 @@ def night_lighting():
         elif label == "Sky_Light":
             actor.get_component_by_class(unreal.SkyLightComponent).set_intensity(0.55)
         elif label == "Pit_Floor":
-            # El fondo del pozo se veía lila al bajar la cámara: oscuro, como el escenario.
-            actor.set_editor_property("color_override", unreal.LinearColor(0.03, 0.03, 0.04, 1.0))
+            # T-0041 (auditoría): era una franja negra pura abajo. Ahora es la calle: adoquín mojado azul grisáceo, oscuro
+            # pero con forma (el color lo trae la textura; el override solo la apaga un poco).
+            actor.set_editor_property("color_override", unreal.LinearColor(0.55, 0.57, 0.65, 1.0))
+            try:
+                actor.set_editor_property("pattern_override", "T_Street_Cobble")
+                actor.set_editor_property("pattern_override_strength", 1.0)
+            except Exception as e:
+                unreal.log_warning(f"[TDC] Pit_Floor sin patrón (¿C++ viejo?): {e}")
+                actor.set_editor_property("color_override", unreal.LinearColor(0.06, 0.065, 0.08, 1.0))
         elif label == "Height_Fog":
             # Poca niebla y solo lejos: el telón ya trae su bruma pintada; la niebla densa lo lavaba.
             fog = actor.get_component_by_class(unreal.ExponentialHeightFogComponent)

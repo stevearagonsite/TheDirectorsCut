@@ -125,6 +125,13 @@ void ATDCSetPiece::Release()
 void ATDCSetPiece::ApplyPattern()
 {
 	// Tablones = fija; gelatina = existe con luz / a oscuras; película = en toma (rebobinable). El color lo sigue poniendo ReadColor.
+	if (!PatternOverride.IsNone())
+	{
+		// Superficies de decorado con su propia textura (p. ej. el adoquín de la calle en Pit_Floor, T-0041).
+		const FString Name = PatternOverride.ToString();
+		TDC::ApplyReadPattern(Material, *Name, PatternOverrideStrength, 300.f);
+		return;
+	}
 	if (ColorOverride.A > 0.f)
 	{
 		return; // marcadores (salida, escenario) quedan lisos

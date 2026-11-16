@@ -64,7 +64,7 @@ def constant(mat, value, y):
 
 TEX_SRC = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")), "Art", "Export", "Textures")
 TEX_DEST = f"{FOLDER}/Textures"
-PATTERNS = ("T_Stage_Floor", "T_Stage_Edge", "T_Gel_Panel", "T_Take_Holo")
+PATTERNS = ("T_Stage_Floor", "T_Stage_Edge", "T_Gel_Panel", "T_Take_Holo", "T_Street_Cobble")
 
 
 def import_patterns():
