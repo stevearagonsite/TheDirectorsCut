@@ -306,8 +306,8 @@ void ATDCPlaytestRunner::CheckLights(const FString& When)
 			const bool bCollision = Piece->GetActorEnableCollision();
 			Report(FString::Printf(TEXT("luces_%s_%s_%s"), *Check.Name, bOn ? TEXT("on") : TEXT("off"), *P.Name),
 				bPresent == bExpected && bCollision == bExpected,
-				FString::Printf(TEXT("%s (%s) %s=%s: presente=%d (esperado %d), colision=%d"), *When, *Check.Name,
-					*Check.Name, bOn ? TEXT("on") : TEXT("off"), *P.Name, bPresent ? 1 : 0, bExpected ? 1 : 0, bCollision ? 1 : 0));
+				FString::Printf(TEXT("%s (%s=%s) %s: presente=%d (esperado %d), colision=%d"), *When, *Check.Name,
+					bOn ? TEXT("on") : TEXT("off"), *P.Name, bPresent ? 1 : 0, bExpected ? 1 : 0, bCollision ? 1 : 0));
 		}
 	}
 }
