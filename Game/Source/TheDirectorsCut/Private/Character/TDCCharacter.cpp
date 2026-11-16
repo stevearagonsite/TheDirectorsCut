@@ -206,6 +206,7 @@ void ATDCCharacter::TickAutoRun(float DeltaSeconds)
 		// cámara la atravesaba y las capturas de la galería salían tapadas (auditoría visual #10).
 		CameraBoom->TargetArmLength = 1300.f;
 		CameraBoom->TargetOffset = FVector::ZeroVector; // con el brazo corto, el offset de anticipación lo dejaba fuera de cuadro
+		CameraBoom->SocketOffset = FVector(0.f, 0.f, 110.f); // con 250 y brazo corto el director quedaba cortado abajo
 	}
 	AutoRunTime += DeltaSeconds;
 	// Claquetazo cada 0.6 s: limpia al extra común de Beat 1 (si no, lo toca y reaparece al inicio).
@@ -395,8 +396,9 @@ void ATDCCharacter::BeginPlay()
 		if (PlaytestMode != ETDCPlaytestMode::Record && CameraBoom)
 		{
 			// Replay y bot: cámara cerca y centrada, para que las capturas se lean (como -TDCAutoRun).
-			CameraBoom->TargetArmLength = 900.f;
+			CameraBoom->TargetArmLength = 1100.f;
 			CameraBoom->TargetOffset = FVector::ZeroVector;
+			CameraBoom->SocketOffset = FVector(0.f, 0.f, 100.f); // T-0049: el director salía cortado abajo (playtest_00/_03)
 		}
 	}
 	if (IsPlayerControlled())

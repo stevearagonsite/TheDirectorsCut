@@ -315,9 +315,68 @@ def build_light_piece():
     unreal.log(f"[TDC] {LIGHT_PATH} creado y guardado.")
 
 
+CONE_SRC = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")), "Art", "Export", "VFX",
+                        "LightCone", "T_LightCone.png")
+CONE_PATH = f"{FOLDER}/M_TDCLightCone"
+# Si en el shot el cono sale cabeza abajo (la lente abajo), poner True y volver a correr make_materials.
+CONE_FLIP_V = False
+
+
+def build_light_cone():
+    """M_TDCLightCone (T-0054): unlit aditivo two-sided; Emissive = textura premultiplicada × Intensity. FlipV voltea
+    la textura entera (el haz es simétrico en U, así que solo importa V)."""
+    if not os.path.isfile(CONE_SRC):
+        unreal.log_warning("[TDC] sin T_LightCone.png: los reflectores quedan sin cono")
+        return
+    tex_path = f"{TEX_DEST}/T_LightCone"
+    require_writable(tex_path, ".uasset")
+    task = unreal.AssetImportTask()
+    task.filename = CONE_SRC
+    task.destination_path = TEX_DEST
+    task.destination_name = "T_LightCone"
+    task.replace_existing = True
+    task.automated = True
+    task.save = True
+    unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+    tex = eal.load_asset(tex_path) if eal.does_asset_exist(tex_path) else None
+    if not tex:
+        unreal.log_warning("[TDC] no se importó T_LightCone")
+        return
+    require_writable(CONE_PATH, ".uasset")
+    if eal.does_asset_exist(CONE_PATH):
+        mat = eal.load_asset(CONE_PATH)
+        mel.delete_all_material_expressions(mat)
+    else:
+        mat = unreal.AssetToolsHelpers.get_asset_tools().create_asset("M_TDCLightCone", FOLDER, unreal.Material,
+                                                                       unreal.MaterialFactoryNew())
+    mat.set_editor_property("shading_model", unreal.MaterialShadingModel.MSM_UNLIT)
+    mat.set_editor_property("blend_mode", unreal.BlendMode.BLEND_ADDITIVE)
+    mat.set_editor_property("two_sided", True)
+    tc = mel.create_material_expression(mat, unreal.MaterialExpressionTextureCoordinate, -900, 0)
+    inv = mel.create_material_expression(mat, unreal.MaterialExpressionOneMinus, -750, 100)
+    mel.connect_material_expressions(tc, "", inv, "")
+    flip = scalar_param(mat, "FlipV", 1.0 if CONE_FLIP_V else 0.0, -750, 250)
+    uv = mel.create_material_expression(mat, unreal.MaterialExpressionLinearInterpolate, -600, 50)
+    mel.connect_material_expressions(tc, "", uv, "A")
+    mel.connect_material_expressions(inv, "", uv, "B")
+    mel.connect_material_expressions(flip, "", uv, "Alpha")
+    sample = mel.create_material_expression(mat, unreal.MaterialExpressionTextureSample, -400, 0)
+    sample.set_editor_property("texture", tex)
+    mel.connect_material_expressions(uv, "", sample, "UVs")
+    intensity = scalar_param(mat, "Intensity", 1.8, -400, 250)
+    out = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -150, 50)
+    mel.connect_material_expressions(sample, "RGB", out, "A")
+    mel.connect_material_expressions(intensity, "", out, "B")
+    mel.connect_material_property(out, "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+    mel.recompile_material(mat)
+    eal.save_asset(CONE_PATH, only_if_is_dirty=False)
+    unreal.log(f"[TDC] {CONE_PATH} creado (FlipV={CONE_FLIP_V}).")
+
+
 try:
     build()
     build_light_piece()
+    build_light_cone()
 finally:
     # Lanzado con -ExecutePythonScript (tdc.ps1 python -InEditor): cerrar el editor al terminar, también si falló.
     if "-executepythonscript" in unreal.SystemLibrary.get_command_line().lower():

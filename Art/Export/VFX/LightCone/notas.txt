@@ -1,0 +1,50 @@
+T_LightCone: cono de luz del reflector (auditoría, punto 4)
+Generado por código: src/cono_luz.py (numpy + PIL). Preview: src/preview.py.
+  python3 src/cono_luz.py .   &&   python3 src/preview.py . ../auditoria/T-0033_01-mejora6.png preview.png
+
+CÓMO ESTÁ CONSTRUIDO (UV: u = -1..1 a lo ancho, v = 0..1 de arriba a abajo)
+- Lente en v = 0.015, medio ancho 0.045. Piso (centro de la elipse) en v = 0.94, medio ancho 0.90.
+  El haz se abre linealmente: a la altura del piso ocupa el 90 % del ancho de la textura, que equivale a 2R.
+- Perfil lateral: núcleo gaussiano (σ ≈ 0.4 del medio ancho) + meseta con borde difuso (smoothstep 0.62 → 1.04).
+- Perfil a lo largo: 100 % en la lente y 68 % en el piso. El haz termina en el piso (fade 0.93 → 0.96).
+- Estrías radiales: ruido 1D en la coordenada angular, contraste 0.80 a 1.06. Humo: fBm de baja frecuencia, 0.78 a 1.10.
+- Elipse del piso: medio alto 0.05 en v, la parte más intensa (alpha 0.45). La lente tiene un brillo chico (0.42).
+- Polvo: 380 motas gaussianas de radio 1 a 7 px, solo donde hay haz (+0.10 de alpha como máximo).
+- Color: centro (255,228,150), cuerpo (255,210,90) que es el amarillo de la mecánica, borde ámbar (255,186,70).
+- Alpha: pico 0.45 (elipse y lente) y cuerpo 0.28 a 0.40 en el eje. Los bordes de la textura valen 0 exacto,
+  porque hay una ventana de 6 a 12 px, y todo alpha menor a 0.5/255 se fuerza a 0.
+
+PREMULTIPLICADO
+- RGB = sRGB( lineal(color) × alpha ). Está premultiplicado en lineal y codificado sRGB; A es lineal.
+  Con sRGB = on, Unreal decodifica RGB a lineal(color) × alpha exacto, y Tex.rgb ya es la luz que se suma.
+- Importar: sRGB on, Compression BC7 (DXT5 bandea los degradés suaves), Address Clamp/Clamp, mips on.
+
+GEOMETRÍA DEL QUAD (lo pone el código)
+- Ancho = 2R / 0.90. Con R = 500 da 1111 cm.
+- Alto = D / 0.925, con D = distancia vertical de la lente al plano de juego.
+- Arriba del quad = lente + 0.015 × alto. Centrado en X sobre la lente, en el plano de profundidad de las plataformas
+  y mirando a cámara (cámara lateral fija, no hace falta billboard).
+- La escala no uniforme está prevista. Con D chico la elipse se aplana (D = 400 cm la deja de unos 20 cm de alto).
+  Rinde bien con D ≥ 300 cm. Por debajo se vuelve una franja, y conviene colgar el reflector más alto.
+
+MATERIAL (M_LightCone): ADITIVO
+- Blend Additive, Unlit, Two Sided, sin escritura de profundidad.
+- Emissive = Tex.rgb × Intensity (1.8 en el preview) × LightOn (0 o 1, con un fade de unos 0.15 s al prender/apagar).
+- DepthFade de unos 40 cm sobre el Emissive, para que no se vea el corte contra plataformas y piso.
+- Por qué aditivo: la luz nunca oscurece, varios conos superpuestos suman bien y no hay problemas de orden.
+  En contra: sobre el fondo celeste actual tiende a blanco. Con la iluminación del punto 6 (fondo más oscuro) se lee
+  mucho mejor (ver el zoom derecho del preview).
+- Alternativa: Blend AlphaComposite (premultiplicado): Emissive = Tex.rgb × k, Opacity = Tex.a.
+  Tiñe más amarillo sobre fondos claros, pero oscurece lo de atrás en (1 − a). Usarla solo si se mantiene el cielo claro.
+
+T_LightCone_dust.png (opcional)
+- 512×512, flipbook 4×4 (16 frames de 128 px). Motas que suben: 1 o 2 vueltas verticales por loop, con vaivén
+  horizontal de 1 a 4 px y titileo. Loop y tile en X/Y sin costura. Premultiplicado igual que el cono, Address Wrap.
+- En el material: Flipbook(4,4) a 8 fps (2 s por loop), UV = UV del quad × (ancho_cm / 250, alto_cm / 250)
+  para que las motas no se estiren, × (Tex.a / 0.45) como máscara, × DustAmount 0.4, sumado al Emissive.
+
+PREVIEW (preview.png)
+- Arriba: captura T-0033 con el cono aditivo ×1.8, con la lente en la esfera interactiva (972,300), el piso en el plano
+  de juego (y 470) y R = 500 cm ≈ 222 px (director de 80 px ≈ 180 cm).
+- A la derecha: la textura sobre gris y su alpha (normalizado a 0.45).
+- Abajo: zoom ×2 de la escena actual y de la misma escena con el fondo × 0.35, que simula la luz del punto 6.

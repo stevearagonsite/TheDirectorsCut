@@ -1,46 +1,65 @@
-import sys
+"""preview.png: frames clave sobre noche + original pixelfx (Nearest) al lado.
+Uso (desde vfx-pintados-2/): python3 src/preview.py <tdc-preview dir> [salida]"""
+import json, os, sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-orig = sys.argv[1]
-def cells(p, cw, ch, cols, idx):
-    im = Image.open(p).convert("RGBA")
-    return [im.crop(((i % cols) * cw, (i // cols) * ch, (i % cols + 1) * cw, (i // cols + 1) * ch)) for i in idx]
-W, H = 1800, 1560
+
+ROOT = sys.argv[1]
+OUTP = sys.argv[2] if len(sys.argv) > 2 else "preview.png"
+FX = [  # nombre, original, frames clave
+    ("extra_defeat", "vfx/extra_defeat/extra_defeat.png", [0, 3, 6, 12, 19, 27, 34], 13),
+    ("extra_stun", "vfx/extra_stun/extra_stun.png", [0, 12, 24, 36, 48, 59], 0),
+    ("scripted_bounce", "vfx/scripted_bounce/scripted_bounce.png", [0, 2, 4, 8, 12, 15, 18], 7),
+    ("rewind", "vfx/rewind/rewind.png", [0, 9, 18, 27, 36, 53], 0),
+    ("light_toggle", "vfx/light_toggle/light_toggle.png", [0, 2, 5, 9, 14, 22, 30], 6),
+    ("light_piece_appear", "vfx2/light_piece_appear.png", [0, 2, 4, 6, 8], 4),
+    ("light_piece_vanish", "vfx2/light_piece_vanish.png", [0, 2, 4, 6, 8], 5),
+    ("dark_piece_appear", "vfx2/dark_piece_appear.png", [0, 2, 4, 6, 8], 4),
+    ("dark_piece_vanish", "vfx2/dark_piece_vanish.png", [0, 2, 4, 6, 8], 5),
+]
+ROWH = 196
+W = 1900
+H = 60 + len(FX) * (ROWH + 46)
 y = np.linspace(0, 1, H)[:, None, None]
 bg = (np.array([10, 14, 32]) * (1 - y) + np.array([22, 28, 58]) * y) * np.ones((H, W, 3))
 img = Image.fromarray(bg.astype(np.uint8)).convert("RGBA")
 d = ImageDraw.Draw(img)
 try:
-    F = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 22); f = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 15)
+    F = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 19)
+    f = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 13)
 except Exception:
     F = f = ImageFont.load_default()
-def put(tile, x, y, scale, label=None, filt=Image.BILINEAR):
-    t = tile.resize((int(tile.width * scale), int(tile.height * scale)), filt)
-    img.alpha_composite(t, (x, y))
-    if label: d.text((x, y + t.height + 3), label, fill=(160, 175, 205), font=f)
-    return t.width
-d.text((30, 18), "VFX pintados - The Director's Cut (frames clave sobre noche)", fill=(235, 225, 200), font=F)
-# lluvia
-d.text((30, 60), "anim_lluvia  8x8, 60 fr, 30 fps, loop 2 s  (celda 256x256)", fill=(235, 225, 200), font=F)
-x = 30
-for i, c in zip([0, 20, 40, 59], cells("anim_lluvia.png", 256, 256, 8, [0, 20, 40, 59])):
-    x += put(c, x, 95, 1.2, f"frame {i}") + 16
-x += 20
-put(cells(orig + "/anim_lluvia.png", 256, 256, 8, [0])[0], x, 95, 1.2, "original pixelfx (frame 0)", Image.NEAREST)
-# vapor
-d.text((30, 450), "anim_vapor  14x7, 90 fr, 30 fps, loop 3 s  (celda 128x256)", fill=(235, 225, 200), font=F)
-x = 30
-for i, c in zip([0, 15, 30, 45, 60, 75, 89], cells("anim_vapor.png", 128, 256, 14, [0, 15, 30, 45, 60, 75, 89])):
-    x += put(c, x, 485, 1.5, f"frame {i}") + 14
-x += 30
-put(cells(orig + "/anim_vapor.png", 128, 256, 14, [0])[0], x, 485, 1.5, "original (frame 0)", Image.NEAREST)
-# claquetazo
-d.text((30, 905), "claquetazo_impact  3x4, 10 fr, 30 fps, one-shot  (celda 256x160, aspecto 1.6 = original)", fill=(235, 225, 200), font=F)
-x, yy = 30, 940
-for k, c in enumerate(cells("claquetazo_impact.png", 256, 160, 3, range(9))):
-    if k == 5: x, yy = 30, 1215
-    x += put(c, x, yy, 1.25, f"frame {k}") + 14
-o = cells(orig + "/claquetazo_impact.png", 128, 80, 3, [1, 3])
-x2 = 30 + 4 * (320 + 14) + 30
-put(o[0], x2, 1215, 2.5, "original fr 1", Image.NEAREST)
-img.convert("RGB").save("preview.png", optimize=True)
+d.text((24, 16), "VFX pintados (2da tanda) - frames clave sobre noche; a la derecha el original pixelfx", fill=(235, 225, 200), font=F)
+
+
+def cell(path, js, i):
+    im = Image.open(path).convert("RGBA")
+    px = js["meta"]["pixelfx"]
+    cw, ch = px["frameSize"]
+    c = px["columns"]
+    return im.crop(((i % c) * cw, (i // c) * ch, (i % c + 1) * cw, (i // c + 1) * ch))
+
+
+yy = 60
+for name, orig, keys, okey in FX:
+    js = json.load(open(name + ".json"))
+    px = js["meta"]["pixelfx"]
+    cw, ch = px["frameSize"]
+    d.text((24, yy), f"{name}   {px['columns']}x{js['meta']['size']['h'] // ch}, {px['frames']} fr, {px['fps']} fps, "
+                     f"{'loop' if px['loop'] else 'one-shot'}   celda {cw}x{ch}", fill=(235, 225, 200), font=F)
+    s = min(ROWH / ch, 250 / cw)
+    x = 24
+    for k in keys:
+        t = cell(name + ".png", js, k)
+        t = t.resize((int(cw * s), int(ch * s)), Image.BILINEAR)
+        img.alpha_composite(t, (x, yy + 26))
+        d.text((x, yy + 26 + t.height - 14), f"fr {k}", fill=(150, 165, 195), font=f)
+        x += t.width + 8
+    ojs = {"meta": {"pixelfx": {"frameSize": [cw // 2, ch // 2], "columns": px["columns"]}}}
+    o = cell(os.path.join(ROOT, orig), ojs, okey).resize((int(cw * s), int(ch * s)), Image.NEAREST)
+    x = max(x + 24, W - o.width - 24)
+    d.line([(x - 12, yy + 26), (x - 12, yy + 26 + o.height)], fill=(80, 90, 120), width=1)
+    img.alpha_composite(o, (x, yy + 26))
+    d.text((x, yy + 26 + o.height - 14), f"original fr {okey}", fill=(150, 165, 195), font=f)
+    yy += ROWH + 46
+img.convert("RGB").save(OUTP, optimize=True)

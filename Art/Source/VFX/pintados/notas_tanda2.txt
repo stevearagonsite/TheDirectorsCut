@@ -1,0 +1,48 @@
+VFX pintados, 2da tanda (reemplazo de los sheets pixelfx restantes). Generados 2026-11-15.
+Fuente: src/vfx_pintados_2.py (numpy + PIL; importa los helpers de src/vfx_pintados.py, copia del de vfx-pintados).
+Re-render:  python3 src/vfx_pintados_2.py "<repo>/Art/Export/VFX" .   [nombres opcionales para renderizar solo esos]
+Preview:    python3 src/preview.py ..        Loops: src/loop_check.txt
+
+Formato: es reemplazo directo para los 9. Cambian el PNG y el JSON, con los mismos nombres, grilla, frames, fps, loop e id.
+La celda es 2x del original (misma proporción) y el pivot del JSON también va 2x. meta.image queda en kebab-case como antes.
+TDCFlipbookFx.h (Cols/Rows/Frames/Fps/Aspect) e import_vfx.py no cambian.
+- extra_defeat     1568x1512  7x7  46 fr 30 fps one-shot  celda 224x216  pivot 112,160
+- extra_stun       1024x1024  8x8  60 fr 30 fps LOOP      celda 128x128  pivot 64,116
+- scripted_bounce  1280x1120  5x5  25 fr 30 fps one-shot  celda 256x224  pivot 128,192
+- rewind           1344x1152  7x8  54 fr 30 fps LOOP      celda 192x144  pivot 96,120
+- light_toggle     1568x1344  7x6  37 fr 30 fps one-shot  celda 224x224  pivot 112,172
+- light/dark_piece_appear/vanish  816x480  3x4  11 fr 25 fps one-shot  celda 272x120  pivot 136,80
+  (pieza en px x 24..248, y 70..90; la regla de estirar "ancho = plataforma x 136/112" sigue igual)
+Los one-shots dejan el último frame vacío (verificado). RGBA straight; los píxeles transparentes llevan el color del efecto (sin halo).
+Se incluyó light_toggle porque también estaba en pixel art y no es el claquetazo; si no se quiere, se descarta sin afectar al resto.
+
+Loops (alpha, dif. media 0-1):
+- extra_stun: último->primero 0.0129 vs 0.0133 entre frames (ratio 0.97); frame 60 == frame 0 exacto.
+- rewind:     último->primero 0.0138 vs 0.0138 (ratio 1.00); frame 54 == frame 0 exacto.
+
+Lenguaje de color: los extras usan neutros y cálidos apagados (grises, crema y naranja apagado); el rebobinado es cian;
+light_toggle y las piezas de luz usan el amarillo de la mecánica, y las piezas de oscuridad el violeta (tinta #160c28, lila #d6b6ff).
+
+Calidad
+- extra_defeat 3.5/5: el iris de cine se cierra con un aro crema y una sombra de tinta, después viene el destello con rayos y anillo,
+  y queda humo gris pintado (ruido fBm, luz desde arriba a la izquierda) con brillos crema. El humo es una masa algo
+  compacta ("nube" más que "racimo de bolitas" como el original).
+- extra_stun 4/5: 5 estrellas suaves en órbita inclinada con profundidad (las de atrás más chicas y tenues), estela que se
+  desvanece detrás de cada una y destellos. Es lo más fiel al original.
+- scripted_bounce 3.5/5: destello de 4 puntas, anillo que se rompe, X de tinta con borde crema de pincel (se estampa y se
+  disuelve con ruido) y chispas que rebotan en el piso. Las chispas son finas: en pantalla chica pueden perderse.
+- rewind 4/5: dos tiras de película cian con rieles y perforaciones que corren hacia atrás, girando antihorario con punta de
+  flecha, motas en espiral hacia el centro y un núcleo que late. "Rebobinar" se lee mejor que en el original.
+- light_toggle 4/5: destello cálido, 8 rayos de pincel que salen y se retraen, una onda, un charco de luz en el piso y motas.
+  Ya no se parece a un "pickup".
+- light_piece_appear 4/5: un filo de luz barre la pieza, que se enciende detrás (blanco a amarillo) mientras sube polvo de luz,
+  con destellos en las puntas.
+- light_piece_vanish 3.5/5: la pieza se pone blanca, se enfría y se deshace desde las puntas en chispas que suben, se apagan
+  y titilan. En el frame 6 queda un resto caliente en el centro que se ve algo "montículo".
+- dark_piece_appear 3/5: una gota de tinta salpica en la punta, el contorno lila corre adelante y la tinta inunda con un frente
+  ondulado y humo. Como antes, el violeta sobre la noche es sutil y el relleno casi no se ve. Se lee por el contorno.
+- dark_piece_vanish 4/5: el contorno brilla, la pieza se rompe en manchas y queda humo violeta erosionado que sube, con motas y
+  gotas de tinta que caen. Es la que mejor se lee como oscuridad.
+
+Recomendación (no aplicada, toca el repo): igual que en la tanda 1, en import_vfx.py conviene usar filtro bilinear y
+compresión normal/BC7 en vez de TF_NEAREST + UserInterface2D para estos sheets; con Nearest el pintado se ve escalonado.

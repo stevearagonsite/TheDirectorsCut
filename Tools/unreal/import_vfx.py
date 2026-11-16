@@ -57,7 +57,7 @@ def import_sheet(png):
     tex = eal.load_asset(path) if eal.does_asset_exist(path) else None
     if not tex:
         fail(f"no se importó {name}")
-    painted = os.path.splitext(os.path.basename(png))[0] in PAINTED
+    painted = True  # T-0053: todos los VFX pasaron a estilo pintado (PAINTED queda como referencia)
     tex.set_editor_property("filter", unreal.TextureFilter.TF_BILINEAR if painted else unreal.TextureFilter.TF_NEAREST)
     tex.set_editor_property("mip_gen_settings", unreal.TextureMipGenSettings.TMGS_NO_MIPMAPS)
     tex.set_editor_property("compression_settings", unreal.TextureCompressionSettings.TC_EDITOR_ICON)
@@ -98,6 +98,7 @@ def flipbook_material(any_tex):
     loop = scalar(mat, "Loop", 0.0, -1400, 400)
     start = scalar(mat, "StartTime", 0.0, -1400, 500)
     intensity = scalar(mat, "Intensity", 1.5, -400, 300)
+    opacity = scalar(mat, "Opacity", 1.0, 120, 600)  # T-0053: las cards de lluvia/vapor pintadas eran demasiado opacas
     one = mel.create_material_expression(mat, unreal.MaterialExpressionConstant, -1400, 600)
     one.set_editor_property("r", 1.0)
 
@@ -131,7 +132,8 @@ def flipbook_material(any_tex):
     mel.connect_material_expressions(final_uv, "", sheet, "UVs")
     emissive = binop(mat, unreal.MaterialExpressionMultiply, sheet, intensity, 320, 250, a_out="RGB")
     mel.connect_material_property(emissive, "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
-    mel.connect_material_property(sheet, "A", unreal.MaterialProperty.MP_OPACITY)
+    alpha = binop(mat, unreal.MaterialExpressionMultiply, sheet, opacity, 320, 450, a_out="A")
+    mel.connect_material_property(alpha, "", unreal.MaterialProperty.MP_OPACITY)
     mel.recompile_material(mat)
     eal.save_asset(path)
     log("M_TDCFlipbook listo")

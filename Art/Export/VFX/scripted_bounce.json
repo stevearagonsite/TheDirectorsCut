@@ -5,108 +5,108 @@
    "frame": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 1",
    "frame": {
-    "x": 128,
+    "x": 256,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 2",
    "frame": {
-    "x": 256,
+    "x": 512,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 3",
    "frame": {
-    "x": 384,
+    "x": 768,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 4",
    "frame": {
-    "x": 512,
+    "x": 1024,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
@@ -114,109 +114,109 @@
    "filename": "scripted-bounce 5",
    "frame": {
     "x": 0,
-    "y": 112,
-    "w": 128,
-    "h": 112
+    "y": 224,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 6",
    "frame": {
-    "x": 128,
-    "y": 112,
-    "w": 128,
-    "h": 112
+    "x": 256,
+    "y": 224,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 7",
    "frame": {
-    "x": 256,
-    "y": 112,
-    "w": 128,
-    "h": 112
+    "x": 512,
+    "y": 224,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 8",
    "frame": {
-    "x": 384,
-    "y": 112,
-    "w": 128,
-    "h": 112
+    "x": 768,
+    "y": 224,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 9",
    "frame": {
-    "x": 512,
-    "y": 112,
-    "w": 128,
-    "h": 112
+    "x": 1024,
+    "y": 224,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
@@ -224,109 +224,109 @@
    "filename": "scripted-bounce 10",
    "frame": {
     "x": 0,
-    "y": 224,
-    "w": 128,
-    "h": 112
+    "y": 448,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 11",
    "frame": {
-    "x": 128,
-    "y": 224,
-    "w": 128,
-    "h": 112
+    "x": 256,
+    "y": 448,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 12",
    "frame": {
-    "x": 256,
-    "y": 224,
-    "w": 128,
-    "h": 112
+    "x": 512,
+    "y": 448,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 13",
    "frame": {
-    "x": 384,
-    "y": 224,
-    "w": 128,
-    "h": 112
+    "x": 768,
+    "y": 448,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 14",
    "frame": {
-    "x": 512,
-    "y": 224,
-    "w": 128,
-    "h": 112
+    "x": 1024,
+    "y": 448,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
@@ -334,109 +334,109 @@
    "filename": "scripted-bounce 15",
    "frame": {
     "x": 0,
-    "y": 336,
-    "w": 128,
-    "h": 112
+    "y": 672,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 16",
    "frame": {
-    "x": 128,
-    "y": 336,
-    "w": 128,
-    "h": 112
+    "x": 256,
+    "y": 672,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 17",
    "frame": {
-    "x": 256,
-    "y": 336,
-    "w": 128,
-    "h": 112
+    "x": 512,
+    "y": 672,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 18",
    "frame": {
-    "x": 384,
-    "y": 336,
-    "w": 128,
-    "h": 112
+    "x": 768,
+    "y": 672,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 19",
    "frame": {
-    "x": 512,
-    "y": 336,
-    "w": 128,
-    "h": 112
+    "x": 1024,
+    "y": 672,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
@@ -444,121 +444,121 @@
    "filename": "scripted-bounce 20",
    "frame": {
     "x": 0,
-    "y": 448,
-    "w": 128,
-    "h": 112
+    "y": 896,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 21",
    "frame": {
-    "x": 128,
-    "y": 448,
-    "w": 128,
-    "h": 112
+    "x": 256,
+    "y": 896,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 22",
    "frame": {
-    "x": 256,
-    "y": 448,
-    "w": 128,
-    "h": 112
+    "x": 512,
+    "y": 896,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 23",
    "frame": {
-    "x": 384,
-    "y": 448,
-    "w": 128,
-    "h": 112
+    "x": 768,
+    "y": 896,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   },
   {
    "filename": "scripted-bounce 24",
    "frame": {
-    "x": 512,
-    "y": 448,
-    "w": 128,
-    "h": 112
+    "x": 1024,
+    "y": 896,
+    "w": 256,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "sourceSize": {
-    "w": 128,
-    "h": 112
+    "w": 256,
+    "h": 224
    },
    "duration": 33
   }
  ],
  "meta": {
-  "app": "https://github.com/patch-gg/pixelfx",
+  "app": "vfx-pintados-2 (numpy+PIL)",
   "version": "1",
   "image": "scripted-bounce.png",
   "format": "RGBA8888",
   "size": {
-   "w": 640,
-   "h": 560
+   "w": 1280,
+   "h": 1120
   },
   "scale": "1",
   "frameTags": [
@@ -571,17 +571,17 @@
   ],
   "pixelfx": {
    "id": "tdc/scripted-bounce",
-   "name": "Scripted bounce",
+   "name": "Scripted bounce (pintado)",
    "fps": 30,
    "loop": false,
    "frames": 25,
    "frameSize": [
-    128,
-    112
+    256,
+    224
    ],
    "pivot": [
-    64,
-    96
+    128,
+    192
    ],
    "columns": 5
   }

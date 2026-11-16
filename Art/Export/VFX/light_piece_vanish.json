@@ -5,64 +5,64 @@
    "frame": {
     "x": 0,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "sourceSize": {
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "duration": 40
   },
   {
    "filename": "light-piece-vanish 1",
    "frame": {
-    "x": 136,
+    "x": 272,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "sourceSize": {
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "duration": 40
   },
   {
    "filename": "light-piece-vanish 2",
    "frame": {
-    "x": 272,
+    "x": 544,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "sourceSize": {
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "duration": 40
   },
@@ -70,65 +70,65 @@
    "filename": "light-piece-vanish 3",
    "frame": {
     "x": 0,
-    "y": 60,
-    "w": 136,
-    "h": 60
+    "y": 120,
+    "w": 272,
+    "h": 120
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "sourceSize": {
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "duration": 40
   },
   {
    "filename": "light-piece-vanish 4",
    "frame": {
-    "x": 136,
-    "y": 60,
-    "w": 136,
-    "h": 60
+    "x": 272,
+    "y": 120,
+    "w": 272,
+    "h": 120
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "sourceSize": {
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "duration": 40
   },
   {
    "filename": "light-piece-vanish 5",
    "frame": {
-    "x": 272,
-    "y": 60,
-    "w": 136,
-    "h": 60
+    "x": 544,
+    "y": 120,
+    "w": 272,
+    "h": 120
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "sourceSize": {
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "duration": 40
   },
@@ -136,65 +136,65 @@
    "filename": "light-piece-vanish 6",
    "frame": {
     "x": 0,
-    "y": 120,
-    "w": 136,
-    "h": 60
+    "y": 240,
+    "w": 272,
+    "h": 120
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "sourceSize": {
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "duration": 40
   },
   {
    "filename": "light-piece-vanish 7",
    "frame": {
-    "x": 136,
-    "y": 120,
-    "w": 136,
-    "h": 60
+    "x": 272,
+    "y": 240,
+    "w": 272,
+    "h": 120
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "sourceSize": {
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "duration": 40
   },
   {
    "filename": "light-piece-vanish 8",
    "frame": {
-    "x": 272,
-    "y": 120,
-    "w": 136,
-    "h": 60
+    "x": 544,
+    "y": 240,
+    "w": 272,
+    "h": 120
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "sourceSize": {
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "duration": 40
   },
@@ -202,55 +202,55 @@
    "filename": "light-piece-vanish 9",
    "frame": {
     "x": 0,
-    "y": 180,
-    "w": 136,
-    "h": 60
+    "y": 360,
+    "w": 272,
+    "h": 120
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "sourceSize": {
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "duration": 40
   },
   {
    "filename": "light-piece-vanish 10",
    "frame": {
-    "x": 136,
-    "y": 180,
-    "w": 136,
-    "h": 60
+    "x": 272,
+    "y": 360,
+    "w": 272,
+    "h": 120
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "sourceSize": {
-    "w": 136,
-    "h": 60
+    "w": 272,
+    "h": 120
    },
    "duration": 40
   }
  ],
  "meta": {
-  "app": "https://github.com/patch-gg/pixelfx",
+  "app": "vfx-pintados-2 (numpy+PIL)",
   "version": "1",
   "image": "light-piece-vanish.png",
   "format": "RGBA8888",
   "size": {
-   "w": 408,
-   "h": 240
+   "w": 816,
+   "h": 480
   },
   "scale": "1",
   "frameTags": [
@@ -263,17 +263,17 @@
   ],
   "pixelfx": {
    "id": "tdc/light-piece-vanish",
-   "name": "Light piece vanish",
+   "name": "Light piece vanish (pintado)",
    "fps": 25,
    "loop": false,
    "frames": 11,
    "frameSize": [
-    136,
-    60
+    272,
+    120
    ],
    "pivot": [
-    68,
-    40
+    136,
+    80
    ],
    "columns": 3
   }
