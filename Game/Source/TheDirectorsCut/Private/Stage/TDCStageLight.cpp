@@ -94,6 +94,8 @@ void ATDCStageLight::ApplyVisuals()
 	Light->SetAttenuationRadius(Radius);
 	Light->SetIntensity(Intensity);
 	Light->SetVisibility(bOn);
+	// Halo en la niebla volumétrica (build_dressing): muestra el alcance del reflector cuando está prendido.
+	Light->SetVolumetricScatteringIntensity(bOn ? 6.f : 0.f);
 
 	if (!BulbMaterial && Bulb->GetMaterial(0))
 	{

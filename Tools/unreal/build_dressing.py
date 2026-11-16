@@ -156,11 +156,14 @@ def backdrop_material():
 # Parallax (3 capas a distinta profundidad; la cámara lateral en 3D da el parallax sola).
 # (archivo, nombre, Y, z_inferior, alto, ancho, masked, oscurecer). Cámara en Y≈+2200 mirando a -Y.
 PARALLAX = [
-    ("L0_cielo.png", "Parallax_L0", -4500.0, -2000.0, 5000.0, 17000.0, False, 0.8),
-    ("L1_skyline_lejano.png", "Parallax_L1", -3000.0, -1500.0, 3600.0, 15000.0, True, 0.75),
-    ("L2_edificios_cercanos.png", "Parallax_L2", -1600.0, -1100.0, 2600.0, 13000.0, True, 0.9),
+    # T-0039 (auditoría visual): el fondo era lo más brillante de la pantalla y el plano de juego quedaba oscuro.
+    # Fondo a 0.30–0.45 y teñido violeta apagado (PARALLAX_TINT): el ojo va al plano de juego, como en el key art.
+    ("L0_cielo.png", "Parallax_L0", -4500.0, -2000.0, 5000.0, 17000.0, False, 0.38),
+    ("L1_skyline_lejano.png", "Parallax_L1", -3000.0, -1500.0, 3600.0, 15000.0, True, 0.32),
+    ("L2_edificios_cercanos.png", "Parallax_L2", -1600.0, -1100.0, 2600.0, 13000.0, True, 0.45),
 ]
 PARALLAX_DIR = os.path.join(SRC, "Parallax")
+PARALLAX_TINT = (0.82, 0.76, 1.0)  # violeta apagado (no el violeta saturado de la mecánica)
 
 
 def parallax_material(png, name, masked, darken, tiles_u):
@@ -183,7 +186,12 @@ def parallax_material(png, name, masked, darken, tiles_u):
     mul = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -200, 0)
     mul.set_editor_property("const_b", darken)
     mel.connect_material_expressions(sample, "RGB", mul, "A")
-    mel.connect_material_property(mul, "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+    tint = mel.create_material_expression(mat, unreal.MaterialExpressionConstant3Vector, -350, 150)
+    tint.set_editor_property("constant", unreal.LinearColor(PARALLAX_TINT[0], PARALLAX_TINT[1], PARALLAX_TINT[2], 1.0))
+    tinted = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -80, 0)
+    mel.connect_material_expressions(mul, "", tinted, "A")
+    mel.connect_material_expressions(tint, "", tinted, "B")
+    mel.connect_material_property(tinted, "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
     if masked:
         mel.connect_material_property(sample, "A", unreal.MaterialProperty.MP_OPACITY_MASK)
     mel.recompile_material(mat)
@@ -439,6 +447,33 @@ def night_lighting():
             fog.set_editor_property("fog_density", 0.008)
             fog.set_editor_property("start_distance", 4000.0)
             fog.set_editor_property("fog_inscattering_luminance", unreal.LinearColor(0.03, 0.04, 0.08, 1.0))
+            # Volumétrica: el reflector encendido dibuja su halo (= su alcance) en el aire.
+            try:
+                fog.set_editor_property("volumetric_fog", True)
+                fog.set_editor_property("volumetric_fog_start_distance", 0.0)
+                fog.set_editor_property("volumetric_fog_extinction_scale", 0.6)
+            except Exception as e:
+                unreal.log_warning(f"[TDC] niebla volumétrica no disponible ({e})")
+
+
+PLAY_KEYS = [300.0, 1500.0, 2700.0, 3900.0, 5100.0, 6300.0, 7500.0]  # X de las luces de relleno del plano de juego
+
+
+def playfield_key_lights():
+    """Luz de relleno ámbar apagado desde el lado de la cámara: el plano de juego (piso, plataformas, personajes) tiene que
+    ser lo más legible de la pantalla. Ámbar desaturado, no el amarillo de la mecánica de luz."""
+    for i, x in enumerate(PLAY_KEYS):
+        actor = eas.spawn_actor_from_class(unreal.PointLight, vec(x, 700.0, 450.0), rot())
+        actor.set_actor_label(f"DR_PlayKey_{i}")
+        actor.set_folder_path("Dressing/Lights")
+        comp = actor.get_component_by_class(unreal.PointLightComponent)
+        comp.set_mobility(unreal.ComponentMobility.MOVABLE)
+        comp.set_intensity(18.0)
+        comp.set_attenuation_radius(1400.0)
+        comp.set_light_color(unreal.LinearColor(1.0, 0.82, 0.62, 1.0))
+        comp.set_editor_property("volumetric_scattering_intensity", 0.0)  # sin halo: el halo es del reflector
+        comp.set_cast_shadows(False)
+    log(f"luces de relleno del plano de juego: {len(PLAY_KEYS)}")
 
 
 def dynamic_lighting_only():
@@ -464,6 +499,7 @@ def post_process():
                         ("auto_exposure_speed_down", 20.0),
                         ("auto_exposure_bias", 0.0),
                         ("vignette_intensity", 0.45),
+                        ("motion_blur_amount", 0.0),  # las capturas salían borrosas y en 2.5D no suma
                         ("film_grain_intensity", 0.25),
                         ("color_saturation", unreal.Vector4(0.8, 0.8, 0.85, 1.0)),
                         ("color_contrast", unreal.Vector4(1.15, 1.15, 1.15, 1.0)),
@@ -527,6 +563,7 @@ def build():
     log(f"utilería de set colocada: {placed}")
 
     night_lighting()
+    playfield_key_lights()
     post_process()
     dynamic_lighting_only()
 

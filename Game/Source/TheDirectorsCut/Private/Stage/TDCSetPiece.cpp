@@ -183,7 +183,7 @@ void ATDCSetPiece::HandlePresenceChanged(bool bNowPresent)
 	}
 	// La de oscuridad brilla menos: es "sombra sólida", no luz.
 	const float FullGlow = Presence == ETDCLightPresence::OnlyInLight ? 1.4f : 0.6f;
-	Material->SetScalarParameterValue(TEXT("Opacity"), bNowPresent ? 0.5f : 0.06f);
+	Material->SetScalarParameterValue(TEXT("Opacity"), bNowPresent ? 0.5f : 0.2f);
 	Material->SetScalarParameterValue(TEXT("Glow"), bNowPresent ? FullGlow : 0.25f);
 	Material->SetScalarParameterValue(TEXT("EdgeGlow"), bNowPresent ? 2.5f : 1.0f);
 	Material->SetScalarParameterValue(TEXT("Pulse"), bNowPresent ? 0.08f : 0.f);

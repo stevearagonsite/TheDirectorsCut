@@ -1,0 +1,54 @@
+# Auditoría visual: The Director's Cut (mejora 6)
+
+Fuentes: `origin/main` @ 9b58afc y `t/T-0033-extras-skeleton`. Capturas en esta carpeta. La cámara real del jugador (brazo de 2200 cm)
+solo aparece en el cuadro inicial (`T-0033_01-mejora6`, `T-0031_01-mejora5`, `T-0026_01-mejora4-*`). El autorun (`T-0027_*`) usa
+una cámara de demo a 900 cm. No hay ninguna captura de los beats 2 a 4 con la cámara de juego, y `T-0026_02-package.png` salió
+como un degradé azul vacío.
+
+Luminancia medida en `T-0033_01-mejora6` (0-255): cielo **134**, director **67**, plano de juego **47**, franja inferior **4**.
+
+## 1. Los 10 problemas, de mayor a menor impacto
+
+| # | Qué se ve mal (captura) | Por qué rompe la DA | Causa | Arreglo concreto |
+|---|---|---|---|---|
+| 1 | **El fondo es lo más brillante y saturado de la pantalla.** El cielo y el skyline celeste se comen la imagen, y el plano de juego y el director quedan más oscuros que el decorado (`T-0033_01`). | D-012: el plano de juego lleva "color y contraste altos" y el fondo va "desaturado". Acá es al revés y el ojo se va al cielo. | Iluminación/material: las 3 capas de parallax son *unlit* con emisivo casi pleno (`darken` 0.8 / 0.75 / 0.9). El auto-exposure se ajusta al cielo. | `Tools/unreal/build_dressing.py`, `PARALLAX`: bajar `darken` a 0.30 / 0.35 / 0.45 y multiplicar por un tinte azul-violeta apagado (0.55, 0.5, 0.8). Sumar a L2 el mismo gradiente vertical que tiene `M_Backdrop`. En `post_process()`: exposición fija (`auto_exposure_min_brightness` = `max` = 1). |
+| 2 | **El plano de juego es greybox: una losa flotante** con la tapa negra y el frente beige liso, como una caja de cartón. No se sabe si es una azotea, una calle o un escenario (`T-0033_01`, crop del director). | El checklist pide "parece del mismo juego" que el telón pintado. La losa es el único objeto sin arte y es justo donde se juega. | Falta contenido: `ATDCSetPiece` es un cubo escalado con `M_TDCColor` gris 0.35 y un patrón de tablones al 0.35, invisible a 2200 cm. | Separar tapa y lados por normal en `M_TDCColor` (`make_materials.py`): tapa de tablones de escenario o asfalto mojado (claro y con brillo) y lados de ladrillo oscuro con moldura. Más adelante, un kit de 3 o 4 piezas modulares (cornisa, pasarela de andamio, tarima) que use `TDCSetPiece` según la presencia. |
+| 3 | **El 22 % de abajo de la pantalla es negro puro** (luminancia 4). El trípode y la farola "flotan" sobre el vacío (`T-0033_01`). | El key art pone el suelo como la mitad de la imagen: adoquines mojados con reflejos. Acá es espacio muerto. | Composición/material: `DR_ForegroundStage` tiene `color_override` 0.04, la cámara apunta bajo (`SocketOffset` Z 120, pitch -5) y debajo está el pozo. | `build_dressing.py`: cambiar `DR_ForegroundStage` por un plano de adoquín mojado (rugosidad 0.15, que refleje ventanas y faroles). Subir `CameraBoom->SocketOffset.Z` de 120 a ~250 para que el suelo no pase del 12 % del cuadro. |
+| 4 | **La mecánica de luz no se lee.** El reflector interactivo es una **esfera negra flotando en el cielo** (al lado del tanque de agua, `T-0033_01` y crop 2). No hay cono, y la plataforma amarilla apagada es una mancha al 6 % de opacidad. El reflector de trípode del primer plano parece el interactivo, pero es decorado. | DA: "la fuente de luz se ve" y "el cono visible marca el área de efecto". Es el pilar (Dirección) y hoy no se entiende qué tocar. | Legibilidad/contenido: `ATDCStageLight` usa `/Engine/BasicShapes/Sphere` a escala 0.4 (color 0.08 apagado) con una *point light* sin volumen. `SM_StageLight_Hanging` ya está en `Art/Export/Dressing/StageLightHanging/`, pero ningún script lo importa. Fantasma en `TDCSetPiece.cpp:178` (`0.06f`). | `TDCStageLight`: mesh `SM_StageLight_Hanging` colgado de un caño a la parrilla, `USpotLightComponent` con *volumetric scattering* y un cono-mesh aditivo de radio = `Radius` (500) que se apague con la luz. Subir el fantasma de 0.06 a ~0.2 con contorno punteado. Sacar `SM_Spotlight` decorativo del primer plano en `PROPS` o alejarlo del eje. |
+| 5 | **El director no se despega del fondo.** Mide 80 px de 720 (11 %), tiene la gabardina gris sobre una pared gris azulada, y la claqueta no se ve (`T-0033_01`, crop 1). | DA: "se lee bien chico en pantalla". En el key art es el foco, recortado por luz cálida. | Material/cámara: `M_TDCToon` es *unlit* con luz clave fija y `RimStrength` 0.15 (`apply_toon.py:140`). Los reflectores no lo iluminan. Brazo de 2200 cm con FOV 60. | `apply_toon.py`: `RimStrength` a 0.5 y `RimColor` ámbar apagado (1.0, 0.75, 0.45). Escalar la claqueta ×1.3. `TDCCharacter.cpp:57`: `TargetArmLength` de 2200 a ~1700 (Rayman Origins ronda el 15-18 % de alto). Validarlo en playtest contra D-012. |
+| 6 | **Monocromo azul sin claroscuro.** Todo está bañado por la misma luz azul plana y no hay sombras negras ni charcos de luz cálida. Las únicas notas cálidas son ventanas pintadas (`T-0031_01`, `T-0027_*`). | Cine negro = luz dura y sombras profundas. El key art vive del contraste entre azul-violeta y ámbar. | Iluminación: `night_lighting()` con Sun 0.8 azul, SkyLight 0.55 (relleno que aplana todo) y `scene_color_tint` (0.85, 0.92, 1.0). Ninguna luz práctica en el plano de juego. | `build_dressing.py`: SkyLight de 0.55 a 0.15, Sun de 0.8 a 0.3 como contraluz lunar, `scene_color_tint` neutro. Agregar una *point light* ámbar (2700 K, sin sombra) en cada farola de `cards.json` y en la marquesina. Cuidar que no sea amarillo saturado, que es el color de la mecánica. |
+| 7 | **Lluvia, vapor y golpes en pixel art.** Gotas gordas y blancas, del tamaño de la cabeza, delante de cámara. El vapor es un copo pixelado y el claquetazo una mancha blanca (`T-0027_01`, `_09`, `_17`, `_22`; crop 2). | Choque de estilo: telón pintado más 3D low-poly más sprites de pixelfx con filtro *nearest*. Parecen errores de render. | Material/VFX: `anim_lluvia` como card de 2500 cm en `y=300` con `TF_NEAREST` y sin mips (`build_cards`). Los VFX de `Art/Export/VFX/*` salen de pixelfx. | Lluvia con Niagara GPU: 2 capas de estrías finas y diagonales al 25-35 % de opacidad. Vapor como card suave con filtro normal. Rehacer `claquetazo_impact` como estela/arco (el key art usa un arco cian) en vez de salpicadura pixel. |
+| 8 | **El primer plano tapa la cámara y hay motion blur.** Farola, cortina y props pasan como manchas negras o marrones gigantes y desenfocadas, y un cuadro entero queda corrido por el blur (`T-0027_04`, `_05`, `_15`, `_18`, `_23`). | D-012: el primer plano "nunca tapa el plano de juego". Además, esas capturas son las de la galería. | Cámara/composición: con el brazo de 900 del autorun, las cards en `y=700-900` quedan pegadas al lente. Motion blur por defecto, sin override. | `post_process()`: `motion_blur_amount` 0. `cards.json`: primer plano en `y ≤ 450`. El autorun (`TDCCharacter.cpp:178`) debería usar el brazo de juego, o capturar con dos cámaras, para que la evidencia muestre lo que ve el jugador. |
+| 9 | **Escala y lugar ambiguos.** El skyline arranca a la altura de las rodillas del director. Sobre los techos flotan una marquesina blanca fría y un afiche sin soporte (`T-0033_01`). Parece un muñeco parado sobre una maqueta. | Concepto 2 y key art: la calle de noche con los edificios elevándose alrededor. La marquesina es un foco cálido a nivel calle, no un cartel en el cielo. | Composición: `mid_marquesina` en z=450 e y=-400, y L2 con base en z -1100 y 2600 de alto. | `cards.json`: bajar la marquesina a z≈0 sobre una fachada de cine, con bombillas emisivas ámbar y bloom. Pegar el afiche a una pared. Agrandar L2 (alto ~4000) para que los edificios cercanos superen al director por varios pisos. |
+| 10 | **Los extras son incoherentes.** Traje rojo saturado, proporciones de adulto realistas al lado de un director *chibi*, y caminan sin animar (T-0033 en curso) (`T-0033_01`, `T-0027_00`, `_06`). | Checklist #1 y #6 (estilo y coherencia). El rojo pleno no está en la paleta. El key art y el video de concepto definen a los enemigos como sombras con ojos rojos. | Contenido: mallas de Rodin con la textura difusa tal cual (tinte 0.9). Skeleton de los clips distinto del SK (lo arregla T-0033). | Cerrar T-0033. Después, en `apply_toon.py`: extras casi negros (tinte ~0.12) con ojos y una franja emisiva roja. El común y el resistente se distinguen por silueta (sombrero o tamaño), no por el color del traje. |
+
+## 2. Primero: mejor impacto/esfuerzo
+
+1. **Rebalancear valores y luz en un solo pase de `build_dressing.py`.** Solo cambia valores y se re-corre un script; no hacen falta
+   assets ni C++. Parallax `darken` a 0.30-0.45 con tinte violeta, SkyLight 0.15, Sun 0.3, exposición fija, `motion_blur_amount` 0,
+   tinte neutro y luces ámbar en farolas y marquesina. Ataca los puntos 1, 6 y 8 y parte del 5. Es el cambio que más acerca la
+   imagen al key art.
+2. **Poner el reflector de verdad (`TDCStageLight`).** Cambiar la esfera por `SM_StageLight_Hanging`, que ya existe, y agregar
+   un spot con cono visible del radio de juego. El fantasma sube a 0.2. Arregla la mecánica central (4) y da el elemento
+   protagonista del key art. Es poco C++ más importar un FBX que ya pasó el checklist.
+3. **Darle suelo y superficie al plano de juego.** Adoquín mojado en lugar de `DR_ForegroundStage` negro, `SocketOffset.Z` de
+   120 a 250, y `M_TDCColor` con tapa clara de tablones y lados de ladrillo. Ataca los puntos 2 y 3 sin modelar: solo material
+   y un valor de cámara.
+
+## 3. Key art vs juego: qué tiene el key art que el juego no
+
+- **Jerarquía de valores:** el fondo es oscuro y lo más brillante está pegado al personaje (reflector y marquesina). El juego
+  hace lo opuesto: el cielo es lo más claro.
+- **Luz motivada y cálida:** un reflector con cono volumétrico ilumina al director y el piso. En el juego la luz es azul y
+  plana, el reflector es una esfera negra y no hay cono.
+- **Paleta complementaria:** azul marino y violeta apagado contra ámbar. El juego es monocromo azul.
+- **Suelo que refleja:** adoquines mojados con charcos de luz. El juego tiene una losa negra y una franja vacía.
+- **Composición de foco:** el personaje está al centro, con los edificios enmarcando a los lados como un túnel. En el juego el
+  horizonte es plano, a la altura de las rodillas, y el personaje queda chico y a un costado.
+- **Atmósfera fina:** lluvia diagonal delgada y niebla baja iluminada. El juego tiene gotas pixeladas gruesas.
+- **Enemigos de sombra con ojos rojos**, que se leen como amenaza. El juego tiene un señor de traje rojo.
+- **Personaje heroico:** la claqueta se lee y tiene una estela cian. En el juego la claqueta no se ve a escala.
+- **Marquesina como fuente de luz a nivel calle**, no como cartel flotante en el cielo.
+
+Nota: el key art usa perspectiva frontal, que una cámara lateral no puede copiar. Lo que sí se puede llevar al juego son los
+valores, la luz, la paleta, el suelo y la atmósfera, y eso es casi todo lo que falta.
