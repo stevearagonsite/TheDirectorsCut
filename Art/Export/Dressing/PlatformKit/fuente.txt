@@ -1,0 +1,73 @@
+Asset: kit modular de plataformas del plano de juego (auditoria visual, punto 2). Reemplaza el cubo escalado de ATDCSetPiece.
+Piezas del kit (concepto): cornisa de edificio, pasarela de andamio de set, tarima de escenario, descanso de escalera de incendio.
+Generadas en 3D (pedido: solo 2): modulo central de cornisa y modulo central de pasarela.
+
+Busqueda Sketchfab (2026-11-15, API publica de busqueda, solo descargables):
+- Modelos propios de stevearagon92 (14: castle, robot, girl, spaceship, escaneos...): ninguno es una plataforma, cornisa ni andamio.
+- Busquedas: 'modular platform low poly', 'scaffolding low poly', 'stage platform', 'building ledge', 'fire escape low poly',
+  'catwalk low poly', 'rooftop ledge low poly' (0 resultados), 'wooden stage low poly'. ~90 resultados, 12 relevantes en contacto
+  (capturas/sketchfab-candidatos.png).
+Mejores candidatos:
+- 07 Modular Building Window Ledge And RSJ (Stoo, CC-BY, 280 caras): 3/6. Tecnico y silueta ok, pero es una losa fina con textura
+  fotografica de hormigon; sin moldura ni ladrillo, no se lee como cornisa de los 40.
+- 06 Scaffolding (StewartB, CC-BY, 224 caras): 3/6. Low-poly limpio, pero es un banco de tablones con madera naranja saturada,
+  sin caños; no es andamio de estudio.
+- 03 Fire Escape Module (cruftcam, CC-BY, 4.9k): 3/6. Epoca correcta, pero es una torre vertical (no plataforma horizontal),
+  barandas finas que desaparecen a 22 m y oxido rojo.
+- 02 Fire Escape (KnightFallows, CC-BY, 29k): 2/6. Realista, 29k caras, vertical.
+- 05 Scaffolding (kubassa, CC-BY, 35k): 2/6. Andamio moderno de aluminio realista, 35k caras.
+- 00 Ultimate Platformer Pack (quaternius, CC-BY, 96k): 2/6. Estilo cartoon de colores saturados (pasto, monedas), no es noir.
+- 10/11 Catwalk (dylanheyes / Niko313): son pasarelas de moda / una mesa; 1/6.
+Ninguno llega a 5/6 -> se genera (D-015 paso 3).
+
+Concepto (D-015 paso 3):
+- concepto-kit-v1.png: hoja con las 4 piezas en 3/4 (cornisa, pasarela de andamio, tarima, descanso de escalera de incendio).
+  gemini-3-pro-image con ../dressing/prop-spotlight-v1.png como referencia de estilo; prompt en prompt-concepto.txt.
+- ref-cornisa-centro.png y ref-pasarela-centro.png: modulo central aislado de cada pieza, generado con Gemini usando la hoja como
+  referencia (prompts en prompt-ref-*.txt). Son la entrada de Rodin. Contacto: capturas/referencias-rodin.png.
+
+Rodin web (las dos piezas con la misma config): Image to 3D, Gen-2.5 High, Caption Override apagado, presets recomendados.
+Geometria: Clean Topology, Quad, Faces 3K, Baked Normal. Material: Native (PBR), High, 2K. Export: .fbx, Base Model, Shaded + PBR 2K,
+pivote Bottom, altura custom.
+
+1) Modulo central de cornisa  -> rodin/cornisa-centro/ (zip original rodin-cornisa-centro.zip)
+   Tarea: https://hyper3d.ai/workspace/rodin/098605ba-b2ab-4df5-9b62-0cb1f3a1cfc7 (caption automatico: "Low wall with stone and brick sections.")
+   Altura custom 80 cm. Medido en base.fbx: X -1.34..1.34, Y -0.60..0.61, Z 0..0.80 -> 268 x 121 x 80 cm.
+   1,486 verts, 1,800 poligonos (quads + tris) = 2,878 tris. Tapa (coping) en z 0.74-0.78: plana con juntas de 4 cm entre losas.
+   Extremos: cortes planos (el ancho es +-1.34 a toda altura), sirve para tilear en X.
+   Textura: luminancia media 134/255, saturacion mediana 0.10. Piedra gris calida + ladrillo marron oscuro.
+2) Modulo central de pasarela de andamio -> rodin/pasarela-centro/ (zip original rodin-pasarela-centro.zip)
+   Tarea: https://hyper3d.ai/workspace/rodin/76d349e1-fbd3-4a51-a4f0-ff4c3a3475b3 (caption automatico: "a long metal wooden bench.")
+   Altura custom 160 cm (incluye la baranda trasera). Medido: X -2.41..2.41, Y -0.51..0.53, Z 0..1.60 -> 482 x 104 x 160 cm.
+   1,383 verts, 1,222 poligonos = 2,137 tris. Piso de tablones en z 0.90-0.97. Tres tramos con patas en ambos extremos.
+   Textura: muy oscura (luminancia media 26/255): caños casi negros y tablones marron.
+
+Taste:
+- Cornisa: 6/6.
+  Estilo si (facetas grandes y poca textura). Epoca si (cornisa de ladrillo de los 40 con dentellones). Paleta si (neutros, sin
+  colores de mecanica). Silueta si (losas, moldura y ladrillo se leen a 22 m). Tecnico si (2.9k tris, escala real, pivote abajo).
+  Coherencia si (misma referencia de estilo que el reflector).
+- Pasarela: 5/6.
+  Estilo si. Epoca si (andamio de caños de set). Paleta si (neutros oscuros, sin colores de mecanica). Tecnico si (2.1k tris).
+  Coherencia si.
+  Silueta a medias: el piso y la baranda se leen, pero los caños de las cruces son finos y a 22 m se pierden.
+
+Para usarlas en UE (lo hace Windows, NO probado en Unreal):
+- Escala/ejes: los vertices estan en metros, pero el FBX declara UnitScaleFactor 1 (cm) y UpAxis Y. En los datos, la altura es Z.
+  Importar una y verificar el alto (80/160 cm). Si entra chica, usar Import Uniform Scale 100 (como import_extras.py) y revisar
+  la rotacion.
+- Tinte por mecanica: la cornisa ya esta en valores medios. La pasarela es demasiado oscura para que se lea el color de mecanica:
+  en el material, pasar el diffuse a gris y reescalarlo a ~0.35-0.6 antes de multiplicar por el color. En las dos, desaturar
+  el diffuse (el ladrillo y los tablones tiran a marron) para que el tinte no se ensucie.
+- Ancho variable 200-1200: repetir el modulo N = round(ancho/largo_modulo) veces (cornisa 268 cm, pasarela 482 cm) y escalar X
+  para que cierre (+-25 %). Para 200 cm con la pasarela conviene un modulo de 1 tramo (no generado). La pasarela repetida duplica
+  las patas en la union: solapar ~5 cm o aceptar la pata doble.
+- Profundidad: la cornisa mide 121 cm en Y. Escalar Y a 0.83 si el carril de juego tiene que medir 100.
+- Colision: usar caja simple a la altura de la tapa (cornisa ~78 cm, pasarela ~97 cm). Las juntas y los tablones tienen relieve.
+- Faltan (no se pidio generarlos): remates izquierdo/derecho, tarima y escalera de incendio. Estan en el concepto.
+
+Creditos: Rodin 2 generaciones, sin retry. La billetera marcaba 409 al empezar. La comparten otras sesiones, asi que el costo
+exacto no se puede aislar. Sin creditos CC-BY: no se uso ningun modelo de Sketchfab.
+
+Capturas: capturas/sketchfab-candidatos.png, capturas/referencias-rodin.png, capturas/rodin-cornisa-centro.png,
+capturas/rodin-pasarela-centro.png, capturas/resumen-kit.png (concepto + los dos modelos).

@@ -11,6 +11,7 @@
 #include "Engine/CollisionProfile.h"
 #include "Core/TDCFlipbookFx.h"
 #include "TimerManager.h"
+#include "Components/InstancedStaticMeshComponent.h"
 
 ATDCSetPiece::ATDCSetPiece()
 {
@@ -92,6 +93,7 @@ void ATDCSetPiece::BeginPlay()
 		}
 	}
 
+	BuildKitTrim();
 	Super::BeginPlay();
 	// Desde acá los cambios de presencia son del jugador (prender/apagar luces): llevan VFX.
 	bLastPresent = LightReactive->IsPresent();
@@ -277,5 +279,46 @@ void ATDCSetPiece::SpawnPresenceFx(bool bNowPresent)
 		{
 			Spawned->SetActorRotation(FRotator(90.f, 0.f, 0.f));
 		}
+	}
+}
+
+void ATDCSetPiece::BuildKitTrim()
+{
+	if (!bKitTrim || KitTrim || Presence != ETDCLightPresence::Always || bRecordTime)
+	{
+		return; // solo piezas fijas: las de luz/toma tienen su propio material (translúcido, cian)
+	}
+	UStaticMesh* Kit = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr,
+		TEXT("/Game/Dressing/Kit/SM_Ledge_Mid.SM_Ledge_Mid"), nullptr, LOAD_NoWarn | LOAD_Quiet));
+	if (!Kit)
+	{
+		return;
+	}
+	const FVector Size = Mesh->Bounds.BoxExtent * 2.0; // tamaño en mundo del bloque (las piezas no rotan)
+	const FBoxSphereBounds KitBounds = Kit->GetBounds();
+	const FVector Module = KitBounds.BoxExtent * 2.0;
+	if (Module.X < 1.0 || Size.X < 1.0)
+	{
+		return;
+	}
+	const int32 Count = FMath::Max(1, FMath::RoundToInt(Size.X / Module.X));
+	const double ScaleX = Size.X / (Count * Module.X); // estira apenas para cerrar el ancho exacto
+	KitTrim = NewObject<UInstancedStaticMeshComponent>(this, TEXT("KitTrim"));
+	KitTrim->SetupAttachment(RootComponent);
+	KitTrim->SetUsingAbsoluteScale(true); // instancias en cm, sin heredar la escala del cubo
+	KitTrim->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	KitTrim->SetStaticMesh(Kit);
+	KitTrim->RegisterComponent();
+	const FRotator Facing(0.0, KitTrimYaw, 0.0);
+	const FVector Scale(ScaleX, 1.0, 1.0);
+	// Centro del módulo en su espacio local, ya escalado y girado: se compensa para centrar cada instancia.
+	const FVector Pivot = Facing.RotateVector(KitBounds.Origin * Scale);
+	const double TopZ = Size.Z * 0.5;
+	for (int32 i = 0; i < Count; ++i)
+	{
+		const double X = -Size.X * 0.5 + (i + 0.5) * Size.X / Count;
+		// Frente del bloque (+Y, hacia la cámara), con la tapa de la cornisa alineada con la tapa del bloque.
+		const FVector Center(X, Size.Y * 0.5, TopZ - Module.Z * 0.5);
+		KitTrim->AddInstance(FTransform(Facing, Center - Pivot, Scale));
 	}
 }

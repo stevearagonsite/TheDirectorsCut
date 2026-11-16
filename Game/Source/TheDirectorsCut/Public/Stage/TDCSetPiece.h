@@ -6,6 +6,7 @@
 #include "TDCSetPiece.generated.h"
 
 class UStaticMeshComponent;
+class UInstancedStaticMeshComponent;
 class UTDCLightReactiveComponent;
 class UTDCTimelineComponent;
 class UMaterialInstanceDynamic;
@@ -44,6 +45,15 @@ public:
 	/** Intensidad del patrón forzado (0..1). */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|SetPiece", meta = (ClampMin = "0", ClampMax = "1"))
 	float PatternOverrideStrength = 1.f;
+
+	/** Kit modular (T-0050): cornisa (/Game/Dressing/Kit/SM_Ledge_Mid) repetida en el borde frontal, para que la pieza
+	 * fija no se lea como una caja. Sin el asset no hace nada. Solo visual: la colisión sigue siendo la del bloque. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|SetPiece")
+	bool bKitTrim = false;
+
+	/** Giro del módulo para que su frente mire a la cámara (+Y). Rodin exporta mirando a -Y. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|SetPiece")
+	float KitTrimYaw = 180.f;
 
 	UFUNCTION(BlueprintCallable, Category = "TDC|SetPiece")
 	void Release();
@@ -97,4 +107,9 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<UMaterialInstanceDynamic> Material;
+
+	/** Cornisas del kit modular (T-0050) a lo largo del borde frontal. */
+	UPROPERTY(Transient)
+	TObjectPtr<UInstancedStaticMeshComponent> KitTrim;
+	void BuildKitTrim();
 };

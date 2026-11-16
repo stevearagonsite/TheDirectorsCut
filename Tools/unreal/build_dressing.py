@@ -424,6 +424,72 @@ def import_set_prop(folder_name, file_name, tint):
     return sm
 
 
+KIT_DIR = os.path.join(SRC, "PlatformKit")
+KIT_DEST = f"{DEST}/Kit"
+# Medidas reales (cm) de fuente.txt: (X largo, Y profundidad, Z alto), y aclarado del material (la pasarela es muy oscura).
+KIT = {"SM_Ledge_Mid": ((268.0, 121.0, 80.0), 1.0), "SM_Catwalk_Mid": ((482.0, 104.0, 160.0), 2.2)}
+KIT_ROTATIONS = [(0.0, 0.0, 0.0), (90.0, 0.0, 0.0), (-90.0, 0.0, 0.0), (0.0, 0.0, 90.0), (90.0, 0.0, 90.0)]  # (roll, pitch, yaw)
+
+
+def import_kit_piece(name):
+    """Kit modular (T-0050). Rodin declara cm pero los vértices vienen en metros y los ejes cambiados (fuente.txt):
+    se prueba escala y rotación hasta que las medidas importadas coincidan con las reales."""
+    fbx = os.path.join(KIT_DIR, name, f"{name}.fbx")
+    if not os.path.isfile(fbx):
+        log(f"sin {name}.fbx: el kit queda afuera")
+        return None
+    require_writable(f"{KIT_DEST}/{name}", ".uasset")
+    want, tint = KIT[name]
+
+    def attempt(scale, r):
+        ui = static_fbx_options()
+        ui.static_mesh_import_data.import_uniform_scale = scale
+        ui.static_mesh_import_data.import_rotation = unreal.Rotator(roll=r[0], pitch=r[1], yaw=r[2])
+        sm = import_file(fbx, name, ui, folder=KIT_DEST)
+        if not sm:
+            return None, 1e9
+        e = sm.get_bounds().box_extent
+        got = (e.x * 2.0, e.y * 2.0, e.z * 2.0)
+        err = sum(abs(g - w) / w for g, w in zip(got, want))
+        return got, err
+
+    got, _ = attempt(1.0, KIT_ROTATIONS[0])
+    if got is None:
+        unreal.log_warning(f"[TDC] no se importó {name}")
+        return None
+    scale = 100.0 if max(got) < max(want) * 0.2 else 1.0
+    best = None
+    for r in KIT_ROTATIONS:
+        got, err = attempt(scale, r)
+        if best is None or err < best[0]:
+            best = (err, r, got)
+        if err < 0.3:
+            break
+    got, err = attempt(scale, best[1])  # dejar importada la mejor
+    log(f"kit {name}: escala {scale}, rotación {best[1]}, medidas {tuple(round(g) for g in got)} (error {err:.2f})")
+    sm = eal.load_asset(f"{KIT_DEST}/{name}")
+    assign_material(sm, prop_material(KIT_DEST, name, os.path.join(KIT_DIR, name, "texture_diffuse.png"), tint))
+    return sm
+
+
+def kit_trim_floors():
+    """Pisos fijos y la salida llevan cornisa del kit en el borde frontal (ATDCSetPiece::bKitTrim)."""
+    n = 0
+    for actor in eas.get_all_level_actors():
+        label = actor.get_actor_label()
+        if label.startswith("Floor_") or label == "Exit_Ledge":
+            try:
+                actor.set_editor_property("b_kit_trim", True)
+                n += 1
+            except Exception:
+                try:
+                    actor.set_editor_property("kit_trim", True)
+                    n += 1
+                except Exception as e:
+                    unreal.log_warning(f"[TDC] {label}: sin bKitTrim (¿C++ viejo?): {e}")
+    log(f"cornisas del kit en {n} piezas fijas")
+
+
 def import_hanging_light():
     """Reflector colgante (T-0036) -> /Game/Dressing/Props/SM_StageLight_Hanging. ATDCStageLight lo carga si existe."""
     fbx = os.path.join(HANGING_LIGHT_DIR, "SM_StageLight_Hanging.fbx")
@@ -594,6 +660,9 @@ def build():
         spawn_mesh(f"DR_{name}_{i}", sm, (x, y, FOREGROUND_TOP_Z), rot(yaw=yaw), vec(s, s, s))
 
     import_hanging_light()
+    if import_kit_piece("SM_Ledge_Mid"):
+        kit_trim_floors()
+    import_kit_piece("SM_Catwalk_Mid")
     set_cache = {}
     placed = 0
     for i, (folder_name, file_name, x, y, yaw, height, tint) in enumerate(SET_PROPS):
