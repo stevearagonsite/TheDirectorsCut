@@ -239,6 +239,36 @@ def card_flipbook_material(tex, name, fb, darken):
     return mic
 
 
+CARD_LIGHTS = ("fg_farola.png", "mid_marquesina.png")  # cards que son fuente de luz (auditoría #6: luces prácticas)
+
+
+def card_practical_lights():
+    """Luz ámbar desaturada (~2700 K) en cada farola y en la marquesina: charcos de luz cálida en la calle azul."""
+    spec = os.path.join(CARDS_DIR, "cards.json")
+    if not os.path.isfile(spec):
+        return
+    with open(spec, encoding="utf-8") as f:
+        cards = json.load(f)
+    if isinstance(cards, dict):
+        cards = cards.get("cards", [])
+    n = 0
+    for c in cards:
+        if c.get("png") not in CARD_LIGHTS:
+            continue
+        z = float(c.get("z", 0.0)) + float(c.get("height", 300.0)) * 0.85
+        actor = eas.spawn_actor_from_class(unreal.PointLight, vec(float(c["x"]), float(c["y"]) - 80.0, z), rot())
+        actor.set_actor_label(f"DR_CardLight_{n}")
+        actor.set_folder_path("Dressing/Lights")
+        comp = actor.get_component_by_class(unreal.PointLightComponent)
+        comp.set_mobility(unreal.ComponentMobility.MOVABLE)
+        comp.set_intensity(35.0)
+        comp.set_attenuation_radius(900.0)
+        comp.set_light_color(unreal.LinearColor(1.0, 0.7, 0.42, 1.0))
+        comp.set_cast_shadows(False)
+        n += 1
+    log(f"luces prácticas en cards: {n}")
+
+
 def build_cards(cube):
     spec = os.path.join(CARDS_DIR, "cards.json")
     if not os.path.isfile(spec):
@@ -529,6 +559,7 @@ def build():
     cube = unreal.load_asset(CUBE)
     mat = None if build_parallax(cube) else backdrop_material()
     build_cards(cube)
+    card_practical_lights()
     if mat:
         actor, comp = spawn_mesh("DR_Backdrop", cube, BACKDROP_CENTER, rot(),
                                  vec(BACKDROP_WIDTH / 100.0, 0.02, BACKDROP_HEIGHT / 100.0))
@@ -541,7 +572,14 @@ def build():
     stage.set_actor_label("DR_ForegroundStage")
     stage.set_folder_path("Dressing")
     stage.set_actor_scale3d(vec(110.0, (y1 - y0) / 100.0, 1.0))
-    stage.set_editor_property("color_override", unreal.LinearColor(0.04, 0.04, 0.05, 1.0))
+    # T-0041 (auditoría #3): era la franja negra pura del 22 % inferior. Ahora es vereda de adoquín mojado.
+    stage.set_editor_property("color_override", unreal.LinearColor(0.5, 0.52, 0.6, 1.0))
+    try:
+        stage.set_editor_property("pattern_override", "T_Street_Cobble")
+        stage.set_editor_property("pattern_override_strength", 1.0)
+    except Exception as e:
+        unreal.log_warning(f"[TDC] DR_ForegroundStage sin patrón (¿C++ viejo?): {e}")
+        stage.set_editor_property("color_override", unreal.LinearColor(0.06, 0.065, 0.08, 1.0))
 
     cache = {}
     for i, (name, x, y, yaw, height) in enumerate(PROPS):
