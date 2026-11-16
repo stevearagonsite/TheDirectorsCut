@@ -409,6 +409,27 @@ void ATDCPlaytestRunner::WatchGoal()
 	}
 }
 
+void ATDCPlaytestRunner::NotifyPreClap(const FVector& Location)
+{
+	PreClapTargets.Reset();
+	ATDCCharacter* D = Director.Get();
+	if (!D || bFinished)
+	{
+		return;
+	}
+	// Extras al alcance del golpe (hacia donde mira el director), vivos antes del claquetazo.
+	const float Facing = D->GetActorForwardVector().X >= 0.f ? 1.f : -1.f;
+	for (TActorIterator<ATDCExtra> It(GetWorld()); It; ++It)
+	{
+		const FVector Delta = It->GetActorLocation() - Location;
+		const float Ahead = static_cast<float>(Delta.X) * Facing;
+		if (!It->IsDefeated() && !It->IsHidden() && Ahead > -20.f && Ahead < 190.f && FMath::Abs(Delta.Z) < 120.f)
+		{
+			PreClapTargets.Add(*It);
+		}
+	}
+}
+
 void ATDCPlaytestRunner::NotifyAction(ETDCPlayAction Action, float Value, const FVector& Location)
 {
 	if (bFinished)
@@ -449,17 +470,12 @@ void ATDCPlaytestRunner::NotifyAction(ETDCPlayAction Action, float Value, const 
 			break; // en cooldown: no hubo golpe
 		}
 		Shot(TEXT("claquetazo"));
-		// Extras al alcance del golpe (hacia donde mira el director), vivos antes del claquetazo.
-		const float Facing = D->GetActorForwardVector().X >= 0.f ? 1.f : -1.f;
-		TArray<TWeakObjectPtr<ATDCExtra>> Targets;
-		for (TActorIterator<ATDCExtra> It(GetWorld()); It; ++It)
+		TArray<TWeakObjectPtr<ATDCExtra>> Targets = MoveTemp(PreClapTargets);
+		PreClapTargets.Reset();
+		if (Targets.Num() == 0 && Mode == ETDCPlaytestMode::Scripted)
 		{
-			const FVector Delta = It->GetActorLocation() - Location;
-			const float Ahead = static_cast<float>(Delta.X) * Facing;
-			if (!It->IsDefeated() && !It->IsHidden() && Ahead > -20.f && Ahead < 190.f && FMath::Abs(Delta.Z) < 120.f)
-			{
-				Targets.Add(*It);
-			}
+			// El bot solo golpea a propósito: un claquetazo sin extra al alcance es un beat mal armado.
+			Report(TEXT("claquetazo_alcance"), false, FString::Printf(TEXT("ningún extra vivo al alcance en X=%.0f"), Location.X));
 		}
 		if (Targets.Num() > 0)
 		{
@@ -499,7 +515,7 @@ void ATDCPlaytestRunner::Tick(float DeltaSeconds)
 	{
 	case ETDCPlaytestMode::Record:   TickRecord(); break;
 	case ETDCPlaytestMode::Replay:   TickReplay(); break;
-	case ETDCPlaytestMode::Scripted: TickBot(); break;
+	case ETDCPlaytestMode::Scripted: TickBot(); TickRecord(); break; // checkpoints también en el bot: el replay mide drift
 	default: break;
 	}
 
@@ -521,7 +537,7 @@ void ATDCPlaytestRunner::Tick(float DeltaSeconds)
 	}
 
 	// Una captura por frame (si se piden dos en el mismo frame, el motor guarda solo la última).
-	if (ShotQueue.Num() > 0 && Time >= NextShotAt)
+	if (ShotQueue.Num() > 0 && Time >= NextShotAt && Time >= ShotHoldUntil)
 	{
 		const FString Step = ShotQueue[0];
 		ShotQueue.RemoveAt(0);
@@ -599,6 +615,7 @@ void ATDCPlaytestRunner::Teleport(const FVector& Location, float FacingX)
 	if (ATDCCharacter* D = Director.Get())
 	{
 		D->PlaytestTeleport(Location, FacingX);
+		ShotHoldUntil = Time + 0.35; // la cámara tiene lag: sin esto las capturas salían barridas
 	}
 }
 
