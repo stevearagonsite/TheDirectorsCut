@@ -14,8 +14,8 @@
 [TDC-PLAYTEST] teleport a X=2400 Z=100 (salto de beat del bot)
 [TDC-PLAYTEST] PASS luces_L2_off_W1: después de E (L2=off) W1: presente=0 (esperado 0), colision=0
 [TDC-PLAYTEST] PASS luces_L2_off_S1: después de E (L2=off) S1: presente=1 (esperado 1), colision=1
-[TDC-PLAYTEST] FAIL sombra_aparece: con L2 apagado la sombra de guion está en escena
-[TDC-PLAYTEST] FAIL sombra_fuera_de_toma: prender L2 de nuevo saca a la sombra de la toma
+[TDC-PLAYTEST] PASS sombra_aparece: con L2 apagado la sombra de guion está en escena
+[TDC-PLAYTEST] PASS sombra_fuera_de_toma: prender L2 de nuevo saca a la sombra de la toma
 [TDC-PLAYTEST] teleport a X=4300 Z=100 (salto de beat del bot)
 [TDC-PLAYTEST] teleport a X=4560 Z=100 (salto de beat del bot)
 [TDC-PLAYTEST] PASS puente_cae: las tablas bajaron 103 cm
@@ -31,5 +31,5 @@
 [TDC-PLAYTEST] teleport a X=7400 Z=480 (salto de beat del bot)
 [TDC-PLAYTEST] PASS meta: llegó a la salida en 16.7 s
 [TDC-REPLAY] GOAL en 16.7s
-[TDC-REPLAY] corrida guardada: Saved/TDCRuns/bot-20261115-230924.json (18 eventos, meta=1)
-[TDC-PLAYTEST] RESULT FAIL 18/20
+[TDC-REPLAY] corrida guardada: Saved/TDCRuns/bot-20261115-232744.json (18 eventos, meta=1)
+[TDC-PLAYTEST] RESULT PASS 20/20

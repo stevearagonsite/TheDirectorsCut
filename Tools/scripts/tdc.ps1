@@ -146,7 +146,8 @@ switch ($Command) {
     if (-not $Task) { throw 'Falta -Task (ej. T-0002)' }
     $shots = Join-Path $Repo 'Game\Saved\Screenshots\WindowsEditor'
     $before = Get-Date
-    $p = Start-Process $UEEditor -PassThru -ArgumentList "`"$Proj`" $Map -game -windowed -ResX=1280 -ResY=720 -ExecCmds=`"HighResShot 1280x720`""
+    # -TDCNoMenu: desde T-0035 el juego arranca en el menú y la captura salía antes de la cámara de juego (T-0049).
+    $p = Start-Process $UEEditor -PassThru -ArgumentList "`"$Proj`" $Map -game -windowed -ResX=1280 -ResY=720 -TDCNoMenu -ExecCmds=`"HighResShot 1280x720`""
     Start-Sleep -Seconds 25
     Stop-Process -Id $p.Id -ErrorAction SilentlyContinue
     $png = Get-ChildItem $shots -Filter *.png -ErrorAction SilentlyContinue | Where-Object LastWriteTime -gt $before | Sort-Object LastWriteTime | Select-Object -Last 1

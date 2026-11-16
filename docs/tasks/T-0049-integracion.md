@@ -1,7 +1,7 @@
 ---
 id: T-0049
 titulo: Integración post-jam en una sola corrida (T-0037 a T-0048)
-estado: fallo
+estado: ok
 tipo: mixto
 rama: t/T-0049-integracion
 creada: 2026-11-15
@@ -16,6 +16,9 @@ que trae T-0039/T-0041/T-0042: arte, valores de luz, calle). Genera `Game\Saved\
 Si algo falla, reportá qué paso y el error: se bisecta con las ramas sueltas.
 
 ## Pasos
+0. **Reenvío (c1fd9b2):** los 3 PNG pintados ya están completos en LFS (lluvia 765642 B, vapor 3553471 B, claquetazo 103241 B) y
+   LightReactive evalúa la luz con los bounds del root (la sombra de guion fallaba porque el puppet escalado inflaba la caja). Hacé
+   `git lfs pull` después del checkout. Corré **todos** los pasos de nuevo (los scripts son idempotentes).
 1. `git fetch` y `git checkout t/T-0049-integracion` (verificá el sha). `.\Tools\scripts\tdc.ps1 stop`.
 2. `.\Tools\scripts\tdc.ps1 build`. Si no compila, **pará** y reportá `fallo` con `archivo:línea`.
 3. Locks: `git lfs lock Game/Content/Maps/L_Slice.umap` y
@@ -34,9 +37,9 @@ Si algo falla, reportá qué paso y el error: se bisecta con las ramas sueltas.
 11. Dejá abierto el build para Steve: `.\Tools\scripts\tdc.ps1 smoke -Task T-0049 -Name 03-abierto -Keep -Zip stevearagonsite_TheDirectorsCut_dev`.
 
 ## Criterios de aceptación
-- [ ] Compila; los 5 scripts sin `[TDC] ERROR`.
-- [ ] Playtest y replay en RESULT PASS (con `claquetazo_*`).
-- [ ] El exe del zip arranca en el menú; 3 extras con escala ajustada; quedó abierto.
+- [x] Compila; los 5 scripts sin `[TDC] ERROR`.
+- [x] Playtest y replay en RESULT PASS (con `claquetazo_*`).
+- [x] El exe del zip arranca en el menú; 3 extras con escala ajustada; quedó abierto.
 
 ## Permite
 - Editar `Tools/unreal/*.py` y `Tools/scripts/tdc.ps1` solo para compatibilidad de API.
@@ -50,81 +53,108 @@ Si algo falla, reportá qué paso y el error: se bisecta con las ramas sueltas.
 ---
 
 ## Reporte (lo completa Windows)
-- estado: fallo
+- estado: ok
 - sha: (el del commit del reporte; ver `[TDC-REPORT]`)
-- resumen: Rama y sha `f4aeb73` verificados. **Paso 2 OK**: compila (`Result: Succeeded`, 0 errores, 0 warnings de C++).
-  **Paso 3 OK**: 112 locks (mapa + 111 assets). **Paso 4 falla en `import_vfx.py` y en `build_dressing.py`**: los tres PNG
-  pintados de T-0048 (commit `dd544f2`) están en el repo **truncados a 1024 bytes exactos** (el objeto LFS mismo mide 1024; no es un
-  problema de checkout). `make_materials.py`, `import_ui.py` y `apply_toon.py` corrieron sin `[TDC] ERROR`.
-  **Paso 6 (playtest): RESULT FAIL 18/20** (fallan `sombra_aparece` y `sombra_fuera_de_toma`; los dos `claquetazo_*` pasan).
-  **Paso 7 (replay de `best.json`): RESULT PASS 15/15**, 0 correcciones de drift.
-  **No se corrieron** los pasos 5 (shot), 8 (autorun), 9 (package + smoke) ni 11 (dejar abierto): sin `build_dressing.py` el mapa
-  no se rearmó y el zip no sería el entregable. No hay zip `_dev` nuevo.
-- errores:
-  - `import_vfx.py` y `build_dressing.py`: `UnrealEditor-Cmd.exe : libpng error: IDAT: unknown compression method`
-    (`Tools/scripts/tdc.ps1:133`; con `$ErrorActionPreference = 'Stop'` esa línea de stderr corta el wrapper y mata el commandlet).
-  - Archivos truncados (cabecera PNG válida, datos cortados a 1024 bytes):
-    - `Art/Export/VFX/claquetazo_impact.png` — IHDR 768x640, LFS oid `58b66ed355…`, size 1024
-    - `Art/Export/Dressing/Cards/anim_lluvia.png` — IHDR 2048x2048, LFS oid `500ed83c5a…`, size 1024
-    - `Art/Export/Dressing/Cards/anim_vapor.png` — IHDR 1792x1792, LFS oid `1d01d243de…`, size 1024
-  - `build_dressing.py` llegó a loguear `[TDC] parallax de 3 capas armado` y murió al importar las cards animadas.
-  - Playtest:
-    ```
-    [TDC-PLAYTEST] START modo=bot
-    [TDC-PLAYTEST] escena: 3 reflectores, 4 tablas, caja=1, extras C/G/R=1/1/1
-    [TDC-PLAYTEST] PASS luces_L1_off_P1: inicio (L1=off) P1: presente=0 (esperado 0), colision=0
-    [TDC-PLAYTEST] PASS luces_L2_on_W1: inicio (L2=on) W1: presente=1 (esperado 1), colision=1
-    [TDC-PLAYTEST] PASS luces_L2_on_S1: inicio (L2=on) S1: presente=0 (esperado 0), colision=0
-    [TDC-PLAYTEST] PASS luces_L3_on_SH: inicio (L3=on) SH: presente=1 (esperado 1), colision=1
-    [TDC-PLAYTEST] PASS luces_L3_on_P3: inicio (L3=on) P3: presente=0 (esperado 0), colision=0
-    [TDC-PLAYTEST] teleport a X=692 Z=100 (salto de beat del bot)
-    [TDC-PLAYTEST] PASS claquetazo_comun: extra común derrotado
-    [TDC-PLAYTEST] teleport a X=1000 Z=100 (salto de beat del bot)
-    [TDC-PLAYTEST] PASS luces_L1_on_P1: después de E (L1=on) P1: presente=1 (esperado 1), colision=1
-    [TDC-PLAYTEST] teleport a X=1600 Z=100 (salto de beat del bot)
-    [TDC-PLAYTEST] PASS p1_sostiene: director sobre P1 con L1 prendido (Z=92)
-    [TDC-PLAYTEST] teleport a X=2400 Z=100 (salto de beat del bot)
-    [TDC-PLAYTEST] PASS luces_L2_off_W1: después de E (L2=off) W1: presente=0 (esperado 0), colision=0
-    [TDC-PLAYTEST] PASS luces_L2_off_S1: después de E (L2=off) S1: presente=1 (esperado 1), colision=1
-    [TDC-PLAYTEST] FAIL sombra_aparece: con L2 apagado la sombra de guion está en escena
-    [TDC-PLAYTEST] FAIL sombra_fuera_de_toma: prender L2 de nuevo saca a la sombra de la toma
-    [TDC-PLAYTEST] teleport a X=4300 Z=100 (salto de beat del bot)
-    [TDC-PLAYTEST] teleport a X=4560 Z=100 (salto de beat del bot)
-    [TDC-PLAYTEST] PASS puente_cae: las tablas bajaron 103 cm
-    [TDC-PLAYTEST] PASS puente_rebobinado: tablas a 0 cm o menos de su lugar
-    [TDC-PLAYTEST] teleport a X=5250 Z=100 (salto de beat del bot)
-    [TDC-PLAYTEST] PASS puente_sostiene: director sobre el puente rebobinado (Z=92)
-    [TDC-PLAYTEST] teleport a X=6152 Z=100 (salto de beat del bot)
-    [TDC-PLAYTEST] PASS claquetazo_resistente: aturdido=1 derrotado=0
-    [TDC-PLAYTEST] teleport a X=6850 Z=100 (salto de beat del bot)
-    [TDC-PLAYTEST] PASS luces_L3_off_SH: después de E (L3=off) SH: presente=0 (esperado 0), colision=0
-    [TDC-PLAYTEST] PASS luces_L3_off_P3: después de E (L3=off) P3: presente=1 (esperado 1), colision=1
-    [TDC-PLAYTEST] PASS caja_cae: con L3 apagado la caja bajó 302 cm
-    [TDC-PLAYTEST] teleport a X=7400 Z=480 (salto de beat del bot)
-    [TDC-PLAYTEST] PASS meta: llegó a la salida en 16.7 s
-    [TDC-REPLAY] GOAL en 16.7s
-    [TDC-REPLAY] corrida guardada: Saved/TDCRuns/bot-20261115-230924.json (18 eventos, meta=1)
-    [TDC-PLAYTEST] RESULT FAIL 18/20
-    ```
-  - Replay (resumen): `corrida best.json: 18 eventos, 0 checkpoints, 16.7 s` · `GOAL en 16.7s` · `correcciones de drift: 0` ·
-    `RESULT PASS 15/15` (el replay no chequea `p1_sostiene`, `puente_sostiene`, `caja_cae` ni los dos de la sombra).
-- evidencia: `docs/evidence/T-0049/playtest/` (11 capturas + `playtest.log`) y `docs/evidence/T-0049/replay/` (11 capturas +
-  `replay.log`). No hay `01-escena.png`, `autorun/` ni `02-menu.png` (pasos no corridos).
+- resumen: Reenvío, rama y sha `925df4d` verificados; `git lfs pull` trajo los 3 PNG completos (765642 / 3553471 / 103241 B).
+  Se corrieron **todos** los pasos de nuevo.
+  - **Paso 2 OK**: compila (`Result: Succeeded`, 0 errores, 0 warnings de C++).
+  - **Paso 3 OK**: 121 locks (mapa + 120 assets), todos tomados en esta corrida.
+  - **Paso 4 OK**: los 5 scripts por commandlet, `Python script executed successfully`, 0 `[TDC] ERROR`, sin `libpng error`.
+    `build_dressing.py` necesitó un ajuste de API (ver notas) y se corrió dos veces; la segunda sin warnings `[TDC]`.
+  - **Paso 5: captura hecha, pero no sirve para lo pedido** (ver notas): `shot` ya no encuadra el plano de juego.
+    La descripción de la escena sale de `autorun/` y `playtest/`.
+  - **Paso 6 OK**: playtest **RESULT PASS 20/20** (`claquetazo_comun`, `claquetazo_resistente`, y ahora también
+    `sombra_aparece` y `sombra_fuera_de_toma`).
+  - **Paso 7 OK**: replay de `best.json` **RESULT PASS 15/15**, 0 correcciones de drift.
+  - **Paso 8 OK**: autorun, 24 capturas.
+  - **Paso 9 OK**: `BUILD SUCCESSFUL`; zip `Game\Saved\stevearagonsite_TheDirectorsCut_dev.zip` = **370.2 MB**. El exe del zip
+    arranca en el **menú inicial** (`02-menu.png`: título, Jugar / Controles / Salir) y en su log están las 3 líneas de escala.
+  - **Paso 11 OK**: el build quedó abierto (`smoke -Keep`, `03-abierto.png`).
+- errores: ninguno que corte. Warnings:
+  - `build_dressing.py` (1.ª corrida): `[TDC] niebla volumétrica no disponible (ExponentialHeightFogComponent: Failed to find property
+    'volumetric_fog' ...)` → corregido (ver notas).
+  - `build_dressing.py`: 6 warnings de Interchange `No smoothing group information was found for this mesh 'model' in the FBX file`
+    (SM_Spotlight, SM_Crates, SM_FilmCamera, SM_StageLight_Hanging, SM_DirectorChair, SM_BoomMic). No cortan.
+  - 1.er intento de `smoke`: `Remove-Item ... PackageTest\Engine\Binaries\ThirdParty\DbgHelp\dbghelp.dll: Access to the path is denied`
+    (`Tools/scripts/tdc.ps1:278`): había un exe viejo de `PackageTest` abierto; el script lo mata y borra sin esperar. Al reintentar anduvo.
+- playtest (`docs/evidence/T-0049/playtest/playtest.log`):
+  ```
+  [TDC-PLAYTEST] START modo=bot
+  [TDC-PLAYTEST] escena: 3 reflectores, 4 tablas, caja=1, extras C/G/R=1/1/1
+  [TDC-PLAYTEST] PASS luces_L1_off_P1: inicio (L1=off) P1: presente=0 (esperado 0), colision=0
+  [TDC-PLAYTEST] PASS luces_L2_on_W1: inicio (L2=on) W1: presente=1 (esperado 1), colision=1
+  [TDC-PLAYTEST] PASS luces_L2_on_S1: inicio (L2=on) S1: presente=0 (esperado 0), colision=0
+  [TDC-PLAYTEST] PASS luces_L3_on_SH: inicio (L3=on) SH: presente=1 (esperado 1), colision=1
+  [TDC-PLAYTEST] PASS luces_L3_on_P3: inicio (L3=on) P3: presente=0 (esperado 0), colision=0
+  [TDC-PLAYTEST] teleport a X=692 Z=100 (salto de beat del bot)
+  [TDC-PLAYTEST] PASS claquetazo_comun: extra común derrotado
+  [TDC-PLAYTEST] teleport a X=1000 Z=100 (salto de beat del bot)
+  [TDC-PLAYTEST] PASS luces_L1_on_P1: después de E (L1=on) P1: presente=1 (esperado 1), colision=1
+  [TDC-PLAYTEST] teleport a X=1600 Z=100 (salto de beat del bot)
+  [TDC-PLAYTEST] PASS p1_sostiene: director sobre P1 con L1 prendido (Z=92)
+  [TDC-PLAYTEST] teleport a X=2400 Z=100 (salto de beat del bot)
+  [TDC-PLAYTEST] PASS luces_L2_off_W1: después de E (L2=off) W1: presente=0 (esperado 0), colision=0
+  [TDC-PLAYTEST] PASS luces_L2_off_S1: después de E (L2=off) S1: presente=1 (esperado 1), colision=1
+  [TDC-PLAYTEST] PASS sombra_aparece: con L2 apagado la sombra de guion está en escena
+  [TDC-PLAYTEST] PASS sombra_fuera_de_toma: prender L2 de nuevo saca a la sombra de la toma
+  [TDC-PLAYTEST] teleport a X=4300 Z=100 (salto de beat del bot)
+  [TDC-PLAYTEST] teleport a X=4560 Z=100 (salto de beat del bot)
+  [TDC-PLAYTEST] PASS puente_cae: las tablas bajaron 103 cm
+  [TDC-PLAYTEST] PASS puente_rebobinado: tablas a 0 cm o menos de su lugar
+  [TDC-PLAYTEST] teleport a X=5250 Z=100 (salto de beat del bot)
+  [TDC-PLAYTEST] PASS puente_sostiene: director sobre el puente rebobinado (Z=92)
+  [TDC-PLAYTEST] teleport a X=6152 Z=100 (salto de beat del bot)
+  [TDC-PLAYTEST] PASS claquetazo_resistente: aturdido=1 derrotado=0
+  [TDC-PLAYTEST] teleport a X=6850 Z=100 (salto de beat del bot)
+  [TDC-PLAYTEST] PASS luces_L3_off_SH: después de E (L3=off) SH: presente=0 (esperado 0), colision=0
+  [TDC-PLAYTEST] PASS luces_L3_off_P3: después de E (L3=off) P3: presente=1 (esperado 1), colision=1
+  [TDC-PLAYTEST] PASS caja_cae: con L3 apagado la caja bajó 302 cm
+  [TDC-PLAYTEST] teleport a X=7400 Z=480 (salto de beat del bot)
+  [TDC-PLAYTEST] PASS meta: llegó a la salida en 16.7 s
+  [TDC-REPLAY] GOAL en 16.7s
+  [TDC-REPLAY] corrida guardada: Saved/TDCRuns/bot-20261115-232744.json (18 eventos, meta=1)
+  [TDC-PLAYTEST] RESULT PASS 20/20
+  ```
+- replay (resumen; completo en `docs/evidence/T-0049/replay/replay.log`): `corrida best.json: 18 eventos, 0 checkpoints, 16.7 s` ·
+  `GOAL en 16.7s` · `correcciones de drift: 0` · `RESULT PASS 15/15` (los 15 chequeos incluyen `claquetazo_comun` y
+  `claquetazo_resistente`; el replay no evalúa `p1_sostiene`, `puente_sostiene`, `caja_cae` ni los dos de la sombra).
+- log del exe empaquetado (`smoke`):
+  ```
+  LogTDC: TDCExtra_3: pose 1.4 cm, mesh 175.0 cm -> escala del puppet 110.300
+  LogTDC: TDCExtra_4: pose 1.5 cm, mesh 180.0 cm -> escala del puppet 109.112
+  LogTDC: TDCExtra_5: pose 1.6 cm, mesh 190.0 cm -> escala del puppet 109.395
+  ```
+- escena (de `autorun/TDCAutoRun_02/08/16/22.png` y `playtest/TDCPlaytest_00/03.png`):
+  - **Valores de luz: sí.** El piso del plano de juego es crema claro y los personajes se leen con color (director gris, extra de traje
+    rojo); el telón y los edificios quedan en azules oscuros. El plano de juego le gana al fondo.
+  - **Calle de adoquín: no la vi.** En ninguna captura aparece adoquín: debajo del plano de juego el encuadre termina en el borde del
+    piso o en el pozo oscuro (`TDCAutoRun_22`). `T_Street_Cobble` se importó bien; no pude confirmar que se vea en cámara.
+  - **Marquesina a nivel calle: sí**, apoyada justo detrás del piso de juego, a la altura del director.
+  - **Reflector colgante: sí**, se ve arriba a la derecha en `TDCAutoRun_16` y `_22`.
+  - **Extras a tamaño humano: sí.** El extra de rojo es apenas más alto que el director (`TDCAutoRun_02`).
+  - **Cámara más alta: sí**, el piso queda en el quinto inferior del cuadro. En `TDCPlaytest_00_inicio` y `_03_luces` el director sale
+    **cortado por el borde de abajo** (se le ven cabeza y torso); en el autorun entra entero. A revisar por la Mac.
+  - **HUD nuevo: sí.** Panel de teclas arriba a la izquierda (moverse, saltar, claquetazo, prender/apagar reflector, rebobinar) con
+    leyenda de colores; carteles `[E] ¡Luces! Prender el reflector`, `¡Claquetazo!`, `¡Corten! Extra fuera de la toma`. Sin texto de debug.
+  - **Squash en el claquetazo: no se puede juzgar en fotos fijas.** Sí se ve el VFX pintado del impacto (destello blanco sobre el
+    director en `TDCAutoRun_16` y `_22`).
+  - **Utilería: no tapa al director** en las capturas. La farola de primer plano cruza el cuadro en `TDCAutoRun_16` sin taparlo. Las
+    cards de lluvia son bastante opacas y cruzan todo el cuadro; el vapor es una mancha blanca fuerte (`TDCPlaytest_03`).
+- evidencia: `docs/evidence/T-0049/` — `01-escena.png`, `02-menu.png`, `03-abierto.png`, `autorun/` (24), `playtest/` (11 +
+  `playtest.log`), `replay/` (11 + `replay.log`).
 - notas / preguntas:
-  - **Para la Mac:** re-exportar y commitear los tres PNG completos (`python3 Art/Source/VFX/pintados/vfx_pintados.py <dir>`).
-    Acá no se pudieron regenerar: esta sesión sin interfaz no tiene permiso para ejecutar Python suelto.
-  - La falla de la sombra **no está diagnosticada**. El playtest corrió con `L_Slice` sin rearmar (`build_dressing.py` no terminó),
-    así que puede ser mapa viejo contra C++ nuevo o una regresión real del C++ integrado; hay que repetirlo con los 5 scripts OK
-    antes de bisectar.
-  - Las capturas del playtest muestran la escena rota (cámara muy cerca, cards sin acomodar): son del estado intermedio, no sirven
-    para juzgar luz ni arte.
-  - En el log del editor (`-game`) aparecen las 3 líneas `-> escala del puppet` (TDCExtra_3/4/5 ≈ 110.3 / 109.1 / 109.4); falta
-    confirmarlo en el exe empaquetado.
-  - `tdc.ps1 replay -Run best.json` toma primero `Game\Saved\TDCRuns\best.json` y recién después el del repo. Esta vez eran
-    idénticos (`cmp`), pero puede reproducir una corrida local distinta de la commiteada.
-  - Contenido commiteado: solo la salida de los scripts que terminaron (`Materials/`, `UI/` nuevo, `Characters/` por `apply_toon`).
-    Los assets de `Dressing/Parallax` que dejó a medias `build_dressing.py` se descartaron con `git restore`. `L_Slice.umap` sin cambios.
-    `Tools/playtest/runs/best.json` sin cambios.
-  - Al llegar había un cambio sin commitear de otra tarea en `t/T-0039-luz-valores` (`docs/tasks/T-0036-arte-integracion.md`,
-    `estado: enviada → en-curso`). Quedó en `git stash` ("T-0036 estado en-curso (resto previo a T-0049)"), sin descartar.
-  - Locks: los 112 se soltaron al terminar (63 ya estaban tomados por esta misma cuenta desde una tarea anterior).
+  - **`01-escena.png` no muestra el encuadre de juego.** Se sacó dos veces con el mismo resultado: vista a lo largo del eje X, desde
+    atrás de un personaje, con mallas sin material en la primera. `tdc.ps1 shot` dispara `HighResShot` al arrancar, y desde T-0046 el
+    juego arranca en el menú: la toma sale antes de que exista la cámara lateral (y `HighResShot` no incluye la UI). No lo toqué porque
+    no es compatibilidad de API. Sugerencia: que `shot` use un flag que saltee el menú, o `Screenshot showui` con espera como `smoke`.
+  - **Cambio en `Tools/unreal/build_dressing.py` (compatibilidad de API, permitido):** en UE 5.8 la propiedad de Python es
+    `enable_volumetric_fog` (por `bEnableVolumetricFog`), no `volumetric_fog`. Ahora prueba la nueva y cae a la vieja. Con eso la niebla
+    volumétrica quedó **prendida** por primera vez (antes el `try` la salteaba con warning): puede cambiar el look respecto de lo que
+    venían viendo.
+  - En este entorno `tdc.ps1 python` no muestra las líneas `[TDC]` de los scripts por stdout (solo warnings); se verificó por
+    `Python script executed successfully`, el resumen `0 error(s)` y el log del editor.
+  - `Tools/playtest/runs/best.json` sin cambios (idéntico al de `Game\Saved\TDCRuns`, verificado con `cmp`).
+  - Contenido commiteado: salida de los 5 scripts (`Materials/`, `VFX/` con 4 flipbooks nuevos, `UI/`, `Dressing/` con `Props/` y
+    `SetProps/` nuevos, `Characters/`) y `L_Slice.umap`.
+  - Sigue en `git stash` el cambio ajeno de la corrida anterior ("T-0036 estado en-curso (resto previo a T-0049)"), sin descartar.
+  - No se commitearon zips ni `Tools/unreal/_diag_*`. Locks: los 121 soltados al terminar.

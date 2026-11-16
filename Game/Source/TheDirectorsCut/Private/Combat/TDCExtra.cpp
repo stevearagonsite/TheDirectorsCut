@@ -120,6 +120,8 @@ void ATDCExtra::FitPuppetScale()
 		{
 			Scale = PuppetScale * Ratio;
 			Puppet->SetRelativeScale3D(FVector(Scale));
+			// Los bounds salen del mesh (cm) por la escala del componente: sin esto medían ~200 m (culling y luz rotos).
+			Puppet->SetBoundsScale(PuppetScale / Scale);
 		}
 	}
 	UE_LOG(LogTDC, Log, TEXT("%s: pose %.1f cm, mesh %.1f cm -> escala del puppet %.3f"), *GetName(), PoseHeight, MeshHeight, Scale);
