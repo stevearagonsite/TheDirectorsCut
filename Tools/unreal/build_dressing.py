@@ -503,8 +503,9 @@ def kit_trim_floors(ledge=None):
     for actor in eas.get_all_level_actors():
         label = actor.get_actor_label()
         if label.startswith("Floor_") or label == "Exit_Ledge":
-            yaw = os.environ.get("TDC_KIT_YAW") or measured_yaw  # override manual; si no, lo medido en la malla
-            if yaw:
+            env_yaw = os.environ.get("TDC_KIT_YAW")  # override manual; si no, lo medido en la malla
+            yaw = float(env_yaw) if env_yaw else measured_yaw
+            if yaw is not None:  # ojo: 0.0 es un valor válido
                 try:
                     actor.set_editor_property("kit_trim_yaw", float(yaw))
                 except Exception as e:
