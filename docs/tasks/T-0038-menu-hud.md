@@ -3,7 +3,7 @@ id: T-0038
 titulo: Menú inicial + pausa + HUD con Canvas (T-0035 + T-0038 juntas)
 estado: enviada
 tipo: mixto
-rama: t/T-0038-hud
+rama: t/T-0040-camara
 creada: 2026-11-15
 ---
 
@@ -15,12 +15,14 @@ Steve: "no tengo menú inicial". Esta rama trae T-0035 (menú en Slate: Jugar, C
 mensajes de debug). Detalle de T-0035 en [`T-0035-menu.md`](T-0035-menu.md).
 
 ## Contexto
+- **T-0040 (incluida):** cámara de juego más alta y picada (SocketOffset Z 250, pitch −9) para ver las tapas de las plataformas y
+  sacar la franja negra de abajo. En `01-menu.png`/`02-abierto.png` describí si se ven las tapas. El autorun no cambia (brazo 900).
 - El menú no aparece con `-TDCAutoRun`, `-TDCPlaytest`, `-TDCRecord`, `-TDCReplay` ni `-TDCNoMenu`.
 - En PIE, Esc cierra PIE: la pausa se prueba en `-game` o en el exe.
 - Genera `Game\Saved\stevearagonsite_TheDirectorsCut_dev.zip` (no toca los zips de la jam).
 
 ## Pasos
-1. `git fetch` y `git checkout t/T-0038-hud` (verificá el sha). `.\Tools\scripts\tdc.ps1 stop`.
+1. `git fetch` y `git checkout t/T-0040-camara` (verificá el sha). `.\Tools\scripts\tdc.ps1 stop`.
 2. `.\Tools\scripts\tdc.ps1 build`. Si no compila, reportá `fallo` con `archivo:línea`.
 3. Locks de `Game/Content/UI` si ya existe (`git ls-files Game/Content/UI | ForEach-Object { git lfs lock $_ }`).
    `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\import_ui.py` (importa `/Game/UI` y `/Game/UI/HUD/T_UI_*`).
