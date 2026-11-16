@@ -1,7 +1,7 @@
 ---
 id: T-0032
 titulo: Playtest automático de los beats (-TDCPlaytest) y replay de la corrida
-estado: fallo
+estado: enviada
 tipo: test
 rama: t/T-0032-playtest
 creada: 2026-11-15
@@ -21,6 +21,7 @@ Guía: [`docs/pipeline/playtest.md`](../pipeline/playtest.md).
 - La rama trae main con mejora 5. Si T-0033 (mejora 6) ya se mergeó, da igual: el playtest no depende de las animaciones.
 
 ## Pasos
+0. **Reenvío:** 6a9ed7f corrige `TDCPlaytestRunner.cpp:309` (sobraba un `*Check.Name`) y se auditaron los demás Printf/UE_LOG.
 1. `git fetch` y `git checkout t/T-0032-playtest` (verificá el sha). `.\Tools\scripts\tdc.ps1 stop`.
 2. `.\Tools\scripts\tdc.ps1 build`. Si no compila, **pará** y reportá `fallo` con `archivo:línea`.
 3. `.\Tools\scripts\tdc.ps1 playtest -Task T-0032`. Pegá en el Reporte todas las líneas `[TDC-PLAYTEST]` (PASS/FAIL por paso y RESULT).
