@@ -1,7 +1,7 @@
 ---
 id: T-0055
 titulo: Pulido (T-0053) + cono de luz (T-0054) + ajustes de fantasmas y muros (T-0055) en una corrida
-estado: enviada
+estado: ok
 tipo: mixto
 rama: t/T-0055-ajustes
 creada: 2026-11-15
@@ -46,9 +46,36 @@ Una sola corrida sobre main con T-0052 (#44):
 ---
 
 ## Reporte (lo completa Windows)
-- estado:
-- sha:
-- resumen:
-- errores:
-- evidencia:
+- estado: ok
+- sha: el commit "T-0055: ..." de esta rama (va en el [TDC-REPORT])
+- resumen: compila (Result: Succeeded, 4 acciones). Los 4 scripts corrieron por commandlet sin `[TDC] ERROR` ni `libpng error`
+  (`make_materials.py` importó `T_LightCone` y creó `M_TDCLightCone`; `build_dressing.py`: parallax de 3 capas, 20 cards, L_Slice
+  guardado; `apply_toon.py` ok). Playtest `RESULT PASS 20/20` (meta en 16.7 s). Autorun: 24 capturas.
+  - **Cono de luz:** bien orientado, sin `CONE_FLIP_V` (quedó en su valor). En `playtest/TDCPlaytest_02_luces.png` la parte estrecha
+    sale de la lente del reflector y se abre hacia abajo hasta el plano de juego; no lava al director (`04_luces`). Es bastante
+    opaco: en `02_luces` tapa buena parte del skyline detrás.
+  - **W1 ausente:** en `playtest/TDCPlaytest_03_luces.png` (L2 apagado) se ve a la derecha como un panel muy tenue con borde
+    apenas marcado; ya no es un panel gris sólido, pero el relleno todavía se percibe (más "vidrio" que "solo contorno").
+  - **Lluvia y vapor:** translúcidos (rayas blancas y pluma de vapor que dejan ver el fondo) en playtest y autorun.
+  - **Muros de ladrillo:** no tapan el skyline; en `01-escena.png` el muro queda a la derecha y se ven las torres por arriba.
+  - **Adoquín:** no se ve en `01-escena.png` (el piso visible es la losa clara del escenario; abajo hay una franja blanca).
+  - **Director entero y HUD legible** en `01-escena`, en las 11 capturas del playtest y en casi todo el autorun (en
+    `TDCAutoRun_13` y `_23` el piso de primer plano le tapa los pies; en `_05`, `_11`, `_16`, `_21` la cámara mira la losa
+    y el director no aparece).
+  - **VFX pintados:** `autorun/TDCAutoRun_03.png` (impacto de claquetazo: aro dorado con esquirlas) y
+    `autorun/TDCAutoRun_08.png` (derrota: "¡Corten! Extra fuera de la toma", aro/disco blanco). Aturdido: el playtest lo
+    valida (`claquetazo_resistente: aturdido=1`) pero no encontré una captura donde se distinga el sprite sobre el extra.
+- errores: ninguno. Warnings de `build_dressing.py`: 13, todos "No smoothing group information" de los FBX y un
+  "Allow CPU Access" de `SM_Ledge_Mid` (los mismos de corridas anteriores).
+- evidencia: `docs/evidence/T-0055/` (`01-escena.png`, `playtest/` con 11 capturas + `playtest.log`, `autorun/` con 24 capturas).
 - notas / preguntas:
+  - `import_vfx.py` importó **10 sheets, no 15**: en `Art/Export/VFX/*.png` de esta rama hay 10 (1 + los 9 "restantes").
+    Si tenían que ser 15, faltan 5 PNG en el repo.
+  - Limpieza de la T-0053 cancelada: no había locks LFS. Los cambios sin commitear de `Game/Content` (51 modificados + assets
+    sin trackear del kit/fachadas) no los descarté: quedaron en `git stash` de esta máquina ("T-0053 cancelada: restos sin
+    commitear"). Si confirman que no sirven, lo borro.
+  - Assets nuevos: `M_TDCLightCone`, `T_LightCone`, `MI_Card_anim_lluvia_60_30`, `MI_Card_anim_vapor_100_55`,
+    `M_Card_mid_pared_ladrillo_50`, `T_Card_mid_pared_ladrillo_50`. Quedaron huérfanos de la versión anterior (no los borré):
+    `MI_Card_anim_lluvia_80`, `MI_Card_anim_vapor_100`, `M_/T_Card_mid_pared_ladrillo_65`.
+  - Los locks los tomé con globs por carpeta (142 en total) porque el `ForEach-Object` del paso 3 no corre en el worker sin interfaz.
+  - No toqué C++, `Tools/` ni `CONE_FLIP_V`. No empaqueté.
