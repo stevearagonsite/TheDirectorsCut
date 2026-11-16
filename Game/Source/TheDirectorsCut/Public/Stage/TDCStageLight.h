@@ -76,7 +76,7 @@ protected:
 	float PlayPlaneZ = 0.f;
 
 	UPROPERTY(EditAnywhere, Category = "TDC|Light", meta = (ClampMin = "0"))
-	float ConeIntensity = 1.8f;
+	float ConeIntensity = 1.0f; // T-0055: con 1.8 el haz tapaba el skyline detrás
 
 private:
 	void ApplyVisuals();
