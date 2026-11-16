@@ -159,13 +159,13 @@ void ATDCHUD::DrawControls(UTDCHudMessages& Hud, float Scale)
 		{ TEXT("Q"), TEXT("mantener: rebobinar lo celeste"), IconRewind, Cyan },
 	};
 	const float Pad = 14.f * Scale;
-	const float RowH = 38.f * Scale;
-	const float IconS = 32.f * Scale;
-	const float KeyW = 48.f * Scale;
-	const float TextScale = 0.95f * Scale;
+	const float RowH = 52.f * Scale;
+	const float IconS = 44.f * Scale;
+	const float KeyW = 64.f * Scale;
+	const float TextScale = 1.45f * Scale; // a 720p el medium font quedaba ilegible (T-0049)
 	const float X0 = 24.f * Scale;
 	const float Y0 = 24.f * Scale;
-	const float W = 430.f * Scale;
+	const float W = 600.f * Scale;
 	const float H = Pad * 2.f + RowH * UE_ARRAY_COUNT(Rows) + 30.f * Scale;
 	DrawPlate(X0, Y0, W, H, Plate);
 	DrawPlate(X0, Y0, 4.f * Scale, H, Yellow * FLinearColor(1.f, 1.f, 1.f, 0.9f)); // filete de "claqueta"
@@ -256,7 +256,7 @@ void ATDCHUD::DrawMessages(UTDCHudMessages& Hud, float Scale)
 		}
 
 		const bool bPrompt = Msg.Slot == ETDCHudSlot::Prompt;
-		const float S = (bPrompt ? 1.15f : 1.0f) * Scale;
+		const float S = (bPrompt ? 1.7f : 1.5f) * Scale;
 		const FVector2D TS = TextSize(Msg.Text, Medium, S);
 		const float PadX = 18.f * Scale;
 		const float PadY = 8.f * Scale;

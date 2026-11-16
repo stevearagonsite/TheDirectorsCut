@@ -219,7 +219,7 @@ def build_parallax(cube):
 CARDS_DIR = os.path.join(SRC, "Cards")
 
 
-def card_flipbook_material(tex, name, fb, darken):
+def card_flipbook_material(tex, name, fb, darken, opacity=1.0):
     """MIC de M_TDCFlipbook (import_vfx.py) con la sheet en loop."""
     parent_path = "/Game/VFX/M_TDCFlipbook"
     if not eal.does_asset_exist(parent_path):
@@ -233,7 +233,7 @@ def card_flipbook_material(tex, name, fb, darken):
     mel.set_material_instance_parent(mic, eal.load_asset(parent_path))
     mel.set_material_instance_texture_parameter_value(mic, "Sheet", tex)
     for k, v in (("Cols", fb["cols"]), ("Rows", fb["rows"]), ("Frames", fb["frames"]), ("FPS", fb.get("fps", 30)),
-                 ("Loop", 1.0), ("StartTime", 0.0), ("Intensity", 1.5 * darken)):
+                 ("Loop", 1.0), ("StartTime", 0.0), ("Intensity", 1.5 * darken), ("Opacity", opacity)):
         mel.set_material_instance_scalar_parameter_value(mic, k, float(v))
     eal.save_asset(path)
     return mic
@@ -288,7 +288,8 @@ def build_cards(cube):
         base = "Card_" + os.path.splitext(os.path.basename(c["png"]))[0]
         darken = float(c.get("darken", 1.0))
         fb = c.get("flipbook")
-        key = (base, darken, bool(fb))
+        opacity = float(c.get("opacity", 1.0))
+        key = (base, darken, bool(fb), opacity)
         if key not in mats:
             if fb:
                 tex = import_file(png, f"T_{base}", folder=f"{DEST}/Cards")
@@ -296,7 +297,7 @@ def build_cards(cube):
                     # lluvia y vapor ahora son pintados (T-0048): bilinear, sin escalones al agrandarse
                     tex.set_editor_property("filter", unreal.TextureFilter.TF_BILINEAR)
                     tex.set_editor_property("mip_gen_settings", unreal.TextureMipGenSettings.TMGS_NO_MIPMAPS)
-                mats[key] = card_flipbook_material(tex, f"{base}_{int(darken*100)}", fb, darken) if tex else None
+                mats[key] = card_flipbook_material(tex, f"{base}_{int(darken*100)}_{int(opacity*100)}", fb, darken, opacity) if tex else None
             else:
                 mats[key] = parallax_material(png, f"{base}_{int(darken*100)}", bool(c.get("masked", True)), darken, 1.0)
         mat = mats[key]
