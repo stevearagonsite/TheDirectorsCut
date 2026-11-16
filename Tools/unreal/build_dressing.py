@@ -725,6 +725,34 @@ def build():
     if not les.save_current_level():
         fail(f"No se pudo guardar {MAP_PATH} (¿read-only por LFS? git lfs lock Game/Content/Maps/L_Slice.umap)")
     log("ambientación noir aplicada y L_Slice guardado.")
+    prune_orphan_cards()
+
+
+def prune_orphan_cards():
+    """Borra assets de cards (MI_/M_/T_Card_*) que ya no referencia nadie: al cambiar darken u opacidad el nombre del
+    material cambia y el viejo quedaba huérfano. Repite hasta que no quede nada (borrar un MI libera su textura).
+    Si un borrado falla (lock LFS), lo informa y sigue."""
+    folder = f"{DEST}/Cards"
+    if not eal.does_directory_exist(folder):
+        return
+    removed = 0
+    for _ in range(3):
+        changed = False
+        for path in eal.list_assets(folder, recursive=False, include_folder=False):
+            name = path.split("/")[-1].split(".")[0]
+            if not name.startswith(("MI_Card_", "M_Card_", "T_Card_")):
+                continue
+            pkg = path.split(".")[0]
+            if eal.find_package_referencers_for_asset(pkg, load_assets_to_confirm=False):
+                continue
+            if eal.delete_asset(pkg):
+                removed += 1
+                changed = True
+            else:
+                unreal.log_warning(f"[TDC] no pude borrar la card huérfana {name} (¿falta git lfs lock?)")
+        if not changed:
+            break
+    log(f"cards huérfanas borradas: {removed}")
 
 
 build()
