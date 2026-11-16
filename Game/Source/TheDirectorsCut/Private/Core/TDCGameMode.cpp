@@ -1,9 +1,13 @@
 #include "Core/TDCGameMode.h"
 #include "Character/TDCCharacter.h"
+#include "UI/TDCHUD.h"
+#include "Core/TDCPlayerController.h"
 
 ATDCGameMode::ATDCGameMode()
 {
 	DefaultPawnClass = ATDCCharacter::StaticClass();
+	HUDClass = ATDCHUD::StaticClass();
+	PlayerControllerClass = ATDCPlayerController::StaticClass(); // menú inicial y pausa (T-0035)
 }
 
 UClass* ATDCGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)

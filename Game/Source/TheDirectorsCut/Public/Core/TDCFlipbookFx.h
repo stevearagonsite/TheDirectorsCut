@@ -30,6 +30,11 @@ namespace Fx
 	inline const FTDCFlipbook ScriptedBounce { TEXT("scripted_bounce"),   5, 5, 25, 30.f, false, 128.f / 112.f };
 	inline const FTDCFlipbook LightToggle    { TEXT("light_toggle"),      7, 6, 37, 30.f, false, 1.f };
 	inline const FTDCFlipbook Rewind         { TEXT("rewind"),            7, 8, 54, 30.f, true,  96.f / 72.f };
+	// Transiciones de piezas de luz/oscuridad (T-0036): 136x60 por frame; la pieza ocupa 112x10 px centrada en (68,40).
+	inline const FTDCFlipbook LightPieceAppear { TEXT("light_piece_appear"), 3, 4, 11, 25.f, false, 136.f / 60.f };
+	inline const FTDCFlipbook LightPieceVanish { TEXT("light_piece_vanish"), 3, 4, 11, 25.f, false, 136.f / 60.f };
+	inline const FTDCFlipbook DarkPieceAppear  { TEXT("dark_piece_appear"),  3, 4, 11, 25.f, false, 136.f / 60.f };
+	inline const FTDCFlipbook DarkPieceVanish  { TEXT("dark_piece_vanish"),  3, 4, 11, 25.f, false, 136.f / 60.f };
 }
 }
 

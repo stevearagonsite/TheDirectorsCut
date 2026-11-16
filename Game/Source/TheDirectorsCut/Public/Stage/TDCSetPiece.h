@@ -37,6 +37,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|SetPiece")
 	FLinearColor ColorOverride = FLinearColor(0.f, 0.f, 0.f, 0.f);
 
+	/** Textura de patrón forzada (/Game/Materials/Textures/<nombre>), también con ColorOverride. None = la automática. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|SetPiece")
+	FName PatternOverride;
+
+	/** Intensidad del patrón forzado (0..1). */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|SetPiece", meta = (ClampMin = "0", ClampMax = "1"))
+	float PatternOverrideStrength = 1.f;
+
 	UFUNCTION(BlueprintCallable, Category = "TDC|SetPiece")
 	void Release();
 
@@ -68,6 +76,10 @@ private:
 	void HandlePresenceChanged(bool bNowPresent);
 
 	bool bLightMaterial = false;
+	/** VFX de aparición/desaparición (T-0036). Falso hasta terminar BeginPlay: el primer Evaluate no dispara efecto. */
+	void SpawnPresenceFx(bool bNowPresent);
+	bool bPresenceFxReady = false;
+	bool bLastPresent = true;
 	/** Si cambia la luz, despertar la física: lo que estaba apoyado en una pieza que desapareció tiene que caer. */
 	void OnLightingChanged();
 

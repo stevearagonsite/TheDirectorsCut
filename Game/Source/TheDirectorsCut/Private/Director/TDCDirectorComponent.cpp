@@ -4,6 +4,7 @@
 #include "Combat/TDCExtra.h"
 #include "Core/TDCFlipbookFx.h"
 #include "Core/TDCVisuals.h"
+#include "UI/TDCHUD.h"
 #include "Components/AudioComponent.h"
 #include "Engine/OverlapResult.h"
 #include "CollisionShape.h"
@@ -11,6 +12,30 @@
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "Kismet/GameplayStatics.h"
+#include "Containers/Ticker.h"
+
+namespace
+{
+	/** Hit-stop (game feel): congela casi todo unos ms al conectar el golpe. Se restaura en tiempo real (core ticker). */
+	void HitStop(UWorld* World, float Seconds)
+	{
+		if (!World || Seconds <= 0.f || World->GetNetMode() != NM_Standalone)
+		{
+			return;
+		}
+		UGameplayStatics::SetGlobalTimeDilation(World, 0.05f);
+		TWeakObjectPtr<UWorld> WeakWorld(World);
+		FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([WeakWorld](float)
+		{
+			if (UWorld* W = WeakWorld.Get())
+			{
+				UGameplayStatics::SetGlobalTimeDilation(W, 1.f);
+			}
+			return false; // una sola vez
+		}), Seconds);
+	}
+}
 
 UTDCDirectorComponent::UTDCDirectorComponent()
 {
@@ -76,10 +101,7 @@ void UTDCDirectorComponent::BeginRewind()
 	{
 		Stage->SetTimeMode(ETDCTimeMode::Rewind);
 	}
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(/*Key*/ 7001, 600.f, FColor::Cyan, TEXT("<< REBOBINANDO"));
-	}
+	TDC::HudMessage(this, 7001, TEXT("<<  REBOBINANDO"), FLinearColor(0.35f, 0.85f, 1.f), -1.f, ETDCHudSlot::Banner);
 }
 
 void UTDCDirectorComponent::EndRewind()
@@ -102,10 +124,7 @@ void UTDCDirectorComponent::EndRewind()
 	{
 		Stage->SetTimeMode(ETDCTimeMode::Play);
 	}
-	if (GEngine)
-	{
-		GEngine->RemoveOnScreenDebugMessage(7001);
-	}
+	TDC::HudClear(this, 7001);
 }
 
 bool UTDCDirectorComponent::Clap()
@@ -138,6 +157,7 @@ bool UTDCDirectorComponent::Clap()
 	ATDCFlipbookFx::Spawn(World, TDC::Fx::ClapImpact, Center + FVector(0.f, 60.f, 10.f), 170.f, Facing < 0.f);
 
 	FString Feedback = TEXT("¡Claquetazo!");
+	float StopSeconds = 0.f; // el resultado más fuerte del golpe decide el hit-stop
 	TSet<AActor*> Hit;
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
@@ -149,18 +169,23 @@ bool UTDCDirectorComponent::Clap()
 		Hit.Add(Extra);
 		switch (Extra->ReceiveClap(Owner->GetActorLocation()))
 		{
-		case ETDCClapResult::Defeated: Feedback = TEXT("¡Corten! Extra fuera de la toma"); break;
-		case ETDCClapResult::Stunned:  Feedback = TEXT("¡Claquetazo! (aturdido)"); break;
+		case ETDCClapResult::Defeated:
+			Feedback = TEXT("¡Corten! Extra fuera de la toma");
+			StopSeconds = FMath::Max(StopSeconds, 0.09f);
+			break;
+		case ETDCClapResult::Stunned:
+			Feedback = TEXT("¡Claquetazo! (aturdido)");
+			StopSeconds = FMath::Max(StopSeconds, 0.06f);
+			break;
 		default:
+			StopSeconds = FMath::Max(StopSeconds, 0.04f);
 			Feedback = TEXT("Rebota: es un extra de guion. Dirigí la escena.");
 			TDC::PlaySfx(this, TEXT("sfx_bounce"), Extra->GetActorLocation());
 			ATDCFlipbookFx::Spawn(World, TDC::Fx::ScriptedBounce, Extra->GetActorLocation() + FVector(-Facing * 30.f, 70.f, 20.f), 200.f, Facing < 0.f);
 			break;
 		}
 	}
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(7002, 1.2f, FColor::Yellow, Feedback);
-	}
+	HitStop(World, StopSeconds);
+	TDC::HudMessage(this, 7002, Feedback, FLinearColor(1.f, 0.9f, 0.6f), 1.2f, ETDCHudSlot::Toast);
 	return true;
 }

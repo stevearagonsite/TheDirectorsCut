@@ -1,0 +1,38 @@
+VFX pintados (reemplazo de los sheets pixelfx). Generados 2026-11-15.
+Fuente: src/vfx_pintados.py (python3, numpy + PIL). Re-render: python3 src/vfx_pintados.py .   Preview: python3 src/preview.py <dir con originales>
+
+Método
+- Lluvia: 261 estrías en 3 capas de profundidad (lejos finas/tenues/lentas, cerca más largas/opacas/rápidas), trazos antialiasados
+  con supersampling 4x, cola que se desvanece (blur de movimiento), azul grisáceo, ~10° de inclinación como el key art,
+  alpha pico 0.16-0.42. Tilea en X; fade suave arriba/abajo para que el borde de la card no se vea.
+  Loop: cada gota recorre una columna virtual un número entero de veces en 60 frames.
+- Vapor: bocanadas gaussianas que nacen cada 3 frames en la rejilla (pivote 64,252), suben, se abren y se disipan,
+  erosionadas por ruido fBm periódico con domain warp (volutas) que se desplaza exactamente un período por loop.
+  Blanco azulado con sombreado suave. Loop: parámetros de bocanada periódicos (30 por ciclo).
+- Claquetazo: destello blanco cálido, halo ámbar, onda de choque elíptica, 12 rayos de pincel afinados con textura de
+  cerdas que se abren y se desvanecen (el largo apunta a la derecha, como el original), chispas suaves con gravedad y un
+  arco cian tenue en los primeros frames (guiño a la estela del key art). Frame 9 vacío (one-shot), igual que el original.
+
+Formato (reemplazo directo: mismos nombres, grilla, frames y fps)
+- anim_lluvia.png 2048x2048: 8x8, 60 frames, 30 fps, loop. Celda 256x256 (igual).
+- anim_vapor.png 1792x1792: 14x7, 90 frames, 30 fps, loop. Celda 128x256 (igual).
+- claquetazo_impact.png 768x640 + .json: 3x4, 10 frames, 30 fps, sin loop. Celda 256x160 = 2x del original (128x80),
+  misma relación de aspecto (1.6), así que TDCFlipbookFx.h (Aspect 128/80) e import_vfx.py no cambian.
+  Punto de impacto px (104,88) = UV (0.41,0.55), como antes; pivote JSON (104,128).
+  OJO: el pedido decía clap_impact, pero el archivo real del repo es claquetazo_impact; se respetó el nombre real.
+- RGBA straight (no premultiplicado); los píxeles transparentes llevan el color del efecto para que el filtrado no haga halo oscuro.
+
+Verificación de loop (alpha, dif. media 0-1): ver src/loop_check.txt
+- lluvia: último->primero 0.0063 vs 0.0064 entre frames consecutivos (ratio 0.97); frame 60 == frame 0 exacto.
+- vapor:  último->primero 0.0104 vs 0.0098 (ratio 1.06); frame 90 == frame 0 exacto.
+  Ratio ~1 = el salto del loop es igual a un paso normal: no hay salto visible.
+
+Recomendación (no aplicada, toca scripts del repo): import_vfx.py y build_dressing.py fuerzan TF_NEAREST y sin mips.
+Para estos sheets conviene filtro por defecto (bilinear) y compresión normal/BC7; con Nearest el pintado se ve escalonado
+al magnificar. La lluvia, además, se puede reforzar con Niagara como sugiere la auditoría; este sheet sirve igual como card.
+
+Calidad
+- Lluvia 4/5: fina, con profundidad y sin píxeles; densidad conservadora (se puede subir alpha si queda tenue en juego).
+- Vapor 4/5: volutas suaves y disipación creíble; el cuerpo central es algo uniforme en algunos frames.
+- Claquetazo 3.5/5: legible y pintado; los rayos son más "starburst" ilustrado que pincelada suelta. Si se quiere el arco
+  cian del key art como protagonista, conviene una segunda pasada.

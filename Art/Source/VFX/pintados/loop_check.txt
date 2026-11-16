@@ -1,0 +1,2 @@
+lluvia: dif. media entre frames consecutivos 0.0064 | último->primero 0.0063 (ratio 0.97) | frame N vs frame 0 (máx) 0.0000
+vapor: dif. media entre frames consecutivos 0.0098 | último->primero 0.0104 (ratio 1.06) | frame N vs frame 0 (máx) 0.0000

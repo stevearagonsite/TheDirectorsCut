@@ -6,6 +6,7 @@
 #include "Stage/TDCLightReactiveComponent.h"
 #include "TheDirectorsCut.h"
 #include "Components/CapsuleComponent.h"
+#include "TimerManager.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
 #include "Animation/AnimSequence.h"
@@ -87,6 +88,11 @@ void ATDCExtra::LoadPuppet()
 	if (PuppetIdle)
 	{
 		Puppet->PlayAnimation(PuppetIdle, true);
+		// Evaluar la pose ya (sincrónico: sin tick function) y escalar en el mismo frame: shot/smoke capturan antes del
+		// tick 3 y ahí el extra medía 2 cm. La medición del tick 3 queda como confirmación (es idempotente).
+		Puppet->TickAnimation(0.f, false);
+		Puppet->RefreshBoneTransforms();
+		FitPuppetScale();
 	}
 	UpdatePuppet();
 }
@@ -114,6 +120,8 @@ void ATDCExtra::FitPuppetScale()
 		{
 			Scale = PuppetScale * Ratio;
 			Puppet->SetRelativeScale3D(FVector(Scale));
+			// Los bounds salen del mesh (cm) por la escala del componente: sin esto medían ~200 m (culling y luz rotos).
+			Puppet->SetBoundsScale(PuppetScale / Scale);
 		}
 	}
 	UE_LOG(LogTDC, Log, TEXT("%s: pose %.1f cm, mesh %.1f cm -> escala del puppet %.3f"), *GetName(), PoseHeight, MeshHeight, Scale);
@@ -212,6 +220,8 @@ void ATDCExtra::BeginPlay()
 	Capsule->OnComponentBeginOverlap.AddDynamic(this, &ATDCExtra::OnTouch);
 	LightReactive->OnPresenceChanged.AddDynamic(this, &ATDCExtra::OnPresenceChanged);
 	ApplyColor();
+	// Al tick siguiente ya hicieron BeginPlay todas las luces: recién ahí un cambio de presencia es "dirigir la escena".
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [this]() { bPresenceArmed = true; }));
 }
 
 void ATDCExtra::Tick(float DeltaSeconds)
@@ -286,6 +296,10 @@ ETDCClapResult ATDCExtra::ReceiveClap(const FVector& FromLocation)
 void ATDCExtra::OnPresenceChanged(bool bPresent)
 {
 	// Dirigir la escena: si la luz lo saca de la toma, el extra queda fuera para siempre.
+	if (!bPresenceArmed)
+	{
+		return; // evaluación inicial (orden de registro de las luces): no es una acción del jugador
+	}
 	if (!bPresent && Presence != ETDCLightPresence::Always)
 	{
 		Defeat();

@@ -50,8 +50,25 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "TDC|Light")
 	TObjectPtr<UPointLightComponent> Light;
 
+	/** Carcasa del reflector colgante (T-0036): /Game/Dressing/Props/SM_StageLight_Hanging si existe; si no, solo la esfera. */
+	UPROPERTY(VisibleAnywhere, Category = "TDC|Light")
+	TObjectPtr<UStaticMeshComponent> Housing;
+
+	/** Offset de la carcasa respecto del bulbo, en cm de mundo. El pivot del modelo está abajo (90 cm de alto): cuelga hacia arriba. */
+	UPROPERTY(EditAnywhere, Category = "TDC|Light")
+	FVector HousingOffset = FVector(0.f, 0.f, -20.f);
+
+	/** Los FBX de Rodin miran a -Y; 180 los gira hacia la cámara (+Y). Ajustar si la lente queda de espaldas. */
+	UPROPERTY(EditAnywhere, Category = "TDC|Light")
+	FRotator HousingRotation = FRotator(0.f, 180.f, 0.f);
+
+	/** Con carcasa, el bulbo emisivo se achica para quedar en la lente. */
+	UPROPERTY(EditAnywhere, Category = "TDC|Light", meta = (ClampMin = "0.05"))
+	float HangingBulbScale = 0.18f;
+
 private:
 	void ApplyVisuals();
+	void SetupHousing();
 
 	UPROPERTY(Transient)
 	TObjectPtr<UMaterialInstanceDynamic> BulbMaterial;

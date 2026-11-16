@@ -76,6 +76,8 @@ public:
 
 	/** Lo llama el personaje con cada acción (jugador, replay o bot): la graba y programa las verificaciones. */
 	void NotifyAction(ETDCPlayAction Action, float Value, const FVector& Location);
+	/** Antes del golpe: junta los extras vivos al alcance (después del golpe el común ya está derrotado). */
+	void NotifyPreClap(const FVector& Location);
 
 	virtual void Tick(float DeltaSeconds) override;
 
@@ -139,6 +141,9 @@ private:
 	TArray<FTDCPendingCheck> Pending;
 	TArray<FString> ShotQueue;
 	double NextShotAt = 0.0;
+	/** Después de un teleport, esperar a que la cámara (con lag) se asiente antes de capturar. */
+	double ShotHoldUntil = 0.0;
+	TArray<TWeakObjectPtr<ATDCExtra>> PreClapTargets;
 	int32 ShotIndex = 0;
 
 	// Corrida

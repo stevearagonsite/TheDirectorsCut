@@ -46,7 +46,10 @@ void UTDCLightReactiveComponent::Evaluate()
 		Stage->GatherLightSamples(Samples);
 	}
 	// bNonColliding=true: las cajas cuentan aunque la pieza esté sin colisión (ausente).
-	const FBox Bounds = OwnerActor->GetComponentsBoundingBox(/*bNonColliding*/ true);
+	// Bounds del root (cubo en SetPiece, cápsula en el extra): los componentes visuales (puppet animado con escala
+	// compensada, cornisas del kit) inflaban la caja y una pieza "solo a oscuras" nunca podía estar presente (T-0049).
+	const USceneComponent* Root = OwnerActor->GetRootComponent();
+	const FBox Bounds = Root ? Root->Bounds.GetBox() : OwnerActor->GetComponentsBoundingBox(/*bNonColliding*/ true);
 	ApplyPresence(TDC::IsPresent(Presence, TDC::IsLit(Bounds, Samples)));
 }
 
