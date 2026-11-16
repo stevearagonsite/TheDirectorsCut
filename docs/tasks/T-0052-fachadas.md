@@ -1,7 +1,7 @@
 ---
 id: T-0052
 titulo: Kit de plataformas, director legible y fachadas 2D (T-0050 + T-0051 + T-0052)
-estado: enviada
+estado: ok
 tipo: mixto
 rama: t/T-0052-fachadas
 creada: 2026-11-15
@@ -44,9 +44,47 @@ Sobre main con T-0049 (integración):
 ---
 
 ## Reporte (lo completa Windows)
-- estado:
-- sha:
+- estado: ok
+- sha: 97046cf (contenido + evidencia; el commit siguiente solo agrega este Reporte)
 - resumen:
-- errores:
-- evidencia:
-- notas / preguntas:
+  - **Build OK** (`Result: Succeeded`, 4 acciones, sin errores ni `warning C`).
+  - **Locks**: `L_Slice.umap` + 120 assets de `Materials`, `Dressing` y `Characters` (121), soltados al terminar.
+  - **Scripts sin `[TDC] ERROR`** (commandlet, sin `-InEditor`): `make_materials.py` → `build_dressing.py` → `apply_toon.py`.
+    Líneas pedidas de `build_dressing.py`:
+    ```
+    [TDC] kit SM_Ledge_Mid: escala 1.0, rotación (0.0, 0.0, 0.0), medidas (268, 121, 80) (error 0.00)
+    [TDC] cornisa: voladizo +Y 10 cm, -Y 12 cm -> KitTrimYaw 180
+    [TDC] cornisas del kit en 5 piezas fijas
+    [TDC] kit SM_Catwalk_Mid: escala 1.0, rotación (0.0, 0.0, 0.0), medidas (483, 103, 160) (error 0.01)
+    [TDC] cards 2D colocadas: 20
+    ```
+    `apply_toon.py`: `toon aplicado a 4/4 personajes`.
+  - **Captura `01-escena.png`** con cámara de juego (`-TDCNoMenu` funciona: sale la vista lateral con el HUD de controles).
+  - **Playtest: `[TDC-PLAYTEST] RESULT PASS 20/20`**, meta en 16.7 s (log completo en `docs/evidence/T-0052/playtest/playtest.log`).
+  - Assets nuevos: `Game/Content/Dressing/Kit/` (SM/M/T de `SM_Ledge_Mid` y `SM_Catwalk_Mid`) y las cards
+    `mid_fachada_cine_70` y `mid_pared_ladrillo_65` en `Dressing/Parallax/`.
+  - Paso 8: juego abierto con `tdc.ps1 play`.
+- errores: ninguno. Warnings no bloqueantes de `build_dressing.py`:
+  - Interchange `No smoothing group information was found for this mesh 'model' in the FBX file` en los FBX de Dressing
+    (Spotlight, Crates, FilmCamera, StageLight_Hanging, Ledge_Mid, Catwalk_Mid, DirectorChair, BoomMic), igual que en T-0049.
+  - `Calling GetSectionFromStaticMesh on /Game/Dressing/Kit/SM_Ledge_Mid but 'Allow CPU Access' is not enabled. This is required
+    for converting StaticMesh to ProceduralMeshComponent in cooked builds.` Sale justo antes de la línea `cornisa: voladizo …`
+    (medición en editor); en esta tarea no se empaqueta.
+- evidencia: `docs/evidence/T-0052/01-escena.png`, `docs/evidence/T-0052/playtest/` (11 capturas + `playtest.log`).
+- notas / preguntas (lo que se ve en `01-escena.png`):
+  - **Cornisa: sí.** Mira a la cámara, corre por todo el borde frontal de la tarima de inicio y queda al ras de la tapa
+    (la tapa clara termina justo donde arranca la moldura, sin escalón ni hueco). Se ven las juntas entre módulos.
+  - **Fachadas: sí.** El cine art déco queda detrás de la marquesina "THE DIRECTOR'S CUT" (marquesina arriba de las puertas, sin
+    tapar a los personajes). El ladrillo se ve detrás de los afiches en `playtest/TDCPlaytest_02_luces.png` y `_09_luces.png`
+    (pared con caños, afiches rotos, ventana con balcón y farol). En `01-escena.png` solo entra el borde de un afiche a la derecha.
+  - **Director: mejora parcial.** Con la cámara a 1900 mide ~95 px de 720 (≈13 % del alto) y se separa del fondo azul por
+    valor (abrigo gris claro contra edificios oscuros). El rim cálido, en cambio, casi no se nota en esta toma: el borde se lee
+    claro/neutro, no anaranjado. El extra rojo se lee más que el director.
+  - **Calle de adoquín: no la distingo.** Abajo de todo queda una franja clara de ~8 px en el borde inferior del cuadro; no se
+    reconoce textura de adoquín. Si tiene que verse, hay que bajar el encuadre o subir la calle.
+  - Observación: a la derecha de `01-escena.png` hay un bloque gris oscuro grande y liso (≈400×350 px) delante del skyline, con un
+    reflector apenas visible encima; parece una pieza a oscuras sin textura y es lo que más desentona de la toma.
+  - Observación: en las capturas del playtest (`_02`, `_09`) el director sale cortado por el borde inferior del cuadro. Son tomas
+    justo después de un teleport del bot, así que puede ser el retardo de la cámara; no lo verifiqué.
+  - Sin cambios en `Tools/` ni en C++. Las dos primeras corridas de `shot` fallaron por mi invocación (Git Bash convirtió
+    `/Game/Maps/L_Slice` en una ruta de Windows); desde PowerShell salió a la primera. No es un problema del script.
