@@ -120,6 +120,20 @@ def world_aligned_uv(mat, tile):
     return uv
 
 
+def up_mask(mat):
+    """1 en techos y pisos (normal vertical), 0 en frentes."""
+    nrm = mel.create_material_expression(mat, unreal.MaterialExpressionVertexNormalWS, -1500, 300)
+    nz = mel.create_material_expression(mat, unreal.MaterialExpressionComponentMask, -1300, 300)
+    for ch, on in (("r", False), ("g", False), ("b", True), ("a", False)):
+        nz.set_editor_property(ch, on)
+    mel.connect_material_expressions(nrm, "", nz, "")
+    absz = mel.create_material_expression(mat, unreal.MaterialExpressionAbs, -1150, 300)
+    mel.connect_material_expressions(nz, "", absz, "")
+    up = mel.create_material_expression(mat, unreal.MaterialExpressionRound, -1050, 300)
+    mel.connect_material_expressions(absz, "", up, "")
+    return up
+
+
 def build():
     require_writable(PATH, ".uasset")
     default_pattern = import_patterns()
@@ -142,14 +156,43 @@ def build():
         strength.set_editor_property("default_value", 0.0)
         white = mel.create_material_expression(mat, unreal.MaterialExpressionConstant, -600, -180)
         white.set_editor_property("r", 1.0)
+        # T-0036: el techo (proyección XY, lo que la cámara ve desde arriba) salía casi negro: tablones carbón y
+        # poca luz cenital. En techos el patrón pesa menos (TopPatternScale) y el color se aclara (TopBoost).
+        up = up_mask(mat)
+        top_scale = mel.create_material_expression(mat, unreal.MaterialExpressionScalarParameter, -900, 250)
+        top_scale.set_editor_property("parameter_name", "TopPatternScale")
+        top_scale.set_editor_property("default_value", 0.35)
+        top_lerp = mel.create_material_expression(mat, unreal.MaterialExpressionLinearInterpolate, -750, 200)
+        mel.connect_material_expressions(white, "", top_lerp, "A")
+        mel.connect_material_expressions(top_scale, "", top_lerp, "B")
+        mel.connect_material_expressions(up, "", top_lerp, "Alpha")
+        eff_strength = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -550, 100)
+        mel.connect_material_expressions(strength, "", eff_strength, "A")
+        mel.connect_material_expressions(top_lerp, "", eff_strength, "B")
         mix = mel.create_material_expression(mat, unreal.MaterialExpressionLinearInterpolate, -400, -200)
         mel.connect_material_expressions(white, "", mix, "A")
         mel.connect_material_expressions(pattern, "RGB", mix, "B")
-        mel.connect_material_expressions(strength, "", mix, "Alpha")
+        mel.connect_material_expressions(eff_strength, "", mix, "Alpha")
         tinted = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -250, 0)
         mel.connect_material_expressions(color, "", tinted, "A")
         mel.connect_material_expressions(mix, "", tinted, "B")
-        mel.connect_material_property(tinted, "", unreal.MaterialProperty.MP_BASE_COLOR)
+        # TopBoost solo en piezas con patrón (alpha = techo * PatternStrength): lo liso (bulbo, greybox) no cambia.
+        top_boost = mel.create_material_expression(mat, unreal.MaterialExpressionScalarParameter, -400, 350)
+        top_boost.set_editor_property("parameter_name", "TopBoost")
+        top_boost.set_editor_property("default_value", 1.8)
+        boost_alpha = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -400, 250)
+        mel.connect_material_expressions(up, "", boost_alpha, "A")
+        mel.connect_material_expressions(strength, "", boost_alpha, "B")
+        boost = mel.create_material_expression(mat, unreal.MaterialExpressionLinearInterpolate, -250, 250)
+        mel.connect_material_expressions(white, "", boost, "A")
+        mel.connect_material_expressions(top_boost, "", boost, "B")
+        mel.connect_material_expressions(boost_alpha, "", boost, "Alpha")
+        boosted = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -100, 100)
+        mel.connect_material_expressions(tinted, "", boosted, "A")
+        mel.connect_material_expressions(boost, "", boosted, "B")
+        sat = mel.create_material_expression(mat, unreal.MaterialExpressionSaturate, 50, 100)
+        mel.connect_material_expressions(boosted, "", sat, "")
+        mel.connect_material_property(sat, "", unreal.MaterialProperty.MP_BASE_COLOR)
     else:
         mel.connect_material_property(color, "", unreal.MaterialProperty.MP_BASE_COLOR)
 

@@ -49,6 +49,17 @@ PROPS = [
     ("SM_Crates", 5700.0, 700.0, -5.0, 150.0),
     ("SM_FilmCamera", 7000.0, 700.0, 20.0, 190.0),
 ]
+# Utilería de set (T-0036), en la franja de primer plano, lejos de los beats (L1 1600, L2 3050, puente 4800-6000,
+# L3 6750) y de los props de arriba: (carpeta en Art/Export/Dressing/SetProps, archivo, x, y, yaw, alto cm, tinte).
+SET_PROPS = [
+    ("SM_DirectorChair", "SM_DirectorChair.fbx", 300.0, 650.0, 25.0, 90.0, 0.85),
+    ("SM_FilmCanStack", "SM_FilmCanStack.glb", 2350.0, 620.0, -10.0, 45.0, 0.9),
+    ("SM_BoomMic", "SM_BoomMic.fbx", 3950.0, 800.0, 160.0, 220.0, 0.45),  # madera clara del trípode: oscurecer
+    ("SM_FilmCanStack", "SM_FilmCanStack.glb", 6350.0, 600.0, 15.0, 40.0, 0.9),
+    ("SM_DirectorChair", "SM_DirectorChair.fbx", 7650.0, 700.0, -30.0, 90.0, 0.85),
+]
+HANGING_LIGHT_DIR = os.path.join(SRC, "StageLightHanging")
+HANGING_LIGHT_DEST = "/Game/Dressing/Props"
 FOREGROUND_Y = (450.0, 950.0)   # franja de escenario en primer plano
 FOREGROUND_TOP_Z = -40.0
 
@@ -294,6 +305,104 @@ def import_prop(name):
     return sm
 
 
+def static_fbx_options():
+    ui = unreal.FbxImportUI()
+    ui.import_mesh = True
+    ui.import_as_skeletal = False
+    ui.mesh_type_to_import = unreal.FBXImportType.FBXIT_STATIC_MESH
+    ui.import_animations = False
+    ui.import_materials = False  # el material lo arma prop_material (tinte mate, sin metallic de Rodin)
+    ui.import_textures = False
+    ui.automated_import_should_detect_type = False
+    ui.static_mesh_import_data.combine_meshes = True
+    ui.static_mesh_import_data.set_editor_property("auto_generate_collision", False)
+    return ui
+
+
+def first_static_mesh(folder):
+    for path in eal.list_assets(folder, recursive=True, include_folder=False):
+        asset = eal.load_asset(path)
+        if isinstance(asset, unreal.StaticMesh):
+            return asset
+    return None
+
+
+def prop_material(folder, name, png, tint):
+    """Material mate con la difusa de Rodin multiplicada por un tinte (oscurece lo que salió claro). None si no hay png."""
+    if not os.path.isfile(png):
+        return None
+    tex = import_file(png, f"T_{name}_D", folder=folder)
+    if not tex:
+        return None
+    path = f"{folder}/M_{name}"
+    require_writable(path, ".uasset")
+    if eal.does_asset_exist(path):
+        mat = eal.load_asset(path)
+        mel.delete_all_material_expressions(mat)
+    else:
+        mat = unreal.AssetToolsHelpers.get_asset_tools().create_asset(f"M_{name}", folder, unreal.Material,
+                                                                       unreal.MaterialFactoryNew())
+    sample = mel.create_material_expression(mat, unreal.MaterialExpressionTextureSample, -500, 0)
+    sample.set_editor_property("texture", tex)
+    mul = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -250, 0)
+    mul.set_editor_property("const_b", tint)
+    mel.connect_material_expressions(sample, "RGB", mul, "A")
+    mel.connect_material_property(mul, "", unreal.MaterialProperty.MP_BASE_COLOR)
+    for prop, value, y in ((unreal.MaterialProperty.MP_ROUGHNESS, 0.8, 200), (unreal.MaterialProperty.MP_METALLIC, 0.0, 300)):
+        c = mel.create_material_expression(mat, unreal.MaterialExpressionConstant, -250, y)
+        c.set_editor_property("r", value)
+        mel.connect_material_property(c, "", prop)
+    mel.recompile_material(mat)
+    eal.save_asset(path, only_if_is_dirty=False)
+    return mat
+
+
+def assign_material(sm, mat):
+    if not sm or not mat:
+        return
+    for i in range(max(1, len(sm.get_editor_property("static_materials")))):
+        sm.set_material(i, mat)
+    eal.save_asset(sm.get_path_name().split(".")[0], only_if_is_dirty=False)
+
+
+def import_set_prop(folder_name, file_name, tint):
+    """Importa Art/Export/Dressing/SetProps/<folder>/<file> (FBX de Rodin o glTF) a /Game/Dressing/SetProps/<folder>."""
+    src_dir = os.path.join(SRC, "SetProps", folder_name)
+    src = os.path.join(src_dir, file_name)
+    if not os.path.isfile(src):
+        log(f"sin {file_name}: se omite")
+        return None
+    folder = f"{DEST}/SetProps/{folder_name}"
+    is_fbx = file_name.lower().endswith(".fbx")
+    sm = import_file(src, folder_name, static_fbx_options() if is_fbx else None, folder=folder)
+    if not isinstance(sm, unreal.StaticMesh):
+        sm = first_static_mesh(folder)  # glTF (Interchange) nombra la malla por el nodo
+    if not sm:
+        unreal.log_warning(f"[TDC] {file_name} no produjo StaticMesh")
+        return None
+    if is_fbx:
+        assign_material(sm, prop_material(folder, folder_name, os.path.join(src_dir, "texture_diffuse.png"), tint))
+    return sm
+
+
+def import_hanging_light():
+    """Reflector colgante (T-0036) -> /Game/Dressing/Props/SM_StageLight_Hanging. ATDCStageLight lo carga si existe."""
+    fbx = os.path.join(HANGING_LIGHT_DIR, "SM_StageLight_Hanging.fbx")
+    if not os.path.isfile(fbx):
+        log("sin SM_StageLight_Hanging.fbx: los reflectores siguen con la esfera")
+        return None
+    require_writable(f"{HANGING_LIGHT_DEST}/SM_StageLight_Hanging", ".uasset")
+    sm = import_file(fbx, "SM_StageLight_Hanging", static_fbx_options(), folder=HANGING_LIGHT_DEST)
+    if not sm:
+        unreal.log_warning("[TDC] no se importó SM_StageLight_Hanging")
+        return None
+    # Salió gris claro: 0.35 lo lleva al metal oscuro de los reflectores de los 40.
+    assign_material(sm, prop_material(HANGING_LIGHT_DEST, "StageLight_Hanging",
+                                      os.path.join(HANGING_LIGHT_DIR, "texture_diffuse.png"), 0.35))
+    log("reflector colgante importado (/Game/Dressing/Props/SM_StageLight_Hanging)")
+    return sm
+
+
 def clear_dressing():
     old = [a for a in eas.get_all_level_actors() if a.get_actor_label().startswith("DR_")]
     if old:
@@ -401,6 +510,21 @@ def build():
         extent = sm.get_bounds().box_extent
         s = height / max(1.0, extent.z * 2.0)
         spawn_mesh(f"DR_{name}_{i}", sm, (x, y, FOREGROUND_TOP_Z), rot(yaw=yaw), vec(s, s, s))
+
+    import_hanging_light()
+    set_cache = {}
+    placed = 0
+    for i, (folder_name, file_name, x, y, yaw, height, tint) in enumerate(SET_PROPS):
+        if folder_name not in set_cache:
+            set_cache[folder_name] = import_set_prop(folder_name, file_name, tint)
+        sm = set_cache[folder_name]
+        if not sm:
+            continue
+        extent = sm.get_bounds().box_extent
+        s = height / max(1.0, extent.z * 2.0)
+        spawn_mesh(f"DR_SetProp_{i}_{folder_name}", sm, (x, y, FOREGROUND_TOP_Z), rot(yaw=yaw), vec(s, s, s))
+        placed += 1
+    log(f"utilería de set colocada: {placed}")
 
     night_lighting()
     post_process()

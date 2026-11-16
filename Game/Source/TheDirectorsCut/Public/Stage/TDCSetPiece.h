@@ -66,6 +66,10 @@ private:
 	void HandlePresenceChanged(bool bNowPresent);
 
 	bool bLightMaterial = false;
+	/** VFX de aparición/desaparición (T-0036). Falso hasta terminar BeginPlay: el primer Evaluate no dispara efecto. */
+	void SpawnPresenceFx(bool bNowPresent);
+	bool bPresenceFxReady = false;
+	bool bLastPresent = true;
 	/** Si cambia la luz, despertar la física: lo que estaba apoyado en una pieza que desapareció tiene que caer. */
 	void OnLightingChanged();
 
