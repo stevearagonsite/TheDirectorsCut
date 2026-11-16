@@ -52,6 +52,9 @@ ATDCExtra::ATDCExtra()
 	Puppet->SetupAttachment(RootComponent);
 	Puppet->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Puppet->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
+	// Que anime siempre (también fuera de cámara o en el primer frame) y a frecuencia completa.
+	Puppet->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+	Puppet->bEnableUpdateRateOptimizations = false;
 }
 
 void ATDCExtra::LoadPuppet()
@@ -98,9 +101,31 @@ void ATDCExtra::UpdatePuppet()
 	if (Yaw != PuppetFacing)
 	{
 		PuppetFacing = Yaw;
-		Puppet->SetRelativeRotation(FRotator(0.f, Yaw, 0.f));
 	}
-	const bool bWalk = PuppetWalk && StunRemaining <= 0.f && PatrolDistance > 0.f && PatrolSpeed > 0.f;
+	const bool bMoving = StunRemaining <= 0.f && PatrolDistance > 0.f && PatrolSpeed > 0.f && LightReactive->IsPresent();
+	// Rebote y balanceo de "extra de utilería" al caminar; aturdido tiembla. Vuelve suave a la pose base.
+	const float Dt = GetWorld() ? GetWorld()->GetDeltaSeconds() : 0.f;
+	FVector Loc(0.f, 0.f, -90.f);
+	FRotator Rot(0.f, PuppetFacing, 0.f);
+	if (bMoving)
+	{
+		BobPhase += Dt * PatrolSpeed / 45.f; // ~2 pasos por segundo a 150 cm/s
+		Loc.Z += FMath::Abs(FMath::Sin(BobPhase)) * WalkBobCm;
+		Rot.Roll = FMath::Sin(BobPhase) * WalkSwayDegrees;
+	}
+	else if (StunRemaining > 0.f)
+	{
+		BobPhase += Dt * 40.f;
+		Rot.Roll = FMath::Sin(BobPhase) * 3.f;
+	}
+	else
+	{
+		BobPhase += Dt * 1.5f; // respiración
+		Loc.Z += FMath::Sin(BobPhase) * 1.5f;
+	}
+	Puppet->SetRelativeLocationAndRotation(Loc, Rot);
+
+	const bool bWalk = PuppetWalk && bMoving;
 	if (bWalk != bPuppetWalking)
 	{
 		bPuppetWalking = bWalk;

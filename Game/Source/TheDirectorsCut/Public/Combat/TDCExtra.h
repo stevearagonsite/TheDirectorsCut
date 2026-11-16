@@ -56,7 +56,14 @@ public:
 	 * Si no existe, queda el greybox. PuppetScale compensa la escala 0.01 del root en las animaciones de Rodin.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|Extra")
-	float PuppetScale = 1.f; // T-0019: con los FBX de Rodin en cm, 1 = tamaño humano (100 los dejaba gigantes)
+	float PuppetScale = 1.f;
+
+	/** Movimiento procedural al caminar (rebote + balanceo), encima del clip: se ve vivo aunque el clip venga quieto. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|Extra", meta = (ClampMin = "0"))
+	float WalkBobCm = 7.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|Extra", meta = (ClampMin = "0"))
+	float WalkSwayDegrees = 5.f; // T-0019: con los FBX de Rodin en cm, 1 = tamaño humano (100 los dejaba gigantes)
 
 	/** Recibe un claquetazo desde una posición. Devuelve el resultado para el feedback del director. */
 	UFUNCTION(BlueprintCallable, Category = "TDC|Extra")
@@ -117,5 +124,6 @@ private:
 	TObjectPtr<UAnimSequence> PuppetWalk;
 	bool bPuppetWalking = false;
 	float PuppetFacing = 0.f;
+	float BobPhase = 0.f;
 	TWeakObjectPtr<AActor> StunFx;
 };

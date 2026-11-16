@@ -73,6 +73,16 @@ private:
 
 	FDelegateHandle LightingHandle;
 
+	/** Toma (T-0031): mientras se rebobina, brillo cian + película; después queda un resplandor que se apaga. */
+	void OnTimeModeChanged(ETDCTimeMode NewMode);
+	void TickTakeGlow();
+	void SetTakeGlow(float Amount, float Visual = 1.f);
+	FDelegateHandle TimeModeHandle;
+	FTimerHandle TakeGlowTimer;
+	TWeakObjectPtr<AActor> TakeFx;
+	float TakeGlow = 0.f;
+	bool bTakeRewinding = false;
+
 	UPROPERTY(Transient)
 	TObjectPtr<UMaterialInstanceDynamic> Material;
 };
