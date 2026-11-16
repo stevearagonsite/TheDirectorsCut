@@ -71,3 +71,67 @@ exacto no se puede aislar. Sin creditos CC-BY: no se uso ningun modelo de Sketch
 
 Capturas: capturas/sketchfab-candidatos.png, capturas/referencias-rodin.png, capturas/rodin-cornisa-centro.png,
 capturas/rodin-pasarela-centro.png, capturas/resumen-kit.png (concepto + los dos modelos).
+
+------------------------------------------------------------------------------------------------------------------------
+Tanda 2 (2026-11-15): remate de cornisa + tarima central. Completa la cornisa para que los bordes no terminen en corte plano.
+
+Referencias (Gemini 3 Pro Image, D-015 paso 3):
+- ref-cornisa-remate.png: base ref-cornisa-centro.png. Tres pasos (prompt-ref-cornisa-remate-pasos.txt): el primer intento
+  devolvio el modulo largo casi igual (capturas/ref-intentos/cornisa-remate-intento1.png); el segundo lo acorto pero dejo el
+  extremo cerrado oculto (intento2); el tercero cerro el extremo visible (coping con esquina ochavada, moldura, dentellones,
+  ladrillo y zocalo que doblan la esquina). El extremo oculto queda como corte plano.
+- ref-tarima-centro.png: base concepto-kit-v1.png (tarima abajo a la izquierda). El primer intento salio con los 4 postes de
+  esquina (capturas/ref-intentos/tarima-intento1.png); una edicion los saco y dejo los extremos como corte plano
+  (prompt-ref-tarima-pasos.txt).
+
+Rodin web: misma config que la tanda 1 (Image to 3D, Gen-2.5 High, Caption Override apagado, presets recomendados; Clean
+Topology Quad 3K, Baked Normal; Material Native High 2K; .fbx Base Model, Shaded + PBR 2K, pivote Bottom, altura custom).
+2 generaciones, sin retry. Billetera: 407 al empezar (compartida con otras sesiones).
+
+3) Remate de cornisa -> rodin/cornisa-remate/ (zip original rodin-cornisa-remate.zip)
+   Tarea: https://hyper3d.ai/workspace/rodin/e83fde0e-2efc-45cb-832f-b004868a9f56 (caption automatico: "Stone and brick pedestal.")
+   Altura custom 80 cm. Medido en base.fbx: X -0.77..0.78, Y -0.72..0.73, Z 0..0.80 -> 155 x 145 x 80 cm.
+   1,347 verts, 1,598 poligonos = 2,690 tris.
+   OJO, orientacion: el remate corre en Y, no en X como el modulo central. Perfil por lado (saliente maximo por altura):
+   +X y -X moldurados (frente y fondo: ladrillo retirado ~9-11 cm bajo el coping), -Y moldurado (el extremo cerrado),
+   +Y plano a toda altura (el corte que se apoya contra el modulo central).
+   Fuera de medida: la profundidad (frente-fondo) es 155 cm contra 121 del central, y el largo es 145 cm (se pidio 60-100).
+   El ladrillo esta menos retirado que en el central (9-11 cm contra 15) y la tapa queda ~2 cm mas alta (0.80 contra 0.78).
+   Textura: luminancia media 135/255, saturacion mediana 0.09: practicamente igual al central (132 / 0.10).
+4) Tarima de escenario, modulo central -> rodin/tarima-centro/ (zip original rodin-tarima-centro.zip)
+   Tarea: https://hyper3d.ai/workspace/rodin/545791c5-b5ac-4d59-aa6b-698b17cbfe5f (caption automatico: "Wooden bench prop.")
+   Altura custom 60 cm. Medido: X -1.90..1.90, Y -0.52..0.51, Z 0..0.60 -> 380 x 103 x 60 cm (se pidio ~300 x 100 x 60).
+   1,086 verts, 1,276 poligonos = 1,959 tris. Extremos +-X: corte plano a toda altura (la tapa sobresale ~3 cm), sirve para
+   tilear en X. Tapa plana de tablones con juntas, listones verticales al frente y zocalo oscuro.
+   Textura: luminancia media 76/255, saturacion mediana 0.25: madera marron rojiza, mas saturada que la cornisa.
+
+Taste:
+- Remate: 5/6.
+  Estilo si. Epoca si (misma cornisa de ladrillo con dentellones). Paleta si (misma luminancia y saturacion que el central).
+  Silueta si (la esquina con el coping ochavado y la moldura que dobla se lee a 22 m). Coherencia si (sale de la misma ref).
+  Tecnico a medias: 2.7k tris y pivote abajo ok, pero las medidas no cierran con el central (155 de profundidad contra 121,
+  145 de largo contra 60-100) y esta girado 90 grados.
+- Tarima: 5/6.
+  Estilo si. Epoca si (tarima de teatro de madera). Silueta si (caja simple, tapa plana). Tecnico si (2.0k tris, pivote
+  abajo, extremos planos). Coherencia si.
+  Paleta a medias: neutra y sin colores de mecanica, pero el diffuse tira a marron rojizo (sat 0.25) y es oscuro (76/255).
+
+Para usarlas en UE (lo hace Windows, NO probado en Unreal):
+- Escala/ejes: igual que la tanda 1. Vertices en metros, el FBX declara UnitScaleFactor 1 (cm) y UpAxis Y; la altura es Z.
+  Importar una y verificar el alto (80/60 cm). Si entra chica, Import Uniform Scale 100 y revisar la rotacion.
+- Remate, arreglo recomendado en Blender (Windows): rotar 90 grados en Z para que el corte (+Y) quede hacia el modulo central
+  (+Y pasa a -X: va en el extremo +X de la cornisa); escalar la profundidad a 0.78 (155 -> 121); cortar con bisect a 90 cm
+  del extremo cerrado (en datos originales: conservar Y -0.72..+0.18, borrar el resto y tapar el corte). Asi el frente que
+  ve la camara conserva la proporcion del ladrillo. Para el otro extremo, espejar en X.
+  Atajo sin Blender: escala no uniforme en UE (largo 0.62, profundidad 0.78, alto 1.0) -> ~90 x 121 x 80, pero el ladrillo
+  del frente queda 38 % mas angosto que en el central.
+- Tarima: 380 cm de largo. Escalar X a 0.79 para 300 cm, o tilear con N = round(ancho/380). Desaturar el diffuse y subirlo
+  a ~0.35-0.6 en el material antes de multiplicar por el color de mecanica (como la pasarela).
+- Colision: caja simple a la altura de la tapa (remate ~0.80, tarima ~0.60).
+- Faltan (no pedidos): remate de la tarima y de la pasarela, escalera de incendio.
+
+Nota: Rodin marco las dos tareas con "like" (corazon) al descargar; no lo active a mano.
+
+Capturas: capturas/rodin-cornisa-remate.png, capturas/rodin-tarima-centro.png (visor de Rodin con textura),
+capturas/geometria-cornisa-remate.png, capturas/geometria-tarima-centro.png (render propio del base.fbx, 6 vistas),
+capturas/ref-intentos/ (referencias descartadas).
