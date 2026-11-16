@@ -12,7 +12,8 @@ creada: 2026-11-15
 ## Objetivo
 Steve: "los personajes enemigos no tienen animaciones". `check_anims.py` (T-0031) mostró que los 6 clips `AS_Extra_*` apuntan a un
 skeleton que no es el de su `SK_Extra_*`. Causa: `import_extras.py` renombraba el Skeleton y no guardaba los clips. Ya está arreglado.
-Genera `Game\Saved\stevearagonsite_TheDirectorsCut_mejora6.zip`. **No toques** los otros zips. Steve autorizó cerrar el build abierto.
+Genera `Game\Saved\stevearagonsite_TheDirectorsCut_mejora6.zip`. **No toques** los otros zips.
+**URGENTE (22:25, la jam cierra 22:59): Steve tiene abierto el build de `_mejora5` en `Game\Saved\PackageTest`. NO corras `smoke` (lo cerraría).**
 
 ## Pasos
 1. `git fetch` y `git checkout t/T-0033-extras-skeleton` (verificá el sha). `.\Tools\scripts\tdc.ps1 stop`.
@@ -24,14 +25,14 @@ Genera `Game\Saved\stevearagonsite_TheDirectorsCut_mejora6.zip`. **No toques** l
    Si algún clip de extra sigue en `False`, reportá `parcial` y **no empaquetes**.
 7. `.\Tools\scripts\tdc.ps1 shot -Map /Game/Maps/L_Slice -Task T-0033 -Name 01-mejora6` (el extra rojo con toon, no gris).
 8. `.\Tools\scripts\tdc.ps1 package -Zip stevearagonsite_TheDirectorsCut_mejora6`
-9. `.\Tools\scripts\tdc.ps1 smoke -Task T-0033 -Name 02-package -Wait 60 -Zip stevearagonsite_TheDirectorsCut_mejora6`
+9. (sin smoke: no cierres el build abierto)
 10. Commit de `Game/Content/Characters/Extras/**` (LFS), evidencia y Reporte (con tamaño del zip). `git lfs unlock`. Push y `[TDC-REPORT]`.
-11. **Dejá abierto el build para que Steve grabe el video:** `.\Tools\scripts\tdc.ps1 smoke -Task T-0033 -Name 03-video -Keep -Zip stevearagonsite_TheDirectorsCut_mejora6`.
+11. Mandá el `[TDC-REPORT]` apenas esté el zip, con su tamaño: Steve lo sube a mano.
 
 ## Criterios de aceptación
 - [ ] `check_anims.py`: los 6 clips de extras con `mismo esqueleto=True`.
 - [ ] `01-mejora6.png`: extras con cel shading (no grises).
-- [ ] `_mejora6.zip` de menos de 1 GB; el exe corre a los 60 s, sin `Fatal` ni assets faltantes; quedó abierto.
+- [ ] `_mejora6.zip` de menos de 1 GB, `BUILD SUCCESSFUL`.
 
 ## Permite
 - Editar `Tools/unreal/import_extras.py` y `apply_toon.py` solo para compatibilidad de API.
