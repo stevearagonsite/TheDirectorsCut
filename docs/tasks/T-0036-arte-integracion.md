@@ -3,7 +3,7 @@ id: T-0036
 titulo: Integración del arte post-jam (reflector colgante, utilería, VFX de piezas, techo de plataformas)
 estado: enviada
 tipo: mixto
-rama: t/T-0036-arte-integracion
+rama: t/T-0039-luz-valores
 creada: 2026-11-15
 ---
 
@@ -28,8 +28,16 @@ Que se vea en el juego el arte que ya está en main:
   no "cuelga", corregilo ahí y anotá los valores en el reporte.
 - No toca el menú ni el HUD (T-0035).
 
+
+## T-0039 (incluida en este envío): valores de luz
+La auditoría visual (`docs/product/arte/auditoria-visual-2026-11-15.md`) dice que el decorado es lo más brillante y el plano de
+juego queda oscuro. Esta rama suma: parallax a 0.32–0.45 con tinte violeta apagado, 7 luces de relleno ámbar (`DR_PlayKey_*`), niebla
+volumétrica y halo del reflector encendido (C++), pieza ausente al 20 % y motion blur en 0.
+En el shot, **compará el brillo del fondo con el del plano de juego: el plano tiene que ganar**. Si la niebla volumétrica lava la
+imagen, bajá `volumetric_fog_extinction_scale` en `build_dressing.py` o apagala, y anotá el valor (permitido).
+
 ## Pasos
-1. `git fetch` y `git checkout t/T-0036-arte-integracion` (verificá el sha). Cerrá cualquier build abierto (`tdc.ps1 stop`).
+1. `git fetch` y `git checkout t/T-0039-luz-valores` (verificá el sha). Cerrá cualquier build abierto (`tdc.ps1 stop`).
 2. `.\Tools\scripts\tdc.ps1 build`.
 3. Locks: `git lfs lock Game/Content/Maps/L_Slice.umap` y
    `git ls-files Game/Content/Materials Game/Content/Dressing Game/Content/VFX | ForEach-Object { git lfs lock $_ }`.
