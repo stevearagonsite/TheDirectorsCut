@@ -487,7 +487,11 @@ def night_lighting():
             fog.set_editor_property("fog_inscattering_luminance", unreal.LinearColor(0.03, 0.04, 0.08, 1.0))
             # Volumétrica: el reflector encendido dibuja su halo (= su alcance) en el aire.
             try:
-                fog.set_editor_property("volumetric_fog", True)
+                # UE 5.8: la propiedad es bEnableVolumetricFog -> "enable_volumetric_fog" en Python.
+                try:
+                    fog.set_editor_property("enable_volumetric_fog", True)
+                except Exception:
+                    fog.set_editor_property("volumetric_fog", True)
                 fog.set_editor_property("volumetric_fog_start_distance", 0.0)
                 fog.set_editor_property("volumetric_fog_extinction_scale", 0.6)
             except Exception as e:
