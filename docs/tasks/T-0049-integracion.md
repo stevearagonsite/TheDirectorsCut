@@ -1,7 +1,7 @@
 ---
 id: T-0049
 titulo: Integración post-jam en una sola corrida (T-0037 a T-0048)
-estado: fallo
+estado: enviada
 tipo: mixto
 rama: t/T-0049-integracion
 creada: 2026-11-15
@@ -16,6 +16,9 @@ que trae T-0039/T-0041/T-0042: arte, valores de luz, calle). Genera `Game\Saved\
 Si algo falla, reportá qué paso y el error: se bisecta con las ramas sueltas.
 
 ## Pasos
+0. **Reenvío (c1fd9b2):** los 3 PNG pintados ya están completos en LFS (lluvia 765642 B, vapor 3553471 B, claquetazo 103241 B) y
+   LightReactive evalúa la luz con los bounds del root (la sombra de guion fallaba porque el puppet escalado inflaba la caja). Hacé
+   `git lfs pull` después del checkout. Corré **todos** los pasos de nuevo (los scripts son idempotentes).
 1. `git fetch` y `git checkout t/T-0049-integracion` (verificá el sha). `.\Tools\scripts\tdc.ps1 stop`.
 2. `.\Tools\scripts\tdc.ps1 build`. Si no compila, **pará** y reportá `fallo` con `archivo:línea`.
 3. Locks: `git lfs lock Game/Content/Maps/L_Slice.umap` y
