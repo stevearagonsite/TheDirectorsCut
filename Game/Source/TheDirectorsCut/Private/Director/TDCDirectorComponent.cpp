@@ -11,6 +11,30 @@
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "Kismet/GameplayStatics.h"
+#include "Containers/Ticker.h"
+
+namespace
+{
+	/** Hit-stop (game feel): congela casi todo unos ms al conectar el golpe. Se restaura en tiempo real (core ticker). */
+	void HitStop(UWorld* World, float Seconds)
+	{
+		if (!World || Seconds <= 0.f || World->GetNetMode() != NM_Standalone)
+		{
+			return;
+		}
+		UGameplayStatics::SetGlobalTimeDilation(World, 0.05f);
+		TWeakObjectPtr<UWorld> WeakWorld(World);
+		FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([WeakWorld](float)
+		{
+			if (UWorld* W = WeakWorld.Get())
+			{
+				UGameplayStatics::SetGlobalTimeDilation(W, 1.f);
+			}
+			return false; // una sola vez
+		}), Seconds);
+	}
+}
 
 UTDCDirectorComponent::UTDCDirectorComponent()
 {
@@ -138,6 +162,7 @@ bool UTDCDirectorComponent::Clap()
 	ATDCFlipbookFx::Spawn(World, TDC::Fx::ClapImpact, Center + FVector(0.f, 60.f, 10.f), 170.f, Facing < 0.f);
 
 	FString Feedback = TEXT("¡Claquetazo!");
+	float StopSeconds = 0.f; // el resultado más fuerte del golpe decide el hit-stop
 	TSet<AActor*> Hit;
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
@@ -149,15 +174,23 @@ bool UTDCDirectorComponent::Clap()
 		Hit.Add(Extra);
 		switch (Extra->ReceiveClap(Owner->GetActorLocation()))
 		{
-		case ETDCClapResult::Defeated: Feedback = TEXT("¡Corten! Extra fuera de la toma"); break;
-		case ETDCClapResult::Stunned:  Feedback = TEXT("¡Claquetazo! (aturdido)"); break;
+		case ETDCClapResult::Defeated:
+			Feedback = TEXT("¡Corten! Extra fuera de la toma");
+			StopSeconds = FMath::Max(StopSeconds, 0.09f);
+			break;
+		case ETDCClapResult::Stunned:
+			Feedback = TEXT("¡Claquetazo! (aturdido)");
+			StopSeconds = FMath::Max(StopSeconds, 0.06f);
+			break;
 		default:
+			StopSeconds = FMath::Max(StopSeconds, 0.04f);
 			Feedback = TEXT("Rebota: es un extra de guion. Dirigí la escena.");
 			TDC::PlaySfx(this, TEXT("sfx_bounce"), Extra->GetActorLocation());
 			ATDCFlipbookFx::Spawn(World, TDC::Fx::ScriptedBounce, Extra->GetActorLocation() + FVector(-Facing * 30.f, 70.f, 20.f), 200.f, Facing < 0.f);
 			break;
 		}
 	}
+	HitStop(World, StopSeconds);
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(7002, 1.2f, FColor::Yellow, Feedback);
