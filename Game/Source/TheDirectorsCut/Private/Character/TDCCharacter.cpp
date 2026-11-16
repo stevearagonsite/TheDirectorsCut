@@ -20,6 +20,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "TimerManager.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputAction.h"
@@ -168,6 +169,10 @@ void ATDCCharacter::Tick(float DeltaSeconds)
 	if (bAutoRun)
 	{
 		TickAutoRun(DeltaSeconds);
+	}
+	if (GetCharacterMovement() && GetCharacterMovement()->IsMovingOnGround() && GetWorld())
+	{
+		LastGroundedTime = GetWorld()->GetTimeSeconds();
 	}
 	UpdateAnimState();
 	ApplyClapPunch();
@@ -477,6 +482,7 @@ void ATDCCharacter::Move(const FInputActionValue& Value)
 void ATDCCharacter::OnJumped_Implementation()
 {
 	Super::OnJumped_Implementation();
+	bJumpedSinceGrounded = true;
 	TDC::PlaySfx(this, TEXT("sfx_jump"), GetActorLocation(), 0.6f);
 }
 
@@ -484,6 +490,14 @@ void ATDCCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 	TDC::PlaySfx(this, TEXT("sfx_land"), GetActorLocation(), 0.6f);
+	bJumpedSinceGrounded = false;
+	// Jump buffer: si apretó saltar justo antes de tocar el piso (y ya lo soltó), saltar ahora.
+	if (!bPressedJump && GetWorld() && GetWorld()->GetTimeSeconds() - LastJumpPressTime <= JumpBufferTime)
+	{
+		Super::Jump();
+		FTimerHandle Release;
+		GetWorldTimerManager().SetTimer(Release, FTimerDelegate::CreateWeakLambda(this, [this]() { StopJumping(); }), 0.05f, false);
+	}
 	if (const AActor* Floor = Hit.GetActor())
 	{
 		if (Floor->ActorHasTag(TEXT("TDC.Safe")))
@@ -528,4 +542,25 @@ void ATDCCharacter::ApplyClapPunch()
 		Snap.ConcatenateRotation(FRotator(0.f, 0.f, -35.f * Punch).Quaternion());
 		Clapper->SetRelativeTransform(Snap);
 	}
+}
+
+void ATDCCharacter::Jump()
+{
+	if (GetWorld())
+	{
+		LastJumpPressTime = GetWorld()->GetTimeSeconds();
+	}
+	Super::Jump();
+}
+
+bool ATDCCharacter::CanJumpInternal_Implementation() const
+{
+	if (Super::CanJumpInternal_Implementation())
+	{
+		return true;
+	}
+	// Coyote time: cayendo por haber salido de un borde (sin haber saltado), unos ms todavía cuenta como "en el piso".
+	const UCharacterMovementComponent* Move = GetCharacterMovement();
+	return Move && Move->IsFalling() && !bJumpedSinceGrounded && GetWorld()
+		&& GetWorld()->GetTimeSeconds() - LastGroundedTime <= CoyoteTime;
 }
