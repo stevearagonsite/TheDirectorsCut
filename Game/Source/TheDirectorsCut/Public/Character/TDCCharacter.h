@@ -48,6 +48,16 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void Landed(const FHitResult& Hit) override;
 	virtual void OnJumped_Implementation() override;
+	virtual void Jump() override;
+	virtual bool CanJumpInternal_Implementation() const override;
+
+	/** Coyote time: segundos después de salir de un borde en los que todavía se puede saltar (platformer feel). */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|Movement", meta = (ClampMin = "0"))
+	float CoyoteTime = 0.12f;
+
+	/** Jump buffer: un salto apretado hasta estos segundos antes de tocar el piso se ejecuta al aterrizar. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TDC|Movement", meta = (ClampMin = "0"))
+	float JumpBufferTime = 0.12f;
 	virtual void FellOutOfWorld(const UDamageType& DamageType) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "TDC|Camera")
@@ -240,6 +250,13 @@ private:
 
 	/** Hasta cuándo (segundos de mundo) la animación del claquetazo tiene prioridad. */
 	double ClapAnimUntil = 0.0;
+	/** Squash & stretch del cuerpo y golpe de la claqueta en la mano (game feel): se lee aunque el clip no tenga pose. */
+	void ApplyClapPunch();
+	double ClapPunchStart = -100.0;
+	double LastGroundedTime = -100.0;
+	double LastJumpPressTime = -100.0;
+	bool bJumpedSinceGrounded = false;
+	bool bClapPunchActive = false;
 
 	EAnimState AnimState = EAnimState::None;
 };

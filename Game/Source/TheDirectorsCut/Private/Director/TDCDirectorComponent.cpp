@@ -4,6 +4,7 @@
 #include "Combat/TDCExtra.h"
 #include "Core/TDCFlipbookFx.h"
 #include "Core/TDCVisuals.h"
+#include "UI/TDCHUD.h"
 #include "Components/AudioComponent.h"
 #include "Engine/OverlapResult.h"
 #include "CollisionShape.h"
@@ -100,10 +101,7 @@ void UTDCDirectorComponent::BeginRewind()
 	{
 		Stage->SetTimeMode(ETDCTimeMode::Rewind);
 	}
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(/*Key*/ 7001, 600.f, FColor::Cyan, TEXT("<< REBOBINANDO"));
-	}
+	TDC::HudMessage(this, 7001, TEXT("<<  REBOBINANDO"), FLinearColor(0.35f, 0.85f, 1.f), -1.f, ETDCHudSlot::Banner);
 }
 
 void UTDCDirectorComponent::EndRewind()
@@ -126,10 +124,7 @@ void UTDCDirectorComponent::EndRewind()
 	{
 		Stage->SetTimeMode(ETDCTimeMode::Play);
 	}
-	if (GEngine)
-	{
-		GEngine->RemoveOnScreenDebugMessage(7001);
-	}
+	TDC::HudClear(this, 7001);
 }
 
 bool UTDCDirectorComponent::Clap()
@@ -191,9 +186,6 @@ bool UTDCDirectorComponent::Clap()
 		}
 	}
 	HitStop(World, StopSeconds);
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(7002, 1.2f, FColor::Yellow, Feedback);
-	}
+	TDC::HudMessage(this, 7002, Feedback, FLinearColor(1.f, 0.9f, 0.6f), 1.2f, ETDCHudSlot::Toast);
 	return true;
 }

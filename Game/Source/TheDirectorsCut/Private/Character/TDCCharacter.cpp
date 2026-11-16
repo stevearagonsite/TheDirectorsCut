@@ -1,4 +1,5 @@
 #include "Character/TDCCharacter.h"
+#include "UI/TDCHUD.h"
 #include "Core/TDCVisuals.h"
 #include "Director/TDCDirectorComponent.h"
 #include "Debug/TDCPlaytestRunner.h"
@@ -21,6 +22,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "TimerManager.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputAction.h"
@@ -55,9 +57,11 @@ ATDCCharacter::ATDCCharacter()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->SetUsingAbsoluteRotation(true);
-	CameraBoom->SetRelativeRotation(FRotator(-5.f, -90.f, 0.f));
+	// T-0040 (auditoría visual): un poco más alta y mirando más hacia abajo. Se ve la tapa de las plataformas (tablones) y
+	// el plano de juego ocupa el centro, en vez de una franja negra abajo.
+	CameraBoom->SetRelativeRotation(FRotator(-9.f, -90.f, 0.f));
 	CameraBoom->TargetArmLength = 2200.f; // D-012: encuadre amplio para anticipar el tramo que viene
-	CameraBoom->SocketOffset = FVector(0.f, 0.f, 120.f);
+	CameraBoom->SocketOffset = FVector(0.f, 0.f, 250.f);
 	// Look-ahead (D-012): el nivel avanza hacia +X, así que el director queda en el tercio izquierdo y se ve lo que viene.
 	CameraBoom->TargetOffset = FVector(700.f, 0.f, 0.f);
 	CameraBoom->bDoCollisionTest = false;
@@ -182,7 +186,12 @@ void ATDCCharacter::Tick(float DeltaSeconds)
 	{
 		TickAutoRun(DeltaSeconds);
 	}
+	if (GetCharacterMovement() && GetCharacterMovement()->IsMovingOnGround() && GetWorld())
+	{
+		LastGroundedTime = GetWorld()->GetTimeSeconds();
+	}
 	UpdateAnimState();
+	ApplyClapPunch();
 	UpdateLightPrompt();
 	ShowControls();
 }
@@ -191,7 +200,9 @@ void ATDCCharacter::TickAutoRun(float DeltaSeconds)
 {
 	if (AutoRunTime == 0.f && CameraBoom)
 	{
-		CameraBoom->TargetArmLength = 900.f; // demo: más cerca, para que la pose se lea en las capturas
+		// demo: más cerca para que la pose se lea, pero detrás de la utilería de primer plano (y 550–900): con 900 la
+		// cámara la atravesaba y las capturas de la galería salían tapadas (auditoría visual #10).
+		CameraBoom->TargetArmLength = 1300.f;
 		CameraBoom->TargetOffset = FVector::ZeroVector; // con el brazo corto, el offset de anticipación lo dejaba fuera de cuadro
 	}
 	AutoRunTime += DeltaSeconds;
@@ -223,33 +234,28 @@ void ATDCCharacter::TickAutoRun(float DeltaSeconds)
 
 void ATDCCharacter::ShowControls()
 {
-	// Arriba a la izquierda, siempre: los mensajes con clave se reemplazan cada frame (no se acumulan).
-	if (!GEngine || !IsPlayerControlled())
+	// Panel de controles del HUD (ATDCHUD): se pide cada frame mientras se juega.
+	if (!IsPlayerControlled())
 	{
 		return;
 	}
-	const FColor Ink(235, 235, 235);
-	GEngine->AddOnScreenDebugMessage(7010, 0.f, Ink, TEXT("CONTROLES (teclado / gamepad)"));
-	GEngine->AddOnScreenDebugMessage(7011, 0.f, Ink, TEXT("  A / D ........ moverse        (stick)"));
-	GEngine->AddOnScreenDebugMessage(7012, 0.f, Ink, TEXT("  Espacio ...... saltar         (A)"));
-	GEngine->AddOnScreenDebugMessage(7013, 0.f, Ink, TEXT("  F / clic ..... claquetazo     (B)"));
-	GEngine->AddOnScreenDebugMessage(7014, 0.f, Ink, TEXT("  E ............ prender/apagar el reflector cercano  (X)"));
-	GEngine->AddOnScreenDebugMessage(7015, 0.f, Ink, TEXT("  Q (mantener) . rebobinar lo celeste  (gatillo izq.)"));
-	GEngine->AddOnScreenDebugMessage(7016, 0.f, FColor(150, 150, 150),
-		TEXT("  Amarillo = existe con luz · Violeta = a oscuras · Celeste = se rebobina · Rojo/naranja/negro = extras"));
+	if (UTDCHudMessages* Hud = GetWorld() ? GetWorld()->GetSubsystem<UTDCHudMessages>() : nullptr)
+	{
+		Hud->RequestControls();
+	}
 }
 
 void ATDCCharacter::UpdateLightPrompt()
 {
 	// Legibilidad: si hay un reflector al alcance, decir qué tecla lo dirige.
-	if (!GEngine || !IsPlayerControlled() || !Director || !Director->HasPower(ETDCPower::Lights))
+	if (!IsPlayerControlled() || !Director || !Director->HasPower(ETDCPower::Lights))
 	{
 		return;
 	}
 	if (const ATDCStageLight* Light = Director->FindNearestLight())
 	{
-		GEngine->AddOnScreenDebugMessage(7003, 0.15f, FColor(255, 220, 90),
-			Light->IsOn() ? TEXT("[E] ¡Luces!: apagar el reflector") : TEXT("[E] ¡Luces!: prender el reflector"));
+		TDC::HudMessage(this, 7003, Light->IsOn() ? TEXT("[E]  Apagar el reflector") : TEXT("[E]  ¡Luces! Prender el reflector"),
+			FLinearColor(1.f, 0.82f, 0.25f), 0.15f, ETDCHudSlot::Prompt);
 	}
 }
 
@@ -393,7 +399,7 @@ void ATDCCharacter::BeginPlay()
 	}
 	if (IsPlayerControlled())
 	{
-		TDC::PlaySfx2D(this, TEXT("vo_accion"), 0.9f);           // "¡Acción!" al arrancar la toma
+		// "¡Acción!" lo dice ATDCPlayerController al empezar la toma (después del menú, T-0035).
 		TDC::PlaySfx2D(this, TEXT("amb_lluvia_ciudad"), 0.25f);  // ambiente (loop desde import_audio.py)
 	}
 	LoadCharacterAssets();
@@ -538,6 +544,10 @@ bool ATDCCharacter::DoClap()
 	{
 		return false;
 	}
+	if (GetWorld())
+	{
+		ClapPunchStart = GetWorld()->GetTimeSeconds();
+	}
 	if (ClapAnim && GetWorld())
 	{
 		ClapAnimUntil = GetWorld()->GetTimeSeconds() + ClapDuration;
@@ -556,6 +566,7 @@ void ATDCCharacter::Move(const FInputActionValue& Value)
 void ATDCCharacter::OnJumped_Implementation()
 {
 	Super::OnJumped_Implementation();
+	bJumpedSinceGrounded = true;
 	TDC::PlaySfx(this, TEXT("sfx_jump"), GetActorLocation(), 0.6f);
 }
 
@@ -563,6 +574,14 @@ void ATDCCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 	TDC::PlaySfx(this, TEXT("sfx_land"), GetActorLocation(), 0.6f);
+	bJumpedSinceGrounded = false;
+	// Jump buffer: si apretó saltar justo antes de tocar el piso (y ya lo soltó), saltar ahora.
+	if (!bPressedJump && GetWorld() && GetWorld()->GetTimeSeconds() - LastJumpPressTime <= JumpBufferTime)
+	{
+		Super::Jump();
+		FTimerHandle Release;
+		GetWorldTimerManager().SetTimer(Release, FTimerDelegate::CreateWeakLambda(this, [this]() { StopJumping(); }), 0.05f, false);
+	}
 	if (const AActor* Floor = Hit.GetActor())
 	{
 		if (Floor->ActorHasTag(TEXT("TDC.Safe")))
@@ -582,4 +601,50 @@ void ATDCCharacter::FellOutOfWorld(const UDamageType& DamageType)
 {
 	// No destruir al protagonista: volver al último punto seguro.
 	Respawn();
+}
+
+void ATDCCharacter::ApplyClapPunch()
+{
+	USkeletalMeshComponent* MeshComp = GetMesh();
+	if (!MeshComp || !GetWorld())
+	{
+		return;
+	}
+	const float Phase = static_cast<float>(GetWorld()->GetTimeSeconds() - ClapPunchStart) / FMath::Max(ClapDuration, 0.05f);
+	const float Punch = (Phase >= 0.f && Phase < 1.f) ? FMath::Sin(Phase * PI) : 0.f;
+	if (Punch <= 0.f && !bClapPunchActive)
+	{
+		return;
+	}
+	bClapPunchActive = Punch > 0.f;
+	// Se ensancha y se agacha en el golpe (squash), y vuelve: el claquetazo se lee aunque la pose del clip sea sutil.
+	MeshComp->SetRelativeScale3D(FVector(AnimatedMeshScale) * FVector(1.f + 0.1f * Punch, 1.f + 0.1f * Punch, 1.f - 0.08f * Punch));
+	if (Clapper && Clapper->IsVisible())
+	{
+		// La claqueta "cierra": giro seco y vuelta.
+		FTransform Snap = ClapperOffset;
+		Snap.ConcatenateRotation(FRotator(0.f, 0.f, -35.f * Punch).Quaternion());
+		Clapper->SetRelativeTransform(Snap);
+	}
+}
+
+void ATDCCharacter::Jump()
+{
+	if (GetWorld())
+	{
+		LastJumpPressTime = GetWorld()->GetTimeSeconds();
+	}
+	Super::Jump();
+}
+
+bool ATDCCharacter::CanJumpInternal_Implementation() const
+{
+	if (Super::CanJumpInternal_Implementation())
+	{
+		return true;
+	}
+	// Coyote time: cayendo por haber salido de un borde (sin haber saltado), unos ms todavía cuenta como "en el piso".
+	const UCharacterMovementComponent* Move = GetCharacterMovement();
+	return Move && Move->IsFalling() && !bJumpedSinceGrounded && GetWorld()
+		&& GetWorld()->GetTimeSeconds() - LastGroundedTime <= CoyoteTime;
 }
