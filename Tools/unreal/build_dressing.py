@@ -478,6 +478,12 @@ def kit_trim_floors():
     for actor in eas.get_all_level_actors():
         label = actor.get_actor_label()
         if label.startswith("Floor_") or label == "Exit_Ledge":
+            yaw = os.environ.get("TDC_KIT_YAW")  # worker headless: si la cornisa sale al revés, TDC_KIT_YAW=0
+            if yaw:
+                try:
+                    actor.set_editor_property("kit_trim_yaw", float(yaw))
+                except Exception as e:
+                    unreal.log_warning(f"[TDC] {label}: no se pudo setear kit_trim_yaw ({e})")
             try:
                 actor.set_editor_property("b_kit_trim", True)
                 n += 1

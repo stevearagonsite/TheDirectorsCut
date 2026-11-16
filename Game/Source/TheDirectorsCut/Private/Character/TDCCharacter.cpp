@@ -60,7 +60,9 @@ ATDCCharacter::ATDCCharacter()
 	// T-0040 (auditoría visual): un poco más alta y mirando más hacia abajo. Se ve la tapa de las plataformas (tablones) y
 	// el plano de juego ocupa el centro, en vez de una franja negra abajo.
 	CameraBoom->SetRelativeRotation(FRotator(-9.f, -90.f, 0.f));
-	CameraBoom->TargetArmLength = 2200.f; // D-012: encuadre amplio para anticipar el tramo que viene
+	// D-012: encuadre amplio para anticipar el tramo que viene. 1900 (antes 2200): el director medía 11 % del alto de
+	// pantalla y se perdía (auditoría #5); sigue viéndose el tramo siguiente gracias al TargetOffset.
+	CameraBoom->TargetArmLength = 1900.f;
 	CameraBoom->SocketOffset = FVector(0.f, 0.f, 250.f);
 	// Look-ahead (D-012): el nivel avanza hacia +X, así que el director queda en el tercio izquierdo y se ve lo que viene.
 	CameraBoom->TargetOffset = FVector(700.f, 0.f, 0.f);
