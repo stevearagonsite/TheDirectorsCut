@@ -1,0 +1,35 @@
+﻿[TDC-PLAYTEST] START modo=bot
+[TDC-PLAYTEST] escena: 3 reflectores, 4 tablas, caja=1, extras C/G/R=1/1/1
+[TDC-PLAYTEST] PASS luces_L1_off_P1: inicio (L1=off) P1: presente=0 (esperado 0), colision=0
+[TDC-PLAYTEST] PASS luces_L2_on_W1: inicio (L2=on) W1: presente=1 (esperado 1), colision=1
+[TDC-PLAYTEST] PASS luces_L2_on_S1: inicio (L2=on) S1: presente=0 (esperado 0), colision=0
+[TDC-PLAYTEST] PASS luces_L3_on_SH: inicio (L3=on) SH: presente=1 (esperado 1), colision=1
+[TDC-PLAYTEST] PASS luces_L3_on_P3: inicio (L3=on) P3: presente=0 (esperado 0), colision=0
+[TDC-PLAYTEST] teleport a X=692 Z=100 (salto de beat del bot)
+[TDC-PLAYTEST] PASS claquetazo_comun: extra común derrotado
+[TDC-PLAYTEST] teleport a X=1000 Z=100 (salto de beat del bot)
+[TDC-PLAYTEST] PASS luces_L1_on_P1: después de E (L1=on) P1: presente=1 (esperado 1), colision=1
+[TDC-PLAYTEST] teleport a X=1600 Z=100 (salto de beat del bot)
+[TDC-PLAYTEST] PASS p1_sostiene: director sobre P1 con L1 prendido (Z=92)
+[TDC-PLAYTEST] teleport a X=2400 Z=100 (salto de beat del bot)
+[TDC-PLAYTEST] PASS luces_L2_off_W1: después de E (L2=off) W1: presente=0 (esperado 0), colision=0
+[TDC-PLAYTEST] PASS luces_L2_off_S1: después de E (L2=off) S1: presente=1 (esperado 1), colision=1
+[TDC-PLAYTEST] PASS sombra_aparece: con L2 apagado la sombra de guion está en escena
+[TDC-PLAYTEST] PASS sombra_fuera_de_toma: prender L2 de nuevo saca a la sombra de la toma
+[TDC-PLAYTEST] teleport a X=4300 Z=100 (salto de beat del bot)
+[TDC-PLAYTEST] teleport a X=4560 Z=100 (salto de beat del bot)
+[TDC-PLAYTEST] PASS puente_cae: las tablas bajaron 103 cm
+[TDC-PLAYTEST] PASS puente_rebobinado: tablas a 0 cm o menos de su lugar
+[TDC-PLAYTEST] teleport a X=5250 Z=100 (salto de beat del bot)
+[TDC-PLAYTEST] PASS puente_sostiene: director sobre el puente rebobinado (Z=92)
+[TDC-PLAYTEST] teleport a X=6152 Z=100 (salto de beat del bot)
+[TDC-PLAYTEST] PASS claquetazo_resistente: aturdido=1 derrotado=0
+[TDC-PLAYTEST] teleport a X=6850 Z=100 (salto de beat del bot)
+[TDC-PLAYTEST] PASS luces_L3_off_SH: después de E (L3=off) SH: presente=0 (esperado 0), colision=0
+[TDC-PLAYTEST] PASS luces_L3_off_P3: después de E (L3=off) P3: presente=1 (esperado 1), colision=1
+[TDC-PLAYTEST] PASS caja_cae: con L3 apagado la caja bajó 302 cm
+[TDC-PLAYTEST] teleport a X=7400 Z=480 (salto de beat del bot)
+[TDC-PLAYTEST] PASS meta: llegó a la salida en 16.7 s
+[TDC-REPLAY] GOAL en 16.7s
+[TDC-REPLAY] corrida guardada: Saved/TDCRuns/bot-20261116-001411.json (18 eventos, meta=1)
+[TDC-PLAYTEST] RESULT PASS 20/20
