@@ -83,6 +83,7 @@ void ATDCExtra::LoadPuppet()
 	Body->SetVisibility(false);
 	ScriptMark->SetVisibility(false);
 	bPuppetWalking = false;
+	PuppetScaleCheckFrames = 0;
 	if (PuppetIdle)
 	{
 		Puppet->PlayAnimation(PuppetIdle, true);
@@ -90,11 +91,44 @@ void ATDCExtra::LoadPuppet()
 	UpdatePuppet();
 }
 
+void ATDCExtra::FitPuppetScale()
+{
+	// T-0033: con el skeleton bien vinculado, los clips de Rodin aplican la escala 0.01 de su root y el extra quedaba de
+	// ~2 cm (invisible). Medimos la altura de la pose animada (huesos en component space) contra la del mesh y, si
+	// difiere más de 3x, compensamos. Si los clips no traen escala, no cambia nada.
+	float MinZ = TNumericLimits<float>::Max();
+	float MaxZ = TNumericLimits<float>::Lowest();
+	for (int32 Bone = 0; Bone < Puppet->GetNumBones(); ++Bone)
+	{
+		const float Z = Puppet->GetBoneTransform(Bone, FTransform::Identity).GetLocation().Z;
+		MinZ = FMath::Min(MinZ, Z);
+		MaxZ = FMath::Max(MaxZ, Z);
+	}
+	const float PoseHeight = MaxZ - MinZ;
+	const float MeshHeight = Puppet->GetSkeletalMeshAsset()->GetBounds().BoxExtent.Z * 2.f;
+	float Scale = PuppetScale;
+	if (PoseHeight > 0.01f && MeshHeight > 1.f)
+	{
+		const float Ratio = MeshHeight * 0.9f / PoseHeight; // los huesos cubren ~90 % de la altura del mesh
+		if (Ratio > 3.f || Ratio < 0.33f)
+		{
+			Scale = PuppetScale * Ratio;
+			Puppet->SetRelativeScale3D(FVector(Scale));
+		}
+	}
+	UE_LOG(LogTDC, Log, TEXT("%s: pose %.1f cm, mesh %.1f cm -> escala del puppet %.3f"), *GetName(), PoseHeight, MeshHeight, Scale);
+}
+
 void ATDCExtra::UpdatePuppet()
 {
 	if (!Puppet || !Puppet->GetSkeletalMeshAsset())
 	{
 		return;
+	}
+	if (PuppetScaleCheckFrames >= 0 && ++PuppetScaleCheckFrames >= 3)
+	{
+		PuppetScaleCheckFrames = -1; // tres ticks: la pose del clip ya está evaluada
+		FitPuppetScale();
 	}
 	// Mira hacia donde patrulla (el FBX mira a -Y; yaw -90 = +X).
 	const float Yaw = Direction >= 0.f ? -90.f : 90.f;
