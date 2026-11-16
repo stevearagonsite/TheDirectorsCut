@@ -143,8 +143,8 @@ def import_type(kind, target_cm):
         meshes = find(dest, unreal.SkeletalMesh)
         h = meshes[0].get_bounds().box_extent.z * 2.0
     rename(meshes[0], dest, name)
-    for skel in find(dest, unreal.Skeleton):
-        rename(skel, dest, f"SKEL_Extra_{kind}")
+    # NO renombrar el Skeleton: rename_asset actualiza las referencias de los AS solo en memoria y no los guarda;
+    # en disco los clips quedaban apuntando a un skeleton que ya no existe ("mismo esqueleto=False") y no animaban.
     taken = set()
     anims = find(dest, unreal.AnimSequence)
     rest = []
@@ -166,6 +166,14 @@ def import_type(kind, target_cm):
             rename(anim, dest, final)
             taken.add(final)
     matte_material(kind, dest, eal.load_asset(f"{dest}/{name}"))
+    # Guardar todo lo que los renames dejaron sucio (clips, mesh) y verificar que los clips usan el skeleton del mesh.
+    eal.save_directory(dest, only_if_is_dirty=False, recursive=True)
+    sk_skel = eal.load_asset(f"{dest}/{name}").get_editor_property("skeleton")
+    for suffix in ("Idle", "Walk"):
+        path = f"{dest}/AS_Extra_{kind}_{suffix}"
+        anim = eal.load_asset(path) if eal.does_asset_exist(path) else None
+        if anim and anim.get_editor_property("skeleton") != sk_skel:
+            fail(f"{path} no usa el skeleton de SK_Extra_{kind}")
     log(f"{kind}: {h:.0f} cm, animaciones {sorted(taken)}")
 
 
