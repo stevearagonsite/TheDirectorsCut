@@ -66,9 +66,26 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "TDC|Light", meta = (ClampMin = "0.05"))
 	float HangingBulbScale = 0.18f;
 
+	/** Cono de luz pintado (T-0054): quad aditivo desde la lente hasta el plano de juego, ancho = alcance. Muestra qué
+	 * ilumina el reflector. Necesita /Game/Materials/M_TDCLightCone (make_materials.py); sin él no se dibuja. */
+	UPROPERTY(VisibleAnywhere, Category = "TDC|Light")
+	TObjectPtr<UStaticMeshComponent> Cone;
+
+	/** Z del plano de juego donde "pega" el cono. */
+	UPROPERTY(EditAnywhere, Category = "TDC|Light")
+	float PlayPlaneZ = 0.f;
+
+	UPROPERTY(EditAnywhere, Category = "TDC|Light", meta = (ClampMin = "0"))
+	float ConeIntensity = 1.8f;
+
 private:
 	void ApplyVisuals();
 	void SetupHousing();
+	void SetupCone();
+
+	UPROPERTY(Transient)
+	TObjectPtr<UMaterialInstanceDynamic> ConeMaterial;
+	bool bConeReady = false;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UMaterialInstanceDynamic> BulbMaterial;
