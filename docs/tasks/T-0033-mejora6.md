@@ -1,7 +1,7 @@
 ---
 id: T-0033
 titulo: Package de mejora 6: extras que animan (skeleton correcto en los clips)
-estado: parcial
+estado: enviada
 tipo: editor
 rama: t/T-0033-extras-skeleton
 creada: 2026-11-15
@@ -13,26 +13,29 @@ creada: 2026-11-15
 Steve: "los personajes enemigos no tienen animaciones". `check_anims.py` (T-0031) mostró que los 6 clips `AS_Extra_*` apuntan a un
 skeleton que no es el de su `SK_Extra_*`. Causa: `import_extras.py` renombraba el Skeleton y no guardaba los clips. Ya está arreglado.
 Genera `Game\Saved\stevearagonsite_TheDirectorsCut_mejora6.zip`. **No toques** los otros zips.
-**URGENTE (22:25, la jam cierra 22:59): Steve tiene abierto el build de `_mejora5` en `Game\Saved\PackageTest`. NO corras `smoke` (lo cerraría).**
+(La jam terminó: ya no hay restricción con el build abierto.)
 
-## Pasos
+## Pasos (reenvío 2: escala del puppet auto-ajustada, 71bdc80)
+Contexto: con el skeleton bien vinculado los clips por fin se aplican, y el root de Rodin trae escala 0.01: el extra quedaba de ~2 cm
+(por eso no aparecía en `01-mejora6.png`). `ATDCExtra::FitPuppetScale` mide la pose animada y compensa. Los assets de 4c95118 sirven:
+**no reimportes nada**.
 1. `git fetch` y `git checkout t/T-0033-extras-skeleton` (verificá el sha). `.\Tools\scripts\tdc.ps1 stop`.
-2. `.\Tools\scripts\tdc.ps1 build` (no debería recompilar nada).
-3. Locks: `git ls-files Game/Content/Characters/Extras | ForEach-Object { git lfs lock $_ }`.
-4. `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\import_extras.py` (hace clean de la carpeta: borra también MI_Toon_* y T_Extra_*).
-5. `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\apply_toon.py` (**después** de import_extras; si no, los extras quedan sin toon).
-6. `.\Tools\scripts\tdc.ps1 python -Script Tools\unreal\check_anims.py` → los 9 clips con `mismo esqueleto=True`. Pegá la salida.
-   Si algún clip de extra sigue en `False`, reportá `parcial` y **no empaquetes**.
-7. `.\Tools\scripts\tdc.ps1 shot -Map /Game/Maps/L_Slice -Task T-0033 -Name 01-mejora6` (el extra rojo con toon, no gris).
-8. `.\Tools\scripts\tdc.ps1 package -Zip stevearagonsite_TheDirectorsCut_mejora6`
-9. (sin smoke: no cierres el build abierto)
-10. Commit de `Game/Content/Characters/Extras/**` (LFS), evidencia y Reporte (con tamaño del zip). `git lfs unlock`. Push y `[TDC-REPORT]`.
-11. Mandá el `[TDC-REPORT]` apenas esté el zip, con su tamaño: Steve lo sube a mano.
+2. `.\Tools\scripts\tdc.ps1 build`. Si no compila, reportá `fallo` con `archivo:línea`.
+3. `.\Tools\scripts\tdc.ps1 shot -Map /Game/Maps/L_Slice -Task T-0033 -Name 02-escala`. En `Game\Saved\Logs\TheDirectorsCut.log`
+   buscá las 3 líneas `-> escala del puppet` y pegalas (se espera ~100). En la captura, el extra rojo (X1, al lado del reflector)
+   tiene que verse **de tamaño humano**, rojo y con cel shading.
+4. `.\Tools\scripts\tdc.ps1 autorun -Task T-0033 -Wait 45` y elegí 2 capturas con X1 en cuadro: ¿camina con zancada (no deslizándose
+   rígido)? (el autorun lo derriba a claquetazos: mirá las primeras capturas).
+5. Si el extra se ve bien: `.\Tools\scripts\tdc.ps1 package -Zip stevearagonsite_TheDirectorsCut_mejora6` y
+   `.\Tools\scripts\tdc.ps1 smoke -Task T-0033 -Name 03-package -Wait 60 -Zip stevearagonsite_TheDirectorsCut_mejora6`.
+   Si no se ve bien, reportá `parcial` y no empaquetes.
+6. Commit de evidencia y Reporte (con el tamaño del zip). Push y `[TDC-REPORT]`.
+7. Dejá abierto el build de mejora 6 para que Steve lo juegue: `.\Tools\scripts\tdc.ps1 smoke -Task T-0033 -Name 04-abierto -Keep -Zip stevearagonsite_TheDirectorsCut_mejora6`.
 
 ## Criterios de aceptación
-- [ ] `check_anims.py`: los 6 clips de extras con `mismo esqueleto=True`.
-- [ ] `01-mejora6.png`: extras con cel shading (no grises).
-- [ ] `_mejora6.zip` de menos de 1 GB, `BUILD SUCCESSFUL`.
+- [ ] Compila; 3 líneas `-> escala del puppet` en el log.
+- [ ] `02-escala.png`: X1 de tamaño humano, rojo; autorun: X1 caminando con zancada.
+- [ ] `_mejora6.zip` de menos de 1 GB; el exe corre a los 60 s sin `Fatal`; quedó abierto.
 
 ## Permite
 - Editar `Tools/unreal/import_extras.py` y `apply_toon.py` solo para compatibilidad de API.
