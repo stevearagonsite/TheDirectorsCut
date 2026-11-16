@@ -58,7 +58,7 @@ En las zonas de descanso se equipa 1 poder por departamento. Todos gastan Rollo.
 | Movimiento 2.5D | in progress | Prototipo | Correr y saltar en el plano XZ, cámara lateral, reaparecer tras caer | [design](features/movimiento/design.md) |
 | Dirección de fotografía (luz) | in progress | Prototipo | Prender/apagar reflectores; piezas que existen solo con luz o solo a oscuras | [design](features/fotografia/design.md) |
 | Tiempo | in progress | Prototipo | Mantener para rebobinar lo que está "en toma" | [design](features/tiempo/design.md) |
-| Combate | in progress | Prototipo | Claquetazo (F) con hit-stop y extras animados: común lo derriba, resistente lo aturde, de guion inmune (D-002, D-003) | — |
+| Combate | in progress | Prototipo | Claquetazo (F) con hit-stop y extras animados: común lo derriba, resistente lo aturde, de guion inmune (D-002, D-003) | [design](features/combate/design.md) |
 | Rollo | idea | Post-prototipo | Barra compartida que gastan los poderes; latas la alargan (D-004) | — |
 | Equipamiento y progresión | idea | Post-prototipo | 1 poder por departamento en descanso; jefes dan slots, fragmentos dan skill tree (D-007, D-008) | — |
 | Corte | idea | Post-prototipo | Salto de toma (mueve al jugador) y Tijera (corta un fragmento del mundo) (D-006) | — |
