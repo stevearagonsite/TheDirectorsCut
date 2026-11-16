@@ -573,7 +573,7 @@ def night_lighting():
         elif label == "Pit_Floor":
             # T-0041 (auditoría): era una franja negra pura abajo. Ahora es la calle: adoquín mojado azul grisáceo, oscuro
             # pero con forma (el color lo trae la textura; el override solo la apaga un poco).
-            actor.set_editor_property("color_override", unreal.LinearColor(0.55, 0.57, 0.65, 1.0))
+            actor.set_editor_property("color_override", unreal.LinearColor(0.18, 0.19, 0.24, 1.0))  # T-0056: salía casi blanco
             try:
                 actor.set_editor_property("pattern_override", "T_Street_Cobble")
                 actor.set_editor_property("pattern_override_strength", 1.0)
@@ -679,7 +679,7 @@ def build():
     stage.set_folder_path("Dressing")
     stage.set_actor_scale3d(vec(110.0, (y1 - y0) / 100.0, 1.0))
     # T-0041 (auditoría #3): era la franja negra pura del 22 % inferior. Ahora es vereda de adoquín mojado.
-    stage.set_editor_property("color_override", unreal.LinearColor(0.5, 0.52, 0.6, 1.0))
+    stage.set_editor_property("color_override", unreal.LinearColor(0.16, 0.17, 0.21, 1.0))  # T-0056: lavado, casi blanco
     try:
         stage.set_editor_property("pattern_override", "T_Street_Cobble")
         stage.set_editor_property("pattern_override_strength", 1.0)

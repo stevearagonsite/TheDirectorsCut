@@ -179,7 +179,7 @@ def build():
         # TopBoost solo en piezas con patrón (alpha = techo * PatternStrength): lo liso (bulbo, greybox) no cambia.
         top_boost = mel.create_material_expression(mat, unreal.MaterialExpressionScalarParameter, -400, 350)
         top_boost.set_editor_property("parameter_name", "TopBoost")
-        top_boost.set_editor_property("default_value", 1.8)
+        top_boost.set_editor_property("default_value", 1.25)
         boost_alpha = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -400, 250)
         mel.connect_material_expressions(up, "", boost_alpha, "A")
         mel.connect_material_expressions(strength, "", boost_alpha, "B")

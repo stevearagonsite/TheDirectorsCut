@@ -26,7 +26,8 @@ MASTER = "/Game/Materials/M_TDCToon"
 # Rim por personaje (auditoría #5): el director se recorta con luz cálida y más fuerte; los extras quedan con el frío.
 # T-0052: con 0.7 y potencia 3 el borde salía neutro y el extra rojo se leía más que el director. Más ancho (potencia
 # 2) y más fuerte, en ámbar: el director es lo más cálido del plano de juego.
-RIM = {"Director": ((1.0, 0.6, 0.28), 1.4, 2.0)}
+RIM = {"Director": ((1.0, 0.55, 0.22), 2.2, 4.5)}  # T-0056: con potencia 2 el rim era un tinte en todo el cuerpo;
+# con 4.5 queda en el borde (contorno ámbar nítido) y la fuerza 2.2 lo hace notar.
 
 CHARACTERS = [
     ("Director", "/Game/Characters/Director", "SK_Director", (1.0, 1.0, 1.0), None),
